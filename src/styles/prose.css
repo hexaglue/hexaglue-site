@@ -1,6 +1,6 @@
 @layer components {
 	.prose {
-		@apply body mx-auto w-full max-w-prose tracking-wide text-astro-gray-200 lg:text-lg;
+		@apply body mx-auto w-full max-w-prose tracking-wide text-astro-gray-200 text-base sm:text-lg;
 		line-height: 1.75em;
 	}
 
@@ -18,15 +18,15 @@
 	}
 
 	.prose > h1 {
-		@apply font-heading heading-1 mb-6 mt-0 text-4xl md:text-5xl font-bold leading-tight text-white;
+		@apply font-heading heading-1 mb-4 sm:mb-6 mt-0 text-2xl sm:text-4xl md:text-5xl font-bold leading-tight text-white;
 	}
 
 	.prose > h2 {
-		@apply font-heading heading-2 mb-4 mt-10 text-[32px] font-bold leading-[38px] text-white;
+		@apply font-heading heading-2 mb-3 sm:mb-4 mt-8 sm:mt-10 text-xl sm:text-[32px] font-bold leading-tight sm:leading-[38px] text-white;
 	}
 
 	.prose > h3 {
-		@apply font-heading heading-3 mb-4 mt-10 text-2xl font-bold leading-tight text-white;
+		@apply font-heading heading-3 mb-4 mt-10 text-xl sm:text-2xl font-bold leading-tight text-white;
 	}
 
 	.prose > img {
@@ -38,7 +38,7 @@
 	}
 
 	.prose ul {
-		@apply my-4 pl-8;
+		@apply my-4 pl-6 sm:pl-8;
 	}
 
 	/* the ::marker selector doesn't allow customizing the spacing around the marker as easily */
@@ -86,13 +86,13 @@
 	}
 
 	.prose table {
-		@apply overflow-auto border-spacing-0 text-sm sm:text-base w-full;
+		@apply border-spacing-0 text-xs sm:text-sm md:text-base w-full;
 	}
 	.prose tr {
 		@apply w-full;
 	}
 	.prose :is(th, td) {
-		@apply border-b border-astro-gray-500 py-2 px-4 align-baseline;
+		@apply border-b border-astro-gray-500 py-2 px-2 sm:px-4 align-baseline;
 	}
 	.prose :is(th, td):first-child {
 		@apply pl-0;

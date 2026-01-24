@@ -37,10 +37,16 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 		<div
 			role="tablist"
 			aria-label="Étapes d'adoption"
-			class="mt-4 py-1 sm:mt-8 px-4 sm:px-8 w-full flex items-center overflow-x-auto whitespace-nowrap no-scrollbar gap-4"
+			class="mt-6 py-6 sm:mt-10 px-2 sm:px-8 w-full flex items-center justify-center overflow-visible gap-2 sm:gap-6"
 		>
 			<AdoptionStep number={1} label="Observer" isActive />
+			<svg class="adoption-arrow w-5 h-5 sm:w-8 sm:h-8 text-astro-gray-500 flex-shrink-0 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+			</svg>
 			<AdoptionStep number={2} label="Gouverner" />
+			<svg class="adoption-arrow w-5 h-5 sm:w-8 sm:h-8 text-astro-gray-500 flex-shrink-0 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+			</svg>
 			<AdoptionStep number={3} label="Accélérer" />
 		</div>
 	</div>
@@ -93,46 +99,70 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 
 <script>
 	const tabs = document.querySelectorAll('.adoption-tab');
+	const arrows = document.querySelectorAll('.adoption-arrow');
 	let activeTabIndex = 0;
 	let autoPlayInterval: ReturnType<typeof setInterval> | null = null;
 	const AUTO_PLAY_DELAY = 4000; // 4 seconds per tab
 
-	function updateTabStyles(tab: Element, isActive: boolean) {
+	function updateTabStyles(tab: Element, state: 'active' | 'completed' | 'inactive') {
 		const numberBadge = tab.querySelector('span:first-child');
 
-		if (isActive) {
-			tab.classList.remove('bg-astro-dark-800/30', 'border-astro-dark-100/20', 'text-astro-gray-200');
-			tab.classList.add('bg-blue-green-gradient/10', 'border-astro-green/30', 'text-white');
-			numberBadge?.classList.remove('bg-astro-dark-100/30', 'text-astro-gray-200');
+		// Reset all classes first
+		tab.classList.remove(
+			'bg-astro-dark-800/30', 'border-astro-dark-100/20', 'text-astro-gray-200',
+			'bg-astro-dark-700/50', 'border-astro-green', 'text-white', 'shadow-[0_0_20px_rgba(23,191,127,0.3)]'
+		);
+		numberBadge?.classList.remove('bg-astro-dark-100/30', 'text-astro-gray-200', 'bg-astro-green', 'text-black');
+
+		if (state === 'active') {
+			tab.classList.add('bg-astro-dark-700/50', 'border-astro-green', 'text-white', 'shadow-[0_0_20px_rgba(23,191,127,0.3)]');
+			numberBadge?.classList.add('bg-astro-green', 'text-black');
+		} else if (state === 'completed') {
+			tab.classList.add('bg-astro-dark-700/50', 'border-astro-green', 'text-white');
 			numberBadge?.classList.add('bg-astro-green', 'text-black');
 		} else {
-			tab.classList.remove('bg-blue-green-gradient/10', 'border-astro-green/30', 'text-white');
 			tab.classList.add('bg-astro-dark-800/30', 'border-astro-dark-100/20', 'text-astro-gray-200');
-			numberBadge?.classList.remove('bg-astro-green', 'text-black');
 			numberBadge?.classList.add('bg-astro-dark-100/30', 'text-astro-gray-200');
 		}
 	}
 
 	function updateTabSelection(index: number, shouldFocus: boolean = false) {
 		const nextTab = tabs[index];
-		const activeTab = tabs[activeTabIndex];
 		const nextTabContent = document.querySelector(`#adoption-panel-${index + 1}`);
-		const activeTabContent = document.querySelector(`#adoption-panel-${activeTabIndex + 1}`);
 
-		if (!nextTab || !activeTab || !nextTabContent || !activeTabContent) return;
+		if (!nextTab || !nextTabContent) return;
 
-		// Update ARIA attributes
-		activeTab.setAttribute('aria-selected', 'false');
-		activeTab.setAttribute('tabindex', '-1');
-		activeTabContent.classList.add('hidden');
+		// Hide all panels and update all tabs
+		tabs.forEach((tab, i) => {
+			const tabContent = document.querySelector(`#adoption-panel-${i + 1}`);
 
-		nextTab.setAttribute('aria-selected', 'true');
-		nextTab.setAttribute('tabindex', '0');
+			tab.setAttribute('aria-selected', i === index ? 'true' : 'false');
+			tab.setAttribute('tabindex', i === index ? '0' : '-1');
+			tabContent?.classList.add('hidden');
+
+			// Update visual styles based on position relative to active tab
+			if (i === index) {
+				updateTabStyles(tab, 'active');
+			} else if (i < index) {
+				updateTabStyles(tab, 'completed');
+			} else {
+				updateTabStyles(tab, 'inactive');
+			}
+		});
+
+		// Show active panel
 		nextTabContent.classList.remove('hidden');
 
-		// Update visual styles
-		updateTabStyles(activeTab, false);
-		updateTabStyles(nextTab, true);
+		// Update arrows - arrow at position i lights up when we're past step i+1
+		arrows.forEach((arrow, i) => {
+			if (i < index) {
+				arrow.classList.remove('text-astro-gray-500');
+				arrow.classList.add('text-astro-green');
+			} else {
+				arrow.classList.remove('text-astro-green');
+				arrow.classList.add('text-astro-gray-500');
+			}
+		});
 
 		if (shouldFocus) {
 			(tabs[index] as HTMLElement).focus();

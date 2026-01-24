@@ -59,17 +59,17 @@ const socialLinks = siteInfo.socialLinks;
 			aria-label="Secondary"
 			class="flex flex-col lg:flex-row justify-between gap-8 lg:gap-20 py-8 md:py-12"
 		>
-			<div class="flex flex-col gap-4 max-w-sm">
+			<div class="flex flex-col gap-4 w-full lg:max-w-sm text-center lg:text-left">
 				<p class="font-heading text-white text-2xl" style="font-weight: 800;">HexaGlue</p>
 				<p class="text-astro-gray-200 text-sm">
-					Moteur d’analyse et d’automatisation architecturale qui s'active à la compilation des applications Java.
+					Moteur d'analyse et d'automatisation architecturale qui s'active à la compilation des applications Java.
 				</p>
 			</div>
 
-			<div class="gap-12 sm:gap-16 lg:gap-20 flex flex-wrap xl:grid xl:grid-cols-4">
+			<div class="grid grid-cols-2 gap-y-8 sm:flex sm:flex-wrap xl:grid xl:grid-cols-4 sm:gap-12 lg:gap-20 w-full lg:w-auto justify-items-stretch">
 				{
 					groups.map(({ title, links }, index) => (
-						<section class="group flex flex-col basis-32">
+						<section class="group flex flex-col sm:basis-32">
 							<h2
 								id={`footerHeading${index}`}
 								class="mb-4 label-base leading-none text-white font-semibold"
