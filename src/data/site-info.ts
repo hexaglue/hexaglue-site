@@ -26,12 +26,12 @@ type SiteInfo = {
 
 const siteInfo: SiteInfo = {
 	name: 'HexaGlue',
-	title: 'Compilez l\'architecture, pas seulement le code',
+	title: 'Audit et migration d\'architecture Java',
 	description:
-		'HexaGlue est un moteur d\'analyse et d\'automatisation architecturale qui s\'active à la compilation des applications Java. Sans framework impose. Sans vendor lock-in. Sans impact sur le runtime.',
+		'Outil de migration Java : classification automatique, audit d\'architecture, documentation vivante et génération de code. Sans vendor lock-in.',
 	image: {
 		src: '/og/hexaglue.jpg',
-		alt: 'HexaGlue - Compilez l\'architecture, pas seulement le code',
+		alt: 'HexaGlue - Audit et migration d\'architecture Java',
 	},
 	socialLinks: [
 		{
