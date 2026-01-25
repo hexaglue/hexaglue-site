@@ -13,23 +13,40 @@ cd hexaglue-demo`;
 
 const codeStep2 = `mvn clean compile`;
 
-const codeStep3 = `mvn clean verify
-# BUILD FAILURE
-# Task.java importe jakarta.persistence.Entity (domaine vers infra)`;
+const codeStep3 = `mvn clean verify -DskipTests`;
 
-const codeStep4 = `# Dans Task.java, supprimez :
-# import jakarta.persistence.Entity;
+const codeStep3Output = `[ERROR] Audit failed with 1 ERROR violations
+[ERROR] CRITICAL - ddd:domain-purity
+[ERROR]   Domain type 'Task' has 1 forbidden infrastructure import(s)
+BUILD FAILURE`;
 
-mvn clean verify
-# BUILD SUCCESS`;
+const codeStep4 = `mvn clean verify -DskipTests`;
 
-const codeStep5 = `mvn clean compile
-# Genere dans target/generated-sources/hexaglue/ :
-# - TaskEntity.java
-# - TaskJpaRepository.java
-# - TaskRepositoryAdapter.java`;
+const codeStep4Output = `Audit: PASSED
+BUILD SUCCESS`;
 
-const pomConfig = `<plugin>
+const codeStep5 = `mvn clean verify`;
+
+const codeStep5Output = `[INFO] Generated entity: TaskEntity
+[INFO] Generated repository: TaskJpaRepository
+[INFO] Generated mapper: TaskMapper
+[INFO] Generated adapter: TaskRepositoryAdapter
+
+Tests run: 4, Failures: 0, Errors: 0
+Audit: PASSED
+BUILD SUCCESS`;
+
+const pomConfig = `<!-- Dépendance MapStruct (dans <dependencies>) -->
+<dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>1.6.3</version>
+</dependency>
+
+<!-- ========== PLUGINS (dans <build><plugins>) ========== -->
+
+<!-- HexaGlue Maven Plugin -->
+<plugin>
     <groupId>${versions.groupId}</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
     <version>${versions.hexaglue}</version>
@@ -38,17 +55,64 @@ const pomConfig = `<plugin>
         <basePackage>io.hexaglue.demo</basePackage>
     </configuration>
     <dependencies>
+        <!-- Living Documentation -->
         <dependency>
             <groupId>${versions.pluginsGroupId}</groupId>
             <artifactId>hexaglue-plugin-living-doc</artifactId>
             <version>${versions.plugins}</version>
         </dependency>
+        <!-- Audit d'architecture -->
         <dependency>
             <groupId>${versions.pluginsGroupId}</groupId>
             <artifactId>hexaglue-plugin-audit</artifactId>
             <version>${versions.plugins}</version>
         </dependency>
+        <!-- Génération JPA -->
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-jpa</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.2.0</version>
+        </dependency>
     </dependencies>
+</plugin>
+
+<!-- Ajoute les sources HexaGlue au classpath (requis pour MapStruct) -->
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>build-helper-maven-plugin</artifactId>
+    <version>3.4.0</version>
+    <executions>
+        <execution>
+            <id>add-hexaglue-sources</id>
+            <phase>generate-sources</phase>
+            <goals><goal>add-source</goal></goals>
+            <configuration>
+                <sources>
+                    <source>\${project.build.directory}/hexaglue/generated-sources</source>
+                </sources>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+
+<!-- Configuration MapStruct pour générer les implémentations des mappers -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <annotationProcessorPaths>
+            <path>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>1.6.3</version>
+            </path>
+        </annotationProcessorPaths>
+    </configuration>
 </plugin>`;
 ---
 
@@ -136,7 +200,7 @@ const pomConfig = `<plugin>
 					<span class="text-xl md:text-2xl font-bold text-astro-green">1</span>
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-green/30 transition-all duration-300">
-					<h3 class="text-xl font-semibold text-white mb-2">Cloner le projet de démonstration</h3>
+					<h3 class="text-xl font-semibold text-white mb-4">Cloner le projet de démonstration</h3>
 					<p class="text-astro-gray-200 font-light mb-4">
 						Commencez par cloner l'application de démonstration qui contient un domaine métier prêt à l'emploi.
 					</p>
@@ -150,14 +214,14 @@ const pomConfig = `<plugin>
 					<span class="text-xl md:text-2xl font-bold text-astro-blue">2</span>
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-blue/30 transition-all duration-300">
-					<h3 class="text-xl font-semibold text-white mb-2">Activer la Living Documentation</h3>
+					<h3 class="text-xl font-semibold text-white mb-4">Activer la Living Documentation</h3>
 					<p class="text-astro-gray-200 font-light mb-4">
 						Décommentez le plugin HexaGlue et <code class="text-astro-blue">hexaglue-plugin-living-doc</code> dans le <code>pom.xml</code>, puis compilez.
 					</p>
 					<Code code={codeStep2} lang="bash" />
-					<p class="mt-4 text-sm text-astro-gray-300">
-						<Icon name="ri/file-copy-2-line" class="size-4 inline" aria-hidden="true" />
-						Consultez <code>target/hexaglue/reports/living-doc/</code>
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Fichiers générés</h4>
+					<p class="text-astro-gray-200 font-light">
+						Consultez le dossier <code>target/hexaglue/reports/living-doc/</code> pour voir la documentation générée.
 					</p>
 				</div>
 			</div>
@@ -168,12 +232,20 @@ const pomConfig = `<plugin>
 					<span class="text-xl md:text-2xl font-bold text-red-400">3</span>
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-red-400/30 transition-all duration-300">
-					<h3 class="text-xl font-semibold text-white mb-2">Activer l'Audit — Le build échoue !</h3>
+					<h3 class="text-xl font-semibold text-white mb-4">Activer l'Audit — Le build échoue !</h3>
 					<p class="text-astro-gray-200 font-light mb-4">
-						Décommentez <code class="text-astro-blue">hexaglue-plugin-audit</code> et lancez la vérification.
-						L'audit détecte une <strong class="text-red-400">violation architecturale</strong> dans <code>Task.java</code>.
+						Décommentez <code class="text-astro-blue">hexaglue-plugin-audit</code> dans le <code>pom.xml</code>.
+						L'audit va détecter une violation architecturale dans <code>Task.java</code>.
 					</p>
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Commande</h4>
 					<Code code={codeStep3} lang="bash" />
+					<p class="mt-2 text-sm text-astro-gray-400">
+						L'option <code>-DskipTests</code> est nécessaire car les tests échoueraient — l'infrastructure JPA n'est pas encore générée.
+					</p>
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Résultat attendu</h4>
+					<Code code={codeStep3Output} lang="log" />
 				</div>
 			</div>
 
@@ -183,11 +255,22 @@ const pomConfig = `<plugin>
 					<span class="text-xl md:text-2xl font-bold text-astro-green">4</span>
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-green/30 transition-all duration-300">
-					<h3 class="text-xl font-semibold text-white mb-2">Corriger la violation</h3>
+					<h3 class="text-xl font-semibold text-white mb-4">Corriger la violation</h3>
 					<p class="text-astro-gray-200 font-light mb-4">
-						Supprimez l'import JPA dans <code>Task.java</code> et relancez. Le build passe.
+						Le domaine ne doit pas dépendre de l'infrastructure. Corrigez <code>Task.java</code> pour respecter ce principe.
 					</p>
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Modifications à effectuer</h4>
+					<ul class="text-astro-gray-200 font-light list-disc list-inside space-y-1">
+						<li>Supprimez l'annotation <code class="text-red-400">@Entity</code> sur la classe</li>
+						<li>Supprimez l'import <code class="text-red-400">jakarta.persistence.Entity</code></li>
+					</ul>
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Commande</h4>
 					<Code code={codeStep4} lang="bash" />
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Résultat attendu</h4>
+					<Code code={codeStep4Output} lang="log" />
 				</div>
 			</div>
 
@@ -197,13 +280,29 @@ const pomConfig = `<plugin>
 					<span class="text-xl md:text-2xl font-bold text-astro-purple">5</span>
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-purple/30 transition-all duration-300">
-					<h3 class="text-xl font-semibold text-white mb-2">Générer l'infrastructure JPA</h3>
+					<h3 class="text-xl font-semibold text-white mb-4">Générer l'infrastructure JPA</h3>
 					<p class="text-astro-gray-200 font-light mb-4">
-						Décommentez <code class="text-astro-blue">hexaglue-plugin-jpa</code> pour générer les entités, repositories et adapters.
+						Décommentez <code class="text-astro-blue">hexaglue-plugin-jpa</code> et <code class="text-astro-blue">build-helper-maven-plugin</code> dans le <code>pom.xml</code>.
 					</p>
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Commande</h4>
 					<Code code={codeStep5} lang="bash" />
-					<p class="mt-4 text-sm text-astro-gray-300">
-						Lancez les tests pour vérifier : <code>mvn test</code>
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Résultat attendu</h4>
+					<Code code={codeStep5Output} lang="log" />
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Ordre d'exécution des plugins</h4>
+					<p class="text-astro-gray-200 font-light mb-3">
+						HexaGlue exécute les plugins dans un ordre précis selon leur catégorie :
+					</p>
+					<ol class="text-astro-gray-200 font-light space-y-2 list-decimal list-inside">
+						<li><strong class="text-white">Générateurs</strong> (phase <code>generate-sources</code>) : <code>living-doc</code> puis <code>jpa</code> génèrent le code</li>
+						<li><strong class="text-white">Compilation</strong> : Maven compile les sources générées avec MapStruct</li>
+						<li><strong class="text-white">Tests</strong> : Spring Boot démarre avec l'infrastructure générée</li>
+						<li><strong class="text-white">Audit</strong> (phase <code>verify</code>) : <code>audit</code> valide l'architecture finale</li>
+					</ol>
+					<p class="text-astro-gray-200 font-light mt-3">
+						Cette séparation garantit que l'audit valide le code <em>après</em> génération et que les tests utilisent l'infrastructure complète.
 					</p>
 				</div>
 			</div>
