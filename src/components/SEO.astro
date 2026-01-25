@@ -113,7 +113,58 @@ function formatCanonicalURL(url: string | URL) {
 			"url": "https://hexaglue.io/",
 			"name": name,
 			"description": description,
-			"inLanguage": locale === "fr" ? "fr-FR" : "en-US"
+			"inLanguage": locale === "fr" ? "fr-FR" : "en-US",
+			"publisher": {
+				"@id": "https://hexaglue.io/#organization"
+			}
+		},
+		{
+			"@type": "Organization",
+			"@id": "https://hexaglue.io/#organization",
+			"name": "HexaGlue",
+			"url": "https://hexaglue.io/",
+			"logo": {
+				"@type": "ImageObject",
+				"url": "https://hexaglue.io/favicon.svg"
+			},
+			"contactPoint": {
+				"@type": "ContactPoint",
+				"contactType": "customer service",
+				"email": "info@hexaglue.io",
+				"url": "https://hexaglue.io/contact/",
+				"availableLanguage": ["French", "English"]
+			},
+			"hasOfferCatalog": {
+				"@type": "OfferCatalog",
+				"name": "Services HexaGlue",
+				"url": "https://hexaglue.io/services/",
+				"itemListElement": [
+					{
+						"@type": "Offer",
+						"itemOffered": {
+							"@type": "Service",
+							"name": "Diagnostic Architectural",
+							"description": "Analyse de votre codebase pour identifier les opportunites de migration vers une architecture hexagonale."
+						}
+					},
+					{
+						"@type": "Offer",
+						"itemOffered": {
+							"@type": "Service",
+							"name": "Accompagnement Migration",
+							"description": "Support expert pour migrer progressivement votre application vers une architecture hexagonale avec HexaGlue."
+						}
+					},
+					{
+						"@type": "Offer",
+						"itemOffered": {
+							"@type": "Service",
+							"name": "Industrialisation CI/CD",
+							"description": "Integration de HexaGlue dans votre pipeline CI/CD pour automatiser les audits et la generation de code."
+						}
+					}
+				]
+			}
 		},
 		{
 			"@type": "SoftwareApplication",
@@ -123,7 +174,6 @@ function formatCanonicalURL(url: string | URL) {
 			"url": "https://hexaglue.io/",
 			"applicationCategory": "DeveloperApplication",
 			"operatingSystem": "Cross-platform (JVM)",
-			"programmingLanguage": "Java",
 			"offers": {
 				"@type": "Offer",
 				"price": "0",
@@ -133,8 +183,20 @@ function formatCanonicalURL(url: string | URL) {
 				"@type": "WebPage",
 				"url": "https://hexaglue.io/getting-started/"
 			},
+			"author": {
+				"@id": "https://hexaglue.io/#organization"
+			}
+		},
+		{
+			"@type": "SoftwareSourceCode",
+			"@id": "https://hexaglue.io/#sourcecode",
+			"name": "HexaGlue Source Code",
 			"codeRepository": "https://github.com/hexaglue/hexaglue",
-			"license": "https://opensource.org/licenses/Apache-2.0"
+			"programmingLanguage": "Java",
+			"license": "https://opensource.org/licenses/Apache-2.0",
+			"author": {
+				"@id": "https://hexaglue.io/#organization"
+			}
 		}
 	]
 })} />
