@@ -1,0 +1,106 @@
+---
+// TypewriterCommands.astro
+import { Icon } from 'astro-icon/components';
+
+const goals = ['compile', 'test', 'package', 'verify', 'install', 'deploy'];
+---
+
+<div data-typewriter-block class="px-4 py-2 bg-astro-dark-900/55 rounded-xl">
+	<div class="h-full flex items-center">
+		<Icon
+			name="chevron"
+			class="mr-2 relative block w-3 -rotate-90 text-astro-gray-200"
+			aria-hidden="true"
+		/>
+
+		<code class="flex-1 font-mono font-light text-sm text-astro-gray-200">
+			<span data-prefix class="text-astro-gray-400">mvn</span>
+			<span data-goal class="text-white"></span>
+			<span data-cursor class="animate-blink">▌</span>
+		</code>
+	</div>
+</div>
+
+<script define:vars={{ goals }}>
+	const TYPING_SPEED = 80;
+	const DELETING_SPEED = 40;
+	const PAUSE_BEFORE_DELETE = 2000;
+	const PAUSE_BEFORE_TYPE = 500;
+
+	for (const block of document.querySelectorAll('[data-typewriter-block]')) {
+		const prefixEl = block.querySelector('[data-prefix]');
+		const goalEl = block.querySelector('[data-goal]');
+
+		let currentIndex = 0;
+
+		function getRandomPrefix() {
+			return Math.random() > 0.5 ? 'mvn clean ' : 'mvn ';
+		}
+
+		function shuffleArray(array) {
+			const shuffled = [...array];
+			for (let i = shuffled.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+			}
+			return shuffled;
+		}
+
+		let shuffledGoals = shuffleArray(goals);
+
+		async function typeText(text, element) {
+			for (const char of text) {
+				element.textContent += char;
+				await new Promise((r) => setTimeout(r, TYPING_SPEED));
+			}
+		}
+
+		async function deleteText(element) {
+			while (element.textContent.length > 0) {
+				element.textContent = element.textContent.slice(0, -1);
+				await new Promise((r) => setTimeout(r, DELETING_SPEED));
+			}
+		}
+
+		async function cycle() {
+			const goal = shuffledGoals[currentIndex];
+			const prefix = getRandomPrefix();
+
+			prefixEl.textContent = prefix;
+			await typeText(goal, goalEl);
+
+			await new Promise((r) => setTimeout(r, PAUSE_BEFORE_DELETE));
+
+			await deleteText(goalEl);
+
+			await new Promise((r) => setTimeout(r, PAUSE_BEFORE_TYPE));
+
+			currentIndex = (currentIndex + 1) % shuffledGoals.length;
+
+			if (currentIndex === 0) {
+				shuffledGoals = shuffleArray(goals);
+			}
+
+			cycle();
+		}
+
+		cycle();
+	}
+</script>
+
+<style>
+	@keyframes blink {
+		0%,
+		50% {
+			opacity: 1;
+		}
+		51%,
+		100% {
+			opacity: 0;
+		}
+	}
+
+	.animate-blink {
+		animation: blink 1s infinite;
+	}
+</style>

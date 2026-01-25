@@ -5,6 +5,18 @@ import CodeBlock from '~/components/CodeBlock.astro';
 import Link from '../Link.astro';
 import GreenishStardust from './GreenishStardust.astro';
 import ctaBackground from './_assets/CTABackground.svg';
+
+const commands = [
+	"mvn compile",
+	"mvn clean compile",
+	"mvn test",
+	"mvn package",
+	"mvn verify",
+	"mvn install",
+	"mvn deploy",
+	"mvn clean install",
+	"mvn clean verify"
+];
 ---
 
 <section
@@ -45,19 +57,21 @@ import ctaBackground from './_assets/CTABackground.svg';
 					Démarrer maintenant
 				</span>
 			</Link>
-			<CodeBlock>mvn hexaglue:generate</CodeBlock>
+			<CodeBlock typewriter={commands} />
 		</div>
 
 		<div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-4">
 			<a
-				href="/docs/"
+				href="/getting-started/"
 				class="flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors duration-300"
 			>
 				<Icon name="ri/file-list-3-line" class="size-5" aria-hidden="true" />
 				<span class="text-sm">Documentation</span>
 			</a>
 			<a
-				href="/examples/"
+				href="https://github.com/hexaglue/hexaglue/tree/main/examples"
+				target="_blank"
+				rel="noopener noreferrer"
 				class="flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors duration-300"
 			>
 				<Icon name="ri/code-box-line" class="size-5" aria-hidden="true" />

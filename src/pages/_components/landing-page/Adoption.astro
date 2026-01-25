@@ -11,7 +11,7 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 		<SectionCopy
 			label="Adoption"
 			title="Une Adoption Progressive, Sans Risque"
-			description="Avec HexaGlue, avancez à votre rythme. Observez, verrouillez, automatisez, sans jamais vous enfermer."
+			description="Avec HexaGlue, avancez à votre rythme. Observez, décidez, automatisez, sans jamais vous enfermer."
 		/>
 
 		<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -102,7 +102,7 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 	const arrows = document.querySelectorAll('.adoption-arrow');
 	let activeTabIndex = 0;
 	let autoPlayInterval: ReturnType<typeof setInterval> | null = null;
-	const AUTO_PLAY_DELAY = 4000; // 4 seconds per tab
+	const AUTO_PLAY_DELAY = 5000; // 5 seconds per tab
 
 	function updateTabStyles(tab: Element, state: 'active' | 'completed' | 'inactive') {
 		const numberBadge = tab.querySelector('span:first-child');
@@ -185,29 +185,24 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 		}
 	}
 
-	function restartAutoPlay() {
-		stopAutoPlay();
-		startAutoPlay();
-	}
-
 	tabs.forEach((tab, index) => {
 		tab.addEventListener('click', () => {
+			stopAutoPlay();
 			updateTabSelection(index, true);
-			restartAutoPlay(); // Reset timer on manual interaction
 		});
 
 		tab.addEventListener('keydown', (e) => {
 			const event = e as KeyboardEvent;
 			if (event.key === 'ArrowRight') {
 				event.preventDefault();
+				stopAutoPlay();
 				const nextIndex = (activeTabIndex + 1) % tabs.length;
 				updateTabSelection(nextIndex, true);
-				restartAutoPlay();
 			} else if (event.key === 'ArrowLeft') {
 				event.preventDefault();
+				stopAutoPlay();
 				const prevIndex = (activeTabIndex - 1 + tabs.length) % tabs.length;
 				updateTabSelection(prevIndex, true);
-				restartAutoPlay();
 			}
 		});
 	});

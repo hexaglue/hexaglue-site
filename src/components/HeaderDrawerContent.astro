@@ -70,20 +70,25 @@ type Nav = Array<Link | Group>;
 						/>
 					</summary>
 					<div class="mt-4 flex flex-col gap-4 text-xl font-light">
-						{item.items.map((link) => (
-							<a
-								href={link.href}
-								data-astro-prefetch={link.prefetch ? '' : undefined}
-								class="link flex items-center gap-4"
-							>
-								<Icon name={link.icon} size="24" /> {link.label}{' '}
-								{link.badge && (
-									<span class="text-sm leading-none font-mono py-1 px-1.5 rounded bg-astro-blue/40 border border-astro-blue">
-										{link.badge}
-									</span>
-								)}
-							</a>
-						))}
+						{item.items.map((link) => {
+							const isExternal = link.href.startsWith('http://') || link.href.startsWith('https://');
+							return (
+								<a
+									href={link.href}
+									target={isExternal ? '_blank' : undefined}
+									rel={isExternal ? 'noopener noreferrer' : undefined}
+									data-astro-prefetch={link.prefetch ? '' : undefined}
+									class="link flex items-center gap-4"
+								>
+									<Icon name={link.icon} size="24" /> {link.label}{' '}
+									{link.badge && (
+										<span class="text-sm leading-none font-mono py-1 px-1.5 rounded bg-astro-blue/40 border border-astro-blue">
+											{link.badge}
+										</span>
+									)}
+								</a>
+							);
+						})}
 					</div>
 				</details>
 			),

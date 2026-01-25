@@ -11,11 +11,19 @@ const { links } = Astro.props;
 
 <div class="flex items-center gap-1 flex-wrap">
 	{
-		links.map((link) => (
-			<a rel="me" class="link flex items-center gap-2 p-3 text-white" href={link.href}>
-				<span class="sr-only">{link.text}</span>
-				<Icon name={link.icon} size={28} class="s-6 sm:s-7" aria-hidden="true" />
-			</a>
-		))
+		links.map((link) => {
+			const isExternal = link.href.startsWith('http://') || link.href.startsWith('https://');
+			return (
+				<a
+					href={link.href}
+					target={isExternal ? '_blank' : undefined}
+					rel={isExternal ? 'me noopener noreferrer' : 'me'}
+					class="link flex items-center gap-2 p-3 text-white"
+				>
+					<span class="sr-only">{link.text}</span>
+					<Icon name={link.icon} size={28} class="s-6 sm:s-7" aria-hidden="true" />
+				</a>
+			);
+		})
 	}
 </div>

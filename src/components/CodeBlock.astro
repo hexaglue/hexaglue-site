@@ -1,8 +1,15 @@
 ---
 import { Icon } from 'astro-icon/components';
+
+interface Props {
+	typewriter?: string[];
+}
+
+const { typewriter } = Astro.props;
+const isTypewriter = typewriter && typewriter.length > 0;
 ---
 
-<div data-code-block class="px-4 py-2 bg-astro-dark-900/55 rounded-xl">
+<div data-code-block data-typewriter={isTypewriter ? JSON.stringify(typewriter) : undefined} class="px-4 py-2 bg-astro-dark-900/55 rounded-xl">
 	<div class="group h-full flex items-center">
 		<Icon
 			name="chevron"
@@ -10,55 +17,182 @@ import { Icon } from 'astro-icon/components';
 			aria-hidden="true"
 		/>
 
-		<code data-code class="flex-1 font-mono font-light text-sm text-astro-gray-200 mr-2">
-			<slot />
+		<code data-code class="flex-1 font-mono font-light text-sm text-astro-gray-200 mr-2 whitespace-nowrap">
+			{isTypewriter ? (
+				<><span data-typewriter-text></span><span class="cursor">▌</span></>
+			) : (
+				<slot />
+			)}
 		</code>
 
-		<div class="relative">
-			<button
-				data-copy-button
-				class="block mr-1 transition hover:scale-110 active:scale-100 active:transition-colors text-astro-gray-200 group-hover:text-astro-gray-100"
-				title="Copier dans le presse-papier"
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24">
-					<path
-						fill="currentColor"
-						d="M7 6V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3v3c0 .552-.45 1-1.007 1H4.007A1.001 1.001 0 0 1 3 21l.003-14c0-.552.45-1 1.006-1zM5.002 8L5 20h10V8zM9 6h8v10h2V4H9z"
-					></path>
-				</svg>
-			</button>
+		{!isTypewriter && (
+			<div class="relative">
+				<button
+					data-copy-button
+					class="block mr-1 transition hover:scale-110 active:scale-100 active:transition-colors text-astro-gray-200 group-hover:text-astro-gray-100"
+					title="Copier dans le presse-papier"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24">
+						<path
+							fill="currentColor"
+							d="M7 6V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3v3c0 .552-.45 1-1.007 1H4.007A1.001 1.001 0 0 1 3 21l.003-14c0-.552.45-1 1.006-1zM5.002 8L5 20h10V8zM9 6h8v10h2V4H9z"
+						></path>
+					</svg>
+				</button>
 
-			<p
-				data-tooltip
-				class="absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2 whitespace-nowrap rounded bg-black/50 p-2 text-sm leading-none opacity-0 transition data-[visible=true]:opacity-100"
-			>
-				Copie !
-			</p>
-		</div>
+				<p
+					data-tooltip
+					class="absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2 whitespace-nowrap rounded bg-black/50 p-2 text-sm leading-none opacity-0 transition data-[visible=true]:opacity-100"
+				>
+					Copie !
+				</p>
+			</div>
+		)}
 	</div>
 </div>
+
+<style>
+	.cursor {
+		animation: blink 1s step-end infinite;
+		font-weight: 300;
+	}
+
+	@keyframes blink {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0; }
+	}
+</style>
 
 <script>
 	import { effect } from '@preact/signals-core';
 	import { getElement } from '~/helpers/dom.js';
 	import { createTimer } from '~/helpers/timer.js';
 
+	// Touches adjacentes sur un clavier AZERTY pour les typos
+	const adjacentKeys: Record<string, string[]> = {
+		'a': ['z', 'q', 's'], 'z': ['a', 'e', 's'], 'e': ['z', 'r', 'd'],
+		'r': ['e', 't', 'f'], 't': ['r', 'y', 'g'], 'y': ['t', 'u', 'h'],
+		'u': ['y', 'i', 'j'], 'i': ['u', 'o', 'k'], 'o': ['i', 'p', 'l'],
+		'p': ['o', 'm'], 'q': ['a', 's', 'w'], 's': ['q', 'd', 'z', 'x'],
+		'd': ['s', 'f', 'e', 'c'], 'f': ['d', 'g', 'r', 'v'], 'g': ['f', 'h', 't', 'b'],
+		'h': ['g', 'j', 'y', 'n'], 'j': ['h', 'k', 'u'], 'k': ['j', 'l', 'i'],
+		'l': ['k', 'm', 'o'], 'm': ['l', 'p'], 'w': ['q', 'x'],
+		'x': ['w', 'c', 's'], 'c': ['x', 'v', 'd'], 'v': ['c', 'b', 'f'],
+		'b': ['v', 'n', 'g'], 'n': ['b', 'h'],
+	};
+
+	function getTypoChar(char: string): string {
+		const lowerChar = char.toLowerCase();
+		const adjacent = adjacentKeys[lowerChar];
+		if (adjacent && adjacent.length > 0) {
+			const typo = adjacent[Math.floor(Math.random() * adjacent.length)];
+			return char === char.toUpperCase() ? typo.toUpperCase() : typo;
+		}
+		return char;
+	}
+
 	for (const codeBlock of document.querySelectorAll('[data-code-block]')) {
-		const code = getElement('[data-code]', HTMLElement, codeBlock);
-		const button = getElement('[data-copy-button]', HTMLButtonElement, codeBlock);
-		const tooltip = getElement('[data-tooltip]', HTMLElement, codeBlock);
+		const typewriterData = codeBlock.getAttribute('data-typewriter');
 
-		const timer = createTimer(1500);
+		if (typewriterData) {
+			// Mode typewriter
+			const texts = JSON.parse(typewriterData) as string[];
+			const textEl = codeBlock.querySelector('[data-typewriter-text]') as HTMLElement;
+			const codeEl = codeBlock.querySelector('[data-code]') as HTMLElement;
+			if (!textEl || !codeEl || texts.length === 0) continue;
 
-		button.addEventListener('click', () => {
-			navigator.clipboard.writeText(code.innerText);
-			timer.start();
-		});
+			// Calculer et fixer la largeur maximale sur le conteneur code
+			let maxWidth = 0;
+			for (const text of texts) {
+				textEl.textContent = text;
+				maxWidth = Math.max(maxWidth, codeEl.offsetWidth);
+			}
+			codeEl.style.width = `${maxWidth}px`;
+			codeEl.style.flexGrow = '0';
+			textEl.textContent = '';
 
-		effect(() => {
-			button.title = timer.running.value ? 'Copie !' : 'Copier dans le presse-papier';
-			tooltip.dataset.visible = String(timer.running.value);
-			tooltip.ariaHidden = String(!timer.running.value);
-		});
+			const typingSpeed = 80;
+			const deletingSpeed = 40;
+			const pauseBeforeDelete = 2000;
+			const pauseBeforeType = 500;
+			const typoChance = 0.08;
+
+			let textIndex = 0;
+			let charIndex = 0;
+			let isDeleting = false;
+			let isFixingTypo = false;
+			let hasTypoAtCurrentPos = false;
+
+			function type() {
+				const currentText = texts[textIndex];
+				let timeout = typingSpeed;
+
+				if (isFixingTypo) {
+					textEl.textContent = (textEl.textContent || '').slice(0, -1);
+					isFixingTypo = false;
+					timeout = typingSpeed + 50;
+					setTimeout(type, timeout);
+					return;
+				}
+
+				if (isDeleting) {
+					textEl.textContent = currentText.substring(0, charIndex - 1);
+					charIndex--;
+					timeout = deletingSpeed;
+				} else {
+					const nextChar = currentText[charIndex];
+					const shouldTypo = Math.random() < typoChance
+						&& nextChar && nextChar !== ' '
+						&& charIndex > 2 && charIndex < currentText.length - 2;
+
+					if (shouldTypo && !hasTypoAtCurrentPos) {
+						textEl.textContent = currentText.substring(0, charIndex) + getTypoChar(nextChar);
+						hasTypoAtCurrentPos = true;
+						isFixingTypo = true;
+						timeout = 300 + Math.random() * 200;
+						setTimeout(type, timeout);
+						return;
+					}
+
+					textEl.textContent = currentText.substring(0, charIndex + 1);
+					charIndex++;
+					hasTypoAtCurrentPos = false;
+					timeout = typingSpeed + Math.random() * 40 - 20;
+				}
+
+				if (!isDeleting && charIndex === currentText.length) {
+					timeout = pauseBeforeDelete;
+					isDeleting = true;
+				} else if (isDeleting && charIndex === 0) {
+					isDeleting = false;
+					textIndex = (textIndex + 1) % texts.length;
+					timeout = pauseBeforeType;
+				}
+
+				setTimeout(type, timeout);
+			}
+
+			type();
+		} else {
+			// Mode copie standard
+			const code = getElement('[data-code]', HTMLElement, codeBlock);
+			const button = codeBlock.querySelector('[data-copy-button]') as HTMLButtonElement | null;
+			const tooltip = codeBlock.querySelector('[data-tooltip]') as HTMLElement | null;
+
+			if (!button || !tooltip) continue;
+
+			const timer = createTimer(1500);
+
+			button.addEventListener('click', () => {
+				navigator.clipboard.writeText(code.innerText);
+				timer.start();
+			});
+
+			effect(() => {
+				button.title = timer.running.value ? 'Copie !' : 'Copier dans le presse-papier';
+				tooltip.dataset.visible = String(timer.running.value);
+				tooltip.ariaHidden = String(!timer.running.value);
+			});
+		}
 	}
 </script>

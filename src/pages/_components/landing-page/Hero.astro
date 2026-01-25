@@ -6,6 +6,13 @@ import PillLink from '../PillLink.astro';
 import HeroBackground from './HeroBackground.astro';
 import UsedBy from './UsedBy.astro';
 import versions from '~/data/versions';
+
+const slogans = [
+	"Sans framework imposé",
+	"Sans vendor lock-in",
+	"Sans impact sur le runtime",
+	"A la compilation"
+];
 ---
 
 <section class="relative">
@@ -30,12 +37,10 @@ import versions from '~/data/versions';
 			</h1>
 			<div slot="body" class="text-astro-gray-200 text-center text-balance font-light max-w-2xl">
 				<h2 class="mb-4 text-lg md:text-xl lg:text-2xl">
-					<strong class="text-white font-medium">Auditez. Documentez. Migrez.</strong>
+					<strong class="text-white font-medium">Auditer. Documenter. Migrer.</strong>
 				</h2>
-				<div class="slogan-container h-10 flex items-center justify-center">
-					<div id="typewriter-wrapper" class="typewriter-wrapper">
-						<span id="typewriter" class="typewriter font-heading text-lg md:text-xl bg-clip-text text-transparent bg-blue-purple-gradient"></span><span class="cursor">▌</span>
-					</div>
+				<div class="flex items-center justify-center">
+					<CodeBlock typewriter={slogans} />
 				</div>
 			</div>
 		</PageTitleBlock>
@@ -48,7 +53,6 @@ import versions from '~/data/versions';
 					Démarrer maintenant
 				</span>
 			</Link>
-			<CodeBlock>mvn hexaglue:generate</CodeBlock>
 		</div>
 	</div>
 
@@ -56,86 +60,3 @@ import versions from '~/data/versions';
 
 	<UsedBy />
 </section>
-
-<style>
-	.cursor {
-		animation: blink 1s step-end infinite;
-		color: #BC52EE;
-		font-weight: 300;
-	}
-
-	@keyframes blink {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0; }
-	}
-
-	.typewriter-wrapper {
-		text-align: left;
-		display: inline-block;
-		white-space: nowrap;
-	}
-
-	.typewriter {
-		min-width: 1ch;
-	}
-</style>
-
-<script>
-	const slogans = [
-		"Sans framework imposé",
-		"Sans vendor lock-in",
-		"Sans impact sur le runtime"
-	];
-
-	const typewriter = document.getElementById('typewriter');
-	const wrapper = document.getElementById('typewriter-wrapper');
-
-	// Calculer la largeur du slogan le plus large (en pixels)
-	function setWrapperWidth() {
-		if (!typewriter || !wrapper) return;
-		let maxWidth = 0;
-		for (const slogan of slogans) {
-			typewriter.textContent = slogan;
-			maxWidth = Math.max(maxWidth, wrapper.offsetWidth);
-		}
-		wrapper.style.width = `${maxWidth}px`;
-		typewriter.textContent = '';
-	}
-	setWrapperWidth();
-
-	let sloganIndex = 0;
-	let charIndex = 0;
-	let isDeleting = false;
-	const typingSpeed = 80;
-	const deletingSpeed = 40;
-	const pauseBeforeDelete = 2000;
-	const pauseBeforeType = 500;
-
-	function type() {
-		if (!typewriter) return;
-		const currentSlogan = slogans[sloganIndex];
-
-		if (isDeleting) {
-			typewriter.textContent = currentSlogan.substring(0, charIndex - 1);
-			charIndex--;
-		} else {
-			typewriter.textContent = currentSlogan.substring(0, charIndex + 1);
-			charIndex++;
-		}
-
-		let timeout = isDeleting ? deletingSpeed : typingSpeed;
-
-		if (!isDeleting && charIndex === currentSlogan.length) {
-			timeout = pauseBeforeDelete;
-			isDeleting = true;
-		} else if (isDeleting && charIndex === 0) {
-			isDeleting = false;
-			sloganIndex = (sloganIndex + 1) % slogans.length;
-			timeout = pauseBeforeType;
-		}
-
-		setTimeout(type, timeout);
-	}
-
-	type();
-</script>
