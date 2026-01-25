@@ -102,3 +102,39 @@ function formatCanonicalURL(url: string | URL) {
 */
 }
 <meta name="robots" content="max-image-preview:large" />
+
+{/* Schema.org JSON-LD */}
+<script is:inline type="application/ld+json" set:html={JSON.stringify({
+	"@context": "https://schema.org",
+	"@graph": [
+		{
+			"@type": "WebSite",
+			"@id": "https://hexaglue.io/#website",
+			"url": "https://hexaglue.io/",
+			"name": name,
+			"description": description,
+			"inLanguage": locale === "fr" ? "fr-FR" : "en-US"
+		},
+		{
+			"@type": "SoftwareApplication",
+			"@id": "https://hexaglue.io/#software",
+			"name": "HexaGlue",
+			"description": "Outil de migration Java : classification automatique, audit d'architecture hexagonale, living documentation et generation de code JPA.",
+			"url": "https://hexaglue.io/",
+			"applicationCategory": "DeveloperApplication",
+			"operatingSystem": "Cross-platform (JVM)",
+			"programmingLanguage": "Java",
+			"offers": {
+				"@type": "Offer",
+				"price": "0",
+				"priceCurrency": "EUR"
+			},
+			"softwareHelp": {
+				"@type": "WebPage",
+				"url": "https://hexaglue.io/getting-started/"
+			},
+			"codeRepository": "https://github.com/hexaglue/hexaglue",
+			"license": "https://opensource.org/licenses/Apache-2.0"
+		}
+	]
+})} />
