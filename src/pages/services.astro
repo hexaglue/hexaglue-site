@@ -1,0 +1,429 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from './_components/SectionCopy.astro';
+import Link from './_components/Link.astro';
+import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
+import GreenishStardust from './_components/landing-page/GreenishStardust.astro';
+---
+
+<MainLayout
+	title="Offre de Services"
+	description="Accompagnement expert pour vos projets d'architecture hexagonale et DDD. Audit, migration progressive et gouvernance à l'échelle avec HexaGlue."
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<PurpleStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-4xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+				Expertise & Accompagnement
+			</span>
+
+			<h1 class="mt-4 font-heading text-4xl md:text-5xl lg:text-6xl text-white text-balance" style="font-variation-settings: 'wght' 700;">
+				Un outil Open Source.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Une expertise pour en tirer de la valeur.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				HexaGlue est libre d'utilisation, sans licence, sans runtime imposé et sans verrouillage fournisseur.
+				Mais transformer un patrimoine applicatif vers le DDD reste un <strong class="text-white">sujet complexe et structurant</strong>.
+			</p>
+
+			<p class="mt-4 text-xl text-white font-medium">
+				Nous vous aidons à transformer votre architecture sans perdre le contrôle.
+			</p>
+		</div>
+	</section>
+
+	<!-- Pourquoi Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Notre proposition"
+			title="Pourquoi une offre de services autour d'un outil Open Source ?"
+		/>
+
+		<div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+			<!-- Ce que l'Open Source garantit -->
+			<div class="p-6 md:p-8 bg-astro-dark-800/40 border border-astro-green/20 rounded-2xl">
+				<div class="flex items-center gap-3 mb-6">
+					<div class="p-2 rounded-lg bg-astro-green/10">
+						<Icon name="ri/checkbox-circle-line" class="size-6 text-astro-green" aria-hidden="true" />
+					</div>
+					<h3 class="text-xl font-semibold text-white">L'Open Source garantit</h3>
+				</div>
+				<ul class="space-y-4">
+					<li class="flex items-start gap-3">
+						<Icon name="ri/check-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">L'absence de vendor lock-in</span>
+					</li>
+					<li class="flex items-start gap-3">
+						<Icon name="ri/check-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">La pérennité de vos modèles et de votre code</span>
+					</li>
+					<li class="flex items-start gap-3">
+						<Icon name="ri/check-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">L'indépendance vis-à-vis d'un éditeur</span>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Ce que l'Open Source ne garantit pas -->
+			<div class="p-6 md:p-8 bg-astro-dark-800/40 border border-astro-purple/20 rounded-2xl">
+				<div class="flex items-center gap-3 mb-6">
+					<div class="p-2 rounded-lg bg-astro-purple/10">
+						<Icon name="ri/error-warning-line" class="size-6 text-astro-purple" aria-hidden="true" />
+					</div>
+					<h3 class="text-xl font-semibold text-white">Mais il ne garantit pas</h3>
+				</div>
+				<ul class="space-y-4">
+					<li class="flex items-start gap-3">
+						<Icon name="ri/arrow-right-line" class="size-5 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">Une bonne lecture de votre architecture existante</span>
+					</li>
+					<li class="flex items-start gap-3">
+						<Icon name="ri/arrow-right-line" class="size-5 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">Des règles adaptées à votre contexte métier</span>
+					</li>
+					<li class="flex items-start gap-3">
+						<Icon name="ri/arrow-right-line" class="size-5 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">Une adoption progressive sans rupture</span>
+					</li>
+					<li class="flex items-start gap-3">
+						<Icon name="ri/arrow-right-line" class="size-5 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">Une gouvernance cohérente à l'échelle</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<p class="mt-8 text-center text-lg text-astro-gray-200">
+			<strong class="text-white">HexaGlue fournit les signaux.</strong> Nous vous aidons à les interpréter et à agir.
+		</p>
+	</section>
+
+	<!-- Nos Offres Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-96" />
+
+		<SectionCopy
+			label="Nos offres"
+			title="Trois niveaux d'accompagnement"
+			description="De l'audit initial à la gouvernance à l'échelle, nous adaptons notre intervention à vos besoins."
+		/>
+
+		<div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<!-- Offre 1: Diagnostic -->
+			<div class="offer-card group relative p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-astro-green/40 transition-all duration-300">
+				<div class="absolute top-0 left-6 -translate-y-1/2">
+					<span class="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#0d0f14] text-astro-green rounded-full border-2 border-astro-green/50">
+						Diagnostic
+					</span>
+				</div>
+
+				<div class="mt-4">
+					<div class="p-3 w-fit rounded-xl bg-astro-green/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri/search-eye-line" class="size-8 text-astro-green" aria-hidden="true" />
+					</div>
+
+					<h3 class="mt-6 text-2xl font-semibold text-white">Audit Architectural</h3>
+					<p class="mt-2 text-astro-gray-300 font-medium">Voir clair avant d'agir.</p>
+
+					<p class="mt-4 text-sm text-astro-gray-200 font-light leading-relaxed">
+						Pour les organisations qui souhaitent objectiver leur architecture existante avant toute transformation.
+					</p>
+
+					<div class="mt-6 space-y-4">
+						<div>
+							<h4 class="text-sm font-semibold text-white mb-2">Ce que nous faisons</h4>
+							<ul class="space-y-2 text-sm text-astro-gray-200">
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Analyse complète avec HexaGlue</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Cartographie des domaines et dépendances</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Identification des violations</span>
+								</li>
+							</ul>
+						</div>
+
+						<div>
+							<h4 class="text-sm font-semibold text-white mb-2">Livrables</h4>
+							<ul class="space-y-2 text-sm text-astro-gray-200">
+								<li class="flex items-start gap-2">
+									<Icon name="ri/file-list-3-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Rapport d'audit exploitable</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/file-list-3-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Living documentation</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/file-list-3-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Recommandations priorisées</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Offre 2: Accompagnement -->
+			<div class="offer-card group relative p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-astro-blue/40 transition-all duration-300">
+				<div class="absolute top-0 left-6 -translate-y-1/2">
+					<span class="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#0d0f14] text-astro-blue rounded-full border-2 border-astro-blue/50">
+						Migration
+					</span>
+				</div>
+
+				<div class="mt-4">
+					<div class="p-3 w-fit rounded-xl bg-astro-blue/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri/rocket-line" class="size-8 text-astro-blue" aria-hidden="true" />
+					</div>
+
+					<h3 class="mt-6 text-2xl font-semibold text-white">Adoption Progressive</h3>
+					<p class="mt-2 text-astro-gray-300 font-medium">Transformer sans casser.</p>
+
+					<p class="mt-4 text-sm text-astro-gray-200 font-light leading-relaxed">
+						Accompagnement des équipes dans l'adoption d'HexaGlue et des pratiques DDD, sans approche "big bang".
+					</p>
+
+					<div class="mt-6 space-y-4">
+						<div>
+							<h4 class="text-sm font-semibold text-white mb-2">Ce que nous faisons</h4>
+							<ul class="space-y-2 text-sm text-astro-gray-200">
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Intégration dans les builds CI/CD</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Définition des règles d'architecture</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Coaching DDD pragmatique</span>
+								</li>
+							</ul>
+						</div>
+
+						<div>
+							<h4 class="text-sm font-semibold text-white mb-2">Garanties</h4>
+							<ul class="space-y-2 text-sm text-astro-gray-200">
+								<li class="flex items-start gap-2">
+									<Icon name="ri/shield-check-line" class="size-4 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Aucun framework imposé</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/shield-check-line" class="size-4 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Aucun impact sur le runtime</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/shield-check-line" class="size-4 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Arrêt possible sans dette</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Offre 3: Industrialisation -->
+			<div class="offer-card group relative p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-astro-purple/40 transition-all duration-300">
+				<div class="absolute top-0 left-6 -translate-y-1/2">
+					<span class="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#0d0f14] text-astro-purple rounded-full border-2 border-astro-purple/50">
+						Industrialisation
+					</span>
+				</div>
+
+				<div class="mt-4">
+					<div class="p-3 w-fit rounded-xl bg-astro-purple/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri/stack-line" class="size-8 text-astro-purple" aria-hidden="true" />
+					</div>
+
+					<h3 class="mt-6 text-2xl font-semibold text-white">Gouvernance à l'Échelle</h3>
+					<p class="mt-2 text-astro-gray-300 font-medium">Quand l'architecture devient un actif.</p>
+
+					<p class="mt-4 text-sm text-astro-gray-200 font-light leading-relaxed">
+						Pour industrialiser la gouvernance de l'architecture sur plusieurs équipes ou produits.
+					</p>
+
+					<div class="mt-6 space-y-4">
+						<div>
+							<h4 class="text-sm font-semibold text-white mb-2">Ce que nous faisons</h4>
+							<ul class="space-y-2 text-sm text-astro-gray-200">
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Standards architecturaux partagés</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Plugins HexaGlue spécifiques</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/check-line" class="size-4 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Indicateurs d'architecture</span>
+								</li>
+							</ul>
+						</div>
+
+						<div>
+							<h4 class="text-sm font-semibold text-white mb-2">Valeur apportée</h4>
+							<ul class="space-y-2 text-sm text-astro-gray-200">
+								<li class="flex items-start gap-2">
+									<Icon name="ri/dashboard-line" class="size-4 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Cohérence entre équipes</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/dashboard-line" class="size-4 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Delivery accéléré</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<Icon name="ri/dashboard-line" class="size-4 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+									<span>Architecture pilotée par les faits</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Ce que nous ne faisons pas -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="max-w-3xl mx-auto text-center">
+			<span class="bg-clip-text text-transparent bg-red-pink-gradient font-semibold text-sm uppercase tracking-wider">
+				Transparence
+			</span>
+			<h2 class="mt-2 font-heading text-3xl md:text-4xl text-white" style="font-variation-settings: 'wght' 700;">
+				Ce que nous ne faisons pas
+			</h2>
+			<p class="mt-4 text-astro-gray-200 font-light">
+				Parce que la clarté est essentielle.
+			</p>
+		</div>
+
+		<div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+			<div class="flex items-center gap-3 p-4 bg-astro-dark-800/30 rounded-xl border border-astro-dark-100/10">
+				<Icon name="ri/close-line" class="size-5 text-red-400 shrink-0" aria-hidden="true" />
+				<span class="text-sm text-astro-gray-200">Vente de licence logicielle</span>
+			</div>
+			<div class="flex items-center gap-3 p-4 bg-astro-dark-800/30 rounded-xl border border-astro-dark-100/10">
+				<Icon name="ri/close-line" class="size-5 text-red-400 shrink-0" aria-hidden="true" />
+				<span class="text-sm text-astro-gray-200">Framework imposé</span>
+			</div>
+			<div class="flex items-center gap-3 p-4 bg-astro-dark-800/30 rounded-xl border border-astro-dark-100/10">
+				<Icon name="ri/close-line" class="size-5 text-red-400 shrink-0" aria-hidden="true" />
+				<span class="text-sm text-astro-gray-200">Dépendance runtime</span>
+			</div>
+			<div class="flex items-center gap-3 p-4 bg-astro-dark-800/30 rounded-xl border border-astro-dark-100/10">
+				<Icon name="ri/close-line" class="size-5 text-red-400 shrink-0" aria-hidden="true" />
+				<span class="text-sm text-astro-gray-200">Captation de code ou données</span>
+			</div>
+			<div class="flex items-center gap-3 p-4 bg-astro-dark-800/30 rounded-xl border border-astro-dark-100/10">
+				<Icon name="ri/close-line" class="size-5 text-red-400 shrink-0" aria-hidden="true" />
+				<span class="text-sm text-astro-gray-200">Verrouillage fournisseur</span>
+			</div>
+			<div class="flex items-center gap-3 p-4 bg-astro-green/10 rounded-xl border border-astro-green/20">
+				<Icon name="ri/check-line" class="size-5 text-astro-green shrink-0" aria-hidden="true" />
+				<span class="text-sm text-white font-medium">Tout vous appartient</span>
+			</div>
+		</div>
+	</section>
+
+	<!-- Conviction Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="max-w-4xl mx-auto">
+			<div class="text-center mb-12">
+				<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+					Notre conviction
+				</span>
+			</div>
+
+			<!-- Les 3 constats -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+				<div class="p-6 bg-astro-dark-800/50 rounded-2xl border border-astro-dark-100/20 text-center">
+					<Icon name="ri/eye-off-line" class="size-10 text-astro-gray-400 mx-auto mb-4" aria-hidden="true" />
+					<p class="text-lg text-white font-medium">Les frameworks masquent les problèmes.</p>
+				</div>
+				<div class="p-6 bg-astro-dark-800/50 rounded-2xl border border-astro-dark-100/20 text-center">
+					<Icon name="ri/file-damage-line" class="size-10 text-astro-gray-400 mx-auto mb-4" aria-hidden="true" />
+					<p class="text-lg text-white font-medium">Les documents vieillissent.</p>
+				</div>
+				<div class="p-6 bg-astro-dark-800/50 rounded-2xl border border-astro-dark-100/20 text-center">
+					<Icon name="ri/timer-flash-line" class="size-10 text-astro-gray-400 mx-auto mb-4" aria-hidden="true" />
+					<p class="text-lg text-white font-medium">Les audits manuels ne passent pas à l'échelle.</p>
+				</div>
+			</div>
+
+			<!-- La réponse -->
+			<div class="p-8 md:p-10 bg-gradient-to-br from-astro-green/10 to-astro-blue/10 rounded-3xl border border-astro-green/20">
+				<p class="text-xl md:text-2xl text-white text-center font-medium leading-relaxed">
+					HexaGlue rend l'architecture
+					<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold">observable</span>,
+					<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold">vérifiable</span> et
+					<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold">actionnable</span>
+					— à la compilation.
+				</p>
+
+				<p class="mt-6 text-base text-astro-gray-200 text-center">
+					Notre rôle est de vous aider à transformer cette capacité en <strong class="text-white">résultats concrets</strong>.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="text-center space-y-6">
+			<h2 class="font-heading text-3xl md:text-4xl lg:text-5xl text-white" style="font-variation-settings: 'wght' 700;">
+				<span class="text-astro-gray-300">HexaGlue est gratuit.</span><br/>
+				Les décisions d'architecture ne le sont pas.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light">
+				Nous vous aidons à prendre les bonnes.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/contact/" class="primary">
+					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
+						Discutons de votre projet
+					</span>
+				</Link>
+				<Link href="/getting-started/" class="secondary">
+					<Icon name="ri/file-list-3-line" class="size-5" aria-hidden="true" />
+					<span>Documentation</span>
+				</Link>
+			</div>
+		</div>
+	</section>
+</MainLayout>
+
+<style>
+	.offer-card {
+		position: relative;
+	}
+
+	.offer-card::before {
+		content: '';
+		position: absolute;
+		inset: 30% 15%;
+		background: radial-gradient(ellipse at center, rgba(64, 222, 191, 0.08) 0%, transparent 70%);
+		border-radius: 50%;
+		filter: blur(30px);
+		z-index: -1;
+		opacity: 0;
+		transition: opacity 0.4s ease-out;
+	}
+
+	.offer-card:hover::before {
+		opacity: 1;
+	}
+</style>

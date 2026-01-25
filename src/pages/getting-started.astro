@@ -1,0 +1,342 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from './_components/SectionCopy.astro';
+import Link from './_components/Link.astro';
+import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
+import GreenishStardust from './_components/landing-page/GreenishStardust.astro';
+import versions from '~/data/versions';
+
+const codeStep1 = `git clone https://github.com/hexaglue/hexaglue-demo.git
+cd hexaglue-demo`;
+
+const codeStep2 = `mvn clean compile`;
+
+const codeStep3 = `mvn clean verify
+# BUILD FAILURE
+# Task.java importe jakarta.persistence.Entity (domaine vers infra)`;
+
+const codeStep4 = `# Dans Task.java, supprimez :
+# import jakarta.persistence.Entity;
+
+mvn clean verify
+# BUILD SUCCESS`;
+
+const codeStep5 = `mvn clean compile
+# Genere dans target/generated-sources/hexaglue/ :
+# - TaskEntity.java
+# - TaskJpaRepository.java
+# - TaskRepositoryAdapter.java`;
+
+const pomConfig = `<plugin>
+    <groupId>${versions.groupId}</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>${versions.hexaglue}</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>io.hexaglue.demo</basePackage>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-living-doc</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-audit</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+---
+
+<MainLayout
+	title="Démarrage rapide"
+	description="Apprenez à configurer HexaGlue dans votre projet Java Maven en quelques minutes. Guide pas à pas avec un exemple concret."
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<PurpleStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+				Tutoriel
+			</span>
+
+			<h1 class="mt-4 font-heading text-4xl md:text-5xl lg:text-6xl text-white text-balance" style="font-variation-settings: 'wght' 700;">
+				Démarrage rapide.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">5 minutes pour comprendre.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Configurez HexaGlue, générez votre première documentation vivante,
+				et découvrez comment l'audit protège votre architecture.
+			</p>
+
+			<div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<a
+					href="https://github.com/hexaglue/hexaglue-demo"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="px-6 py-3 group inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-white hover:bg-astro-gray-100 text-base font-medium transition-all ease-in-out duration-300"
+				>
+					<Icon name="logos/github" class="size-5" aria-hidden="true" />
+					<span class="text-gray-900">Cloner hexaglue-demo</span>
+				</a>
+				<a href="#etapes" class="text-astro-gray-200 hover:text-white transition-colors flex items-center gap-2">
+					<span>Voir les étapes</span>
+					<Icon name="ri/arrow-right-line" class="size-4" aria-hidden="true" />
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- Prérequis -->
+	<section class="py-12 md:py-16 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="max-w-3xl mx-auto">
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+				<h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-3">
+					<Icon name="ri/checkbox-circle-line" class="size-6 text-astro-green" aria-hidden="true" />
+					Prérequis
+				</h2>
+				<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+					<div class="flex items-center gap-3">
+						<Icon name="ri/check-line" class="size-5 text-astro-green shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">Java 17+</span>
+					</div>
+					<div class="flex items-center gap-3">
+						<Icon name="ri/check-line" class="size-5 text-astro-green shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">Maven 3.8+</span>
+					</div>
+					<div class="flex items-center gap-3">
+						<Icon name="ri/check-line" class="size-5 text-astro-green shrink-0" aria-hidden="true" />
+						<span class="text-astro-gray-200">Un IDE</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Étapes -->
+	<section id="etapes" class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-96" />
+
+		<SectionCopy
+			label="Le parcours"
+			title="5 étapes pour maîtriser HexaGlue"
+			description="Suivez ce tutoriel avec l'application hexaglue-demo pour une expérience pratique."
+		/>
+
+		<div class="mt-12 space-y-8 max-w-4xl mx-auto">
+			<!-- Étape 1 -->
+			<div class="step-card group relative pl-16 md:pl-20">
+				<div class="absolute left-0 top-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-astro-green/10 border border-astro-green/30 flex items-center justify-center">
+					<span class="text-xl md:text-2xl font-bold text-astro-green">1</span>
+				</div>
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-green/30 transition-all duration-300">
+					<h3 class="text-xl font-semibold text-white mb-2">Cloner le projet de démonstration</h3>
+					<p class="text-astro-gray-200 font-light mb-4">
+						Commencez par cloner l'application de démonstration qui contient un domaine métier prêt à l'emploi.
+					</p>
+					<Code code={codeStep1} lang="bash" />
+				</div>
+			</div>
+
+			<!-- Étape 2 -->
+			<div class="step-card group relative pl-16 md:pl-20">
+				<div class="absolute left-0 top-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-astro-blue/10 border border-astro-blue/30 flex items-center justify-center">
+					<span class="text-xl md:text-2xl font-bold text-astro-blue">2</span>
+				</div>
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-blue/30 transition-all duration-300">
+					<h3 class="text-xl font-semibold text-white mb-2">Activer la Living Documentation</h3>
+					<p class="text-astro-gray-200 font-light mb-4">
+						Décommentez le plugin HexaGlue et <code class="text-astro-blue">hexaglue-plugin-living-doc</code> dans le <code>pom.xml</code>, puis compilez.
+					</p>
+					<Code code={codeStep2} lang="bash" />
+					<p class="mt-4 text-sm text-astro-gray-300">
+						<Icon name="ri/file-copy-2-line" class="size-4 inline" aria-hidden="true" />
+						Consultez <code>target/hexaglue/reports/living-doc/</code>
+					</p>
+				</div>
+			</div>
+
+			<!-- Étape 3 -->
+			<div class="step-card group relative pl-16 md:pl-20">
+				<div class="absolute left-0 top-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-red-400/10 border border-red-400/30 flex items-center justify-center">
+					<span class="text-xl md:text-2xl font-bold text-red-400">3</span>
+				</div>
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-red-400/30 transition-all duration-300">
+					<h3 class="text-xl font-semibold text-white mb-2">Activer l'Audit — Le build échoue !</h3>
+					<p class="text-astro-gray-200 font-light mb-4">
+						Décommentez <code class="text-astro-blue">hexaglue-plugin-audit</code> et lancez la vérification.
+						L'audit détecte une <strong class="text-red-400">violation architecturale</strong> dans <code>Task.java</code>.
+					</p>
+					<Code code={codeStep3} lang="bash" />
+				</div>
+			</div>
+
+			<!-- Étape 4 -->
+			<div class="step-card group relative pl-16 md:pl-20">
+				<div class="absolute left-0 top-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-astro-green/10 border border-astro-green/30 flex items-center justify-center">
+					<span class="text-xl md:text-2xl font-bold text-astro-green">4</span>
+				</div>
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-green/30 transition-all duration-300">
+					<h3 class="text-xl font-semibold text-white mb-2">Corriger la violation</h3>
+					<p class="text-astro-gray-200 font-light mb-4">
+						Supprimez l'import JPA dans <code>Task.java</code> et relancez. Le build passe.
+					</p>
+					<Code code={codeStep4} lang="bash" />
+				</div>
+			</div>
+
+			<!-- Étape 5 -->
+			<div class="step-card group relative pl-16 md:pl-20">
+				<div class="absolute left-0 top-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-astro-purple/10 border border-astro-purple/30 flex items-center justify-center">
+					<span class="text-xl md:text-2xl font-bold text-astro-purple">5</span>
+				</div>
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-purple/30 transition-all duration-300">
+					<h3 class="text-xl font-semibold text-white mb-2">Générer l'infrastructure JPA</h3>
+					<p class="text-astro-gray-200 font-light mb-4">
+						Décommentez <code class="text-astro-blue">hexaglue-plugin-jpa</code> pour générer les entités, repositories et adapters.
+					</p>
+					<Code code={codeStep5} lang="bash" />
+					<p class="mt-4 text-sm text-astro-gray-300">
+						Lancez les tests pour vérifier : <code>mvn test</code>
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Configuration Maven -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Le plugin Maven"
+			description="Voici la configuration complète du plugin HexaGlue pour votre pom.xml."
+		/>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Code code={pomConfig} lang="xml" title="pom.xml" />
+		</div>
+	</section>
+
+	<!-- Ce que vous avez appris -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="max-w-4xl mx-auto">
+			<div class="text-center mb-10">
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+					Récapitulatif
+				</span>
+				<h2 class="mt-2 font-heading text-3xl md:text-4xl text-white" style="font-variation-settings: 'wght' 700;">
+					Ce que vous avez découvert
+				</h2>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<div class="flex items-center gap-3 mb-4">
+						<div class="p-2 rounded-lg bg-astro-green/10">
+							<Icon name="ri/file-list-3-line" class="size-5 text-astro-green" aria-hidden="true" />
+						</div>
+						<h3 class="text-lg font-semibold text-white">Living Documentation</h3>
+					</div>
+					<p class="text-sm text-astro-gray-200 font-light">
+						Documentation générée automatiquement, toujours synchronisée avec votre code.
+					</p>
+				</div>
+
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<div class="flex items-center gap-3 mb-4">
+						<div class="p-2 rounded-lg bg-astro-blue/10">
+							<Icon name="ri/shield-check-line" class="size-5 text-astro-blue" aria-hidden="true" />
+						</div>
+						<h3 class="text-lg font-semibold text-white">Audit d'architecture</h3>
+					</div>
+					<p class="text-sm text-astro-gray-200 font-light">
+						Détection des violations architecturales dès la compilation.
+					</p>
+				</div>
+
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<div class="flex items-center gap-3 mb-4">
+						<div class="p-2 rounded-lg bg-astro-purple/10">
+							<Icon name="ri/code-box-line" class="size-5 text-astro-purple" aria-hidden="true" />
+						</div>
+						<h3 class="text-lg font-semibold text-white">Génération JPA</h3>
+					</div>
+					<p class="text-sm text-astro-gray-200 font-light">
+						Entités, repositories et adapters générés depuis votre modèle domaine.
+					</p>
+				</div>
+
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<div class="flex items-center gap-3 mb-4">
+						<div class="p-2 rounded-lg bg-red-400/10">
+							<Icon name="ri/layout-grid-line" class="size-5 text-red-400" aria-hidden="true" />
+						</div>
+						<h3 class="text-lg font-semibold text-white">Classification automatique</h3>
+					</div>
+					<p class="text-sm text-astro-gray-200 font-light">
+						HexaGlue identifie agrégats, value objects, ports sans configuration.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-20 mb-12 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="text-center space-y-6">
+			<h2 class="font-heading text-3xl md:text-4xl lg:text-5xl text-white" style="font-variation-settings: 'wght' 700;">
+				<span class="text-astro-gray-300">Le tutoriel est terminé.</span><br/>
+				Votre architecture ne fait que commencer.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Explorez les exemples avancés ou contactez-nous pour un accompagnement sur mesure.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<a
+					href="https://github.com/hexaglue/hexaglue/tree/main/examples"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="px-6 py-3 group inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-white hover:bg-astro-gray-100 text-base font-medium transition-all ease-in-out duration-300"
+				>
+					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
+						Explorer les exemples
+					</span>
+				</a>
+				<Link href="/services/" class="secondary">
+					<Icon name="ri/building-4-line" class="size-5" aria-hidden="true" />
+					<span>Nos services</span>
+				</Link>
+			</div>
+		</div>
+	</section>
+</MainLayout>
+
+<style>
+	.step-card::before {
+		content: '';
+		position: absolute;
+		left: 1.5rem;
+		top: 3.5rem;
+		bottom: -2rem;
+		width: 2px;
+		background: linear-gradient(to bottom, rgba(64, 222, 191, 0.3), transparent);
+	}
+
+	.step-card:last-child::before {
+		display: none;
+	}
+
+	@media (min-width: 768px) {
+		.step-card::before {
+			left: 1.75rem;
+		}
+	}
+</style>
