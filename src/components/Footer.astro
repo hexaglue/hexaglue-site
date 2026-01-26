@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import siteInfo from '~/data/site-info.js';
 import SocialLinks from './SocialLinks.astro';
+import HexaGlueLogo from './HexaGlueLogo.astro';
 
 interface Props {
 	bgClass?: string;
@@ -60,10 +61,12 @@ const socialLinks = siteInfo.socialLinks;
 			aria-label="Secondary"
 			class="flex flex-col lg:flex-row justify-between gap-8 lg:gap-20 py-8 md:py-12"
 		>
-			<div class="flex flex-col gap-4 w-full lg:max-w-sm text-center lg:text-left">
-				<p class="font-heading text-white text-2xl" style="font-weight: 800;">HexaGlue</p>
-				<p class="text-astro-gray-200 text-sm">
-					La gouvernance de vos applications Java à la compilation.
+			<div class="flex flex-col gap-4 w-full lg:max-w-sm text-center lg:text-left items-center lg:items-start">
+				<a href="/" data-astro-prefetch title="Accueil">
+					<HexaGlueLogo aria-hidden="true" />
+				</a>
+				<p class="text-astro-gray-300 text-base font-bold">
+					L'Architecture as Code. Enfin.
 				</p>
 			</div>
 

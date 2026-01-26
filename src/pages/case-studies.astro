@@ -103,24 +103,20 @@ import GreenishStardust from './_components/landing-page/GreenishStardust.astro'
 	</section>
 
 	<!-- Vous utilisez HexaGlue ? -->
-	<section class="py-16 md:py-20 mb-12 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<div class="max-w-3xl mx-auto p-8 md:p-10 bg-gradient-to-br from-astro-purple/10 to-astro-blue/10 rounded-3xl border border-astro-purple/20 text-center">
-			<div class="p-4 w-fit rounded-2xl bg-astro-purple/10 mx-auto mb-6">
-				<Icon name="ri/rocket-line" class="size-10 text-astro-purple" aria-hidden="true" />
-			</div>
-
-			<h2 class="font-heading text-2xl md:text-3xl lg:text-4xl text-white" style="font-variation-settings: 'wght' 700;">
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading text-3xl md:text-4xl lg:text-5xl text-white" style="font-variation-settings: 'wght' 700;">
 				<span class="text-astro-gray-300">Vous utilisez HexaGlue ?</span><br/>
 				Partagez votre succès.
 			</h2>
 
-			<p class="mt-4 text-astro-gray-200 font-light max-w-xl mx-auto">
+			<p class="text-xl text-astro-gray-200 font-light">
 				Partagez votre expérience et aidez d'autres équipes à découvrir comment HexaGlue peut transformer leur architecture.
 			</p>
 
-			<div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
 				<Link href="/contact/" class="primary">
-					<span class="bg-clip-text text-transparent bg-blue-purple-gradient group-hover:text-[#5b21b6] transition-all ease-in-out duration-500">
+					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
 						Partagez votre histoire
 					</span>
 				</Link>
@@ -130,6 +126,9 @@ import GreenishStardust from './_components/landing-page/GreenishStardust.astro'
 				</Link>
 			</div>
 		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
 	</section>
 </MainLayout>
 

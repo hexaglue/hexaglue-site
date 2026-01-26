@@ -165,18 +165,18 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 	</section>
 
 	<!-- CTA Final -->
-	<section class="py-16 md:py-20 mb-12 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<div class="max-w-3xl mx-auto p-8 md:p-10 bg-gradient-to-br from-astro-green/10 to-astro-blue/10 rounded-3xl border border-astro-green/20 text-center">
-			<h2 class="font-heading text-2xl md:text-3xl lg:text-4xl text-white" style="font-variation-settings: 'wght' 700;">
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading text-3xl md:text-4xl lg:text-5xl text-white" style="font-variation-settings: 'wght' 700;">
 				<span class="text-astro-gray-300">L'architecture, c'est maintenant.</span><br/>
 				La transformation, c'est ensemble.
 			</h2>
 
-			<p class="mt-4 text-astro-gray-200 font-light">
+			<p class="text-xl text-astro-gray-200 font-light">
 				Commencez dès maintenant avec la documentation ou contactez-nous pour un accompagnement personnalisé.
 			</p>
 
-			<div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
 				<Link href="/getting-started/" class="primary">
 					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
 						Démarrer maintenant
@@ -188,6 +188,9 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 				</Link>
 			</div>
 		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
 	</section>
 </MainLayout>
 
