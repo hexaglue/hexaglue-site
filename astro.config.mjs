@@ -1,7 +1,7 @@
 // @ts-check
 
 import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
+import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
 import astroExpressiveCode from 'astro-expressive-code';
@@ -50,7 +50,47 @@ export default defineConfig({
 			},
 		}),
 		mdx(),
-		sitemap(),
+		sitemap({
+			serialize(item) {
+				const url = item.url;
+
+				// Homepage - priorité maximale
+				if (url === 'https://hexaglue.io/') {
+					item.priority = 1.0;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Getting Started - documentation importante
+				else if (url.includes('/getting-started')) {
+					item.priority = 0.9;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Services
+				else if (url.includes('/services')) {
+					item.priority = 0.8;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Case Studies
+				else if (url.includes('/case-studies')) {
+					item.priority = 0.7;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Contact - rarement mis à jour
+				else if (url.includes('/contact')) {
+					item.priority = 0.8;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Autres pages
+				else {
+					item.priority = 0.6;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+
+				// Date de dernière modification
+				item.lastmod = new Date().toISOString().split('T')[0];
+
+				return item;
+			},
+		}),
 	],
 	image: {
 		domains: [],
