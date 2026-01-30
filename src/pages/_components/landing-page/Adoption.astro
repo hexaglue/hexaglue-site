@@ -4,6 +4,9 @@ import PurpleStardust from './PurpleStardust.astro';
 import AdoptionStep from './AdoptionStep.astro';
 import AdoptionPanel from './AdoptionPanel.astro';
 import FeatureCard from './feature-cards/FeatureCard.astro';
+import livingDocScreenshot from '~/assets/screenshots/living-doc.png';
+import auditScreenshot from '~/assets/screenshots/audit.png';
+import codeJpaScreenshot from '~/assets/screenshots/code-jpa.png';
 ---
 
 <section class="mt-20 md:mt-24 lg:mt-28 xl:mt-36 relative">
@@ -67,6 +70,8 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 				'Génération de documentation synchronisée',
 				'Visualisation de l\'architecture existante',
 			]}
+			image={livingDocScreenshot}
+			imageAlt="Living documentation générée par HexaGlue"
 		/>
 		<AdoptionPanel
 			id="2"
@@ -80,6 +85,8 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 				'Audit automatique en CI/CD',
 				'Détection des violations avant déploiement',
 			]}
+			image={auditScreenshot}
+			imageAlt="Rapport d'audit d'architecture HexaGlue"
 		/>
 		<AdoptionPanel
 			id="3"
@@ -93,6 +100,8 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 				'Création des repositories',
 				'Production de code d\'infrastructure aligné',
 			]}
+			image={codeJpaScreenshot}
+			imageAlt="Code JPA généré automatiquement par HexaGlue"
 		/>
 	</div>
 </section>
@@ -139,6 +148,7 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 			tab.setAttribute('aria-selected', i === index ? 'true' : 'false');
 			tab.setAttribute('tabindex', i === index ? '0' : '-1');
 			tabContent?.classList.add('hidden');
+			tabContent?.querySelector('.adoption-panel-image')?.classList.remove('is-visible');
 
 			// Update visual styles based on position relative to active tab
 			if (i === index) {
@@ -152,6 +162,11 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 
 		// Show active panel
 		nextTabContent.classList.remove('hidden');
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				nextTabContent.querySelector('.adoption-panel-image')?.classList.add('is-visible');
+			});
+		});
 
 		// Update arrows - arrow at position i lights up when we're past step i+1
 		arrows.forEach((arrow, i) => {
@@ -206,6 +221,9 @@ import FeatureCard from './feature-cards/FeatureCard.astro';
 			}
 		});
 	});
+
+	// Animate initial panel image
+	document.querySelector('#adoption-panel-1 .adoption-panel-image')?.classList.add('is-visible');
 
 	// Start auto-play
 	startAutoPlay();
