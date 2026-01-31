@@ -49,7 +49,7 @@
         </g>
     </g>
     <text id="HexaGlue" xml:space="preserve" x="438.416016" y="342" font-family="Helvetica" font-size="72" fill="#ffffff">HexaGlue</text>
-    <text id="Audit-et-migration-darchitecture" xml:space="preserve" x="368.100586" y="407" font-family="Helvetica" font-size="28" fill="#e5e7eb">Audit et migration d'architecture Java</text>
+    <text id="Audit-et-migration-darchitecture" xml:space="preserve" x="368.100586" y="407" font-family="Helvetica" font-size="28" fill="#e5e7eb">Audit et migration d'architecture hexagonale Java</text>
     <text id="Classification-automatique--Living" xml:space="preserve" x="283.114258" y="457" font-family="Helvetica" font-size="20" fill="#9ca3af">Classification automatique | Living documentation | Génération de code</text>
     <linearGradient id="linearGradient2" x1="350" y1="510" x2="850" y2="510" gradientUnits="userSpaceOnUse">
         <stop offset="1e-05" stop-color="#3245ff" stop-opacity="1"/>

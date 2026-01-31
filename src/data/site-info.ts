@@ -31,7 +31,7 @@ const siteInfo: SiteInfo = {
 		'Outil de migration Java : classification automatique, audit d\'architecture, living documentation et génération de code. Sans vendor lock-in.',
 	image: {
 		src: '/og/hexaglue.jpg',
-		alt: 'HexaGlue - Audit et migration d\'architecture Java',
+		alt: 'HexaGlue - Audit et migration d\'architecture hexagonale Java',
 	},
 	socialLinks: [
 		{

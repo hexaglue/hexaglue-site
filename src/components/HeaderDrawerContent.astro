@@ -81,7 +81,7 @@ type Nav = Array<Link | Group>;
 									data-astro-prefetch={link.prefetch ? '' : undefined}
 									class="link flex items-center gap-4"
 								>
-									<Icon name={link.icon} size="24" /> {link.label}{' '}
+									<Icon name={link.icon} size="24" aria-hidden="true" /> {link.label}{' '}
 									{link.badge && (
 										<span class="text-sm leading-none font-mono py-1 px-1.5 rounded bg-astro-blue/40 border border-astro-blue">
 											{link.badge}

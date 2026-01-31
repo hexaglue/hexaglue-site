@@ -1,7 +1,8 @@
 @font-face {
 	font-family: 'Degular';
-	src: url('/fonts/Degular.ttf') format('truetype-variations');
-	src: url('/fonts/Degular.ttf') format('truetype') tech('variations');
+	src:
+		url('/fonts/Degular.ttf') format('truetype') tech('variations'),
+		url('/fonts/Degular.ttf') format('truetype-variations');
 	font-style: normal;
 	font-display: swap;
 	font-weight: 100 900;

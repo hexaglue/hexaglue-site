@@ -52,9 +52,10 @@ interface Props {
 								target={isExternal ? '_blank' : undefined}
 								rel={isExternal ? 'noopener noreferrer' : undefined}
 								data-astro-prefetch={prefetch ? '' : undefined}
+								aria-label={label}
 								class="flex items-center gap-2 rounded-md p-3 leading-none transition hover:bg-astro-gray-700 hover:text-white"
 							>
-								<Icon name={icon} size="16" /> {label}
+								<Icon name={icon} size="16" aria-hidden="true" /> {label}
 								{badge && (
 									<span class="text-xs leading-none font-mono py-1 px-1.5 rounded bg-astro-blue/40 border border-astro-blue">
 										{badge}
