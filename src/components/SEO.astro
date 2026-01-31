@@ -143,24 +143,24 @@ function formatCanonicalURL(url: string | URL) {
 						"@type": "Offer",
 						"itemOffered": {
 							"@type": "Service",
-							"name": "Diagnostic Architectural",
-							"description": "Analyse de votre codebase pour identifier les opportunites de migration vers une architecture hexagonale."
+							"name": "Audit Architectural",
+							"description": "Analyse et cartographie de votre architecture existante pour objectiver l'état des lieux avant toute transformation."
 						}
 					},
 					{
 						"@type": "Offer",
 						"itemOffered": {
 							"@type": "Service",
-							"name": "Accompagnement Migration",
-							"description": "Support expert pour migrer progressivement votre application vers une architecture hexagonale avec HexaGlue."
+							"name": "Adoption Progressive",
+							"description": "Accompagnement des équipes dans l'adoption d'HexaGlue et des pratiques DDD : intégration CI/CD, règles d'architecture et coaching pragmatique."
 						}
 					},
 					{
 						"@type": "Offer",
 						"itemOffered": {
 							"@type": "Service",
-							"name": "Industrialisation CI/CD",
-							"description": "Integration de HexaGlue dans votre pipeline CI/CD pour automatiser les audits et la generation de code."
+							"name": "Gouvernance à l'Échelle",
+							"description": "Industrialisation de la gouvernance architecturale sur plusieurs équipes : standards partagés, plugins spécifiques et indicateurs d'architecture."
 						}
 					}
 				]
@@ -170,15 +170,11 @@ function formatCanonicalURL(url: string | URL) {
 			"@type": "SoftwareApplication",
 			"@id": "https://hexaglue.io/#software",
 			"name": "HexaGlue",
-			"description": "Outil de migration Java : classification automatique, audit d'architecture hexagonale, living documentation et generation de code JPA.",
+			"description": "Outil de migration Java : classification automatique, audit d'architecture hexagonale, living documentation et génération de code JPA.",
 			"url": "https://hexaglue.io/",
 			"applicationCategory": "DeveloperApplication",
 			"operatingSystem": "Cross-platform (JVM)",
-			"offers": {
-				"@type": "Offer",
-				"price": "0",
-				"priceCurrency": "EUR"
-			},
+			"isAccessibleForFree": true,
 			"softwareHelp": {
 				"@type": "WebPage",
 				"url": "https://hexaglue.io/getting-started/"
@@ -193,7 +189,7 @@ function formatCanonicalURL(url: string | URL) {
 			"name": "HexaGlue Source Code",
 			"codeRepository": "https://github.com/hexaglue/hexaglue",
 			"programmingLanguage": "Java",
-			"license": "https://opensource.org/licenses/Apache-2.0",
+			"license": "https://opensource.org/license/MPL-2.0",
 			"author": {
 				"@id": "https://hexaglue.io/#organization"
 			}
