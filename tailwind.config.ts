@@ -243,6 +243,10 @@ export default {
 					'@apply py-2 leading-normal': {},
 				},
 
+				'.heading-bold': {
+					fontVariationSettings: "'wght' 700",
+				},
+
 				'.landing-section': {
 					'@apply flex flex-col items-center justify-center overflow-visible text-center': {},
 				},

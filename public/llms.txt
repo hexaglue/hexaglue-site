@@ -1,0 +1,29 @@
+# HexaGlue
+
+> HexaGlue is an architecture compiler for Java applications following Hexagonal Architecture and Domain-Driven Design (DDD).
+
+At compile time, HexaGlue turns your codebase into a semantic graph of architectural intent: automatic classification, architecture audit, living documentation, and JPA code generation. Zero runtime dependency.
+
+## Key Features
+
+- **Automatic Classification**: Detects Aggregates, Entities, Value Objects, Identifiers, Domain Events, Ports and Services automatically from your Java source code.
+- **Architecture Audit**: Validates hexagonal architecture and DDD rules at compile time, generating detailed reports with scores, grades, and remediation guidance.
+- **Living Documentation**: Generates synchronized documentation from your domain code, including domain model diagrams, type inventories, and relationship graphs.
+- **JPA Code Generation**: Produces JPA entities and repositories from your domain model, aligned with your hexagonal architecture.
+- **Zero Runtime**: Operates only at compile time via a Maven plugin. Nothing is embedded in production. No vendor lock-in.
+
+## Technology
+
+- Language: Java 17+
+- Build: Maven plugin (compile-time)
+- Architecture: Hexagonal Architecture, Domain-Driven Design
+- License: Apache 2.0
+
+## Links
+
+- Website: https://hexaglue.io/
+- Getting Started: https://hexaglue.io/getting-started/
+- Services: https://hexaglue.io/services/
+- Case Studies: https://hexaglue.io/case-studies/
+- Contact: https://hexaglue.io/contact/
+- GitHub: https://github.com/hexaglue/hexaglue
