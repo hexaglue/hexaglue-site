@@ -12,55 +12,85 @@ interface Props {
 const { score, grade, status, violations, delta } = Astro.props;
 
 const statusConfig = {
-	FAILED: { label: 'FAILED', color: 'red-400', bg: 'red-400/10', border: 'red-400/30', icon: 'ri/close-circle-line' },
-	PASSED_WITH_WARNINGS: { label: 'PASSED (warnings)', color: 'yellow-400', bg: 'yellow-400/10', border: 'yellow-400/30', icon: 'ri/error-warning-line' },
-	PASSED: { label: 'PASSED', color: 'astro-green', bg: 'astro-green/10', border: 'astro-green/30', icon: 'ri/checkbox-circle-line' },
+	FAILED: {
+		label: 'FAILED',
+		icon: 'ri/close-circle-line',
+		cardClass: 'bg-red-400/10 border-red-400/30',
+		textClass: 'text-red-400',
+	},
+	PASSED_WITH_WARNINGS: {
+		label: 'PASSED (warnings)',
+		icon: 'ri/error-warning-line',
+		cardClass: 'bg-yellow-400/10 border-yellow-400/30',
+		textClass: 'text-yellow-400',
+	},
+	PASSED: {
+		label: 'PASSED',
+		icon: 'ri/checkbox-circle-line',
+		cardClass: 'bg-astro-green/10 border-astro-green/30',
+		textClass: 'text-astro-green',
+	},
 };
 
 const cfg = statusConfig[status];
 const totalViolations = violations.critical + violations.major;
 ---
 
-<div class={`p-6 md:p-8 rounded-2xl border bg-${cfg.bg} border-${cfg.border}`}>
-	<div class="flex flex-col md:flex-row md:items-center gap-6">
-		<div class="flex items-center gap-4">
-			<div class="text-center">
-				<div class={`text-4xl md:text-5xl font-bold text-${cfg.color}`}>{score}</div>
-				<div class="text-sm text-astro-gray-400">/100</div>
+<div class={`p-4 sm:p-6 md:p-8 rounded-2xl border ${cfg.cardClass}`}>
+	<div class="flex flex-col gap-4 sm:gap-6">
+		<!-- Score & Grade -->
+		<div class="flex items-center gap-3 sm:gap-4">
+			<div class="text-center shrink-0">
+				<div class={`text-3xl sm:text-4xl md:text-5xl font-bold ${cfg.textClass}`}>{score}</div>
+				<div class="text-xs sm:text-sm text-astro-gray-400">/100</div>
 			</div>
-			<div>
-				<div class={`text-2xl font-bold text-${cfg.color}`}>Grade {grade}</div>
-				<div class={`flex items-center gap-1.5 text-sm text-${cfg.color}`}>
-					<Icon name={cfg.icon} class="size-4" aria-hidden="true" />
-					<span>{cfg.label}</span>
+			<div class="min-w-0">
+				<div class={`text-xl sm:text-2xl font-bold ${cfg.textClass}`}>Grade {grade}</div>
+				<div class={`flex items-center gap-1.5 text-xs sm:text-sm ${cfg.textClass}`}>
+					<Icon name={cfg.icon} class="size-3.5 sm:size-4 shrink-0" aria-hidden="true" />
+					<span class="truncate">{cfg.label}</span>
 				</div>
 			</div>
 		</div>
 
-		<div class="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4 md:pl-6 md:border-l border-astro-dark-100/15">
-			<div>
-				<div class="text-2xl font-bold text-white">{totalViolations}</div>
-				<div class="text-xs text-astro-gray-400">violations</div>
+		<!-- Violations Stats -->
+		<div class="grid grid-cols-3 gap-3 sm:gap-4 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-astro-dark-100/15 sm:pl-6">
+			<div class="text-center sm:text-left">
+				<div class="text-xl sm:text-2xl font-bold text-white">{totalViolations}</div>
+				<div class="text-[10px] sm:text-xs text-astro-gray-400 uppercase">violations</div>
 			</div>
-			<div>
-				<div class="text-2xl font-bold text-red-400">{violations.critical}</div>
-				<div class="text-xs text-astro-gray-400">CRITICAL</div>
+			<div class="text-center sm:text-left">
+				<div class="text-xl sm:text-2xl font-bold text-red-400">{violations.critical}</div>
+				<div class="text-[10px] sm:text-xs text-astro-gray-400 uppercase">critical</div>
 			</div>
-			<div>
-				<div class="text-2xl font-bold text-yellow-400">{violations.major}</div>
-				<div class="text-xs text-astro-gray-400">MAJOR</div>
+			<div class="text-center sm:text-left">
+				<div class="text-xl sm:text-2xl font-bold text-yellow-400">{violations.major}</div>
+				<div class="text-[10px] sm:text-xs text-astro-gray-400 uppercase">major</div>
 			</div>
 		</div>
 
+		<!-- Delta (if provided) -->
 		{delta && (
-			<div class="flex flex-col gap-1 text-sm md:pl-6 md:border-l border-astro-dark-100/15">
+			<div class="flex flex-row sm:flex-col justify-center sm:justify-start gap-3 sm:gap-1 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-astro-dark-100/15 sm:pl-6 text-xs sm:text-sm">
 				<div class="flex items-center gap-1">
-					<Icon name={delta.score > 0 ? "ri/arrow-up-line" : "ri/arrow-down-line"} class={`size-4 ${delta.score > 0 ? 'text-astro-green' : 'text-red-400'}`} aria-hidden="true" />
-					<span class={delta.score > 0 ? 'text-astro-green' : 'text-red-400'}>{delta.score > 0 ? '+' : ''}{delta.score} pts</span>
+					<Icon
+						name={delta.score > 0 ? 'ri/arrow-up-line' : 'ri/arrow-down-line'}
+						class={`size-3.5 sm:size-4 ${delta.score > 0 ? 'text-astro-green' : 'text-red-400'}`}
+						aria-hidden="true"
+					/>
+					<span class={delta.score > 0 ? 'text-astro-green' : 'text-red-400'}>
+						{delta.score > 0 ? '+' : ''}{delta.score} pts
+					</span>
 				</div>
 				<div class="flex items-center gap-1">
-					<Icon name={delta.violations < 0 ? "ri/arrow-down-line" : "ri/arrow-up-line"} class={`size-4 ${delta.violations < 0 ? 'text-astro-green' : 'text-red-400'}`} aria-hidden="true" />
-					<span class={delta.violations < 0 ? 'text-astro-green' : 'text-red-400'}>{delta.violations > 0 ? '+' : ''}{delta.violations} viol.</span>
+					<Icon
+						name={delta.violations < 0 ? 'ri/arrow-down-line' : 'ri/arrow-up-line'}
+						class={`size-3.5 sm:size-4 ${delta.violations < 0 ? 'text-astro-green' : 'text-red-400'}`}
+						aria-hidden="true"
+					/>
+					<span class={delta.violations < 0 ? 'text-astro-green' : 'text-red-400'}>
+						{delta.violations > 0 ? '+' : ''}{delta.violations} viol.
+					</span>
 				</div>
 			</div>
 		)}

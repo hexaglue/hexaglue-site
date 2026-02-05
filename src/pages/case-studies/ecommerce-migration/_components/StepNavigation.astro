@@ -7,32 +7,62 @@ interface Props {
 }
 
 const { prev, next } = Astro.props;
+const hasOnlyPrev = prev && !next;
+const hasOnlyNext = !prev && next;
 ---
 
-<nav aria-label="Navigation entre etapes" class="mt-16 pt-8 border-t border-astro-dark-100/15 flex items-stretch justify-between gap-4">
+<nav
+	aria-label="Navigation entre etapes"
+	class="mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-astro-dark-100/15 flex flex-col sm:flex-row items-stretch gap-3 sm:gap-4 overflow-hidden"
+>
 	{prev ? (
 		<a
 			href={prev.href}
-			class="group flex-1 flex items-center gap-4 p-4 md:p-6 rounded-2xl bg-astro-dark-800/40 border border-astro-dark-100/15 hover:border-amber-400/30 transition-all duration-300"
+			class:list={[
+				'group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl',
+				'bg-astro-dark-800/40 border border-astro-dark-100/15',
+				'hover:border-amber-400/30 transition-all duration-300',
+				'min-w-0',
+				hasOnlyPrev ? 'sm:max-w-[50%]' : 'sm:flex-1',
+			]}
 		>
-			<Icon name="ri/arrow-left-line" class="size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0" aria-hidden="true" />
-			<div class="min-w-0">
-				<span class="text-xs text-astro-gray-200 uppercase tracking-wider">Précédent</span>
-				<p class="text-lg text-white font-medium truncate">{prev.label}</p>
+			<Icon
+				name="ri/arrow-left-line"
+				class="size-4 sm:size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0"
+				aria-hidden="true"
+			/>
+			<div class="min-w-0 flex-1 overflow-hidden">
+				<span class="text-[10px] sm:text-xs text-astro-gray-200 uppercase tracking-wider">Précédent</span>
+				<p class="text-base sm:text-lg text-white font-medium truncate">{prev.label}</p>
 			</div>
 		</a>
-	) : <div class="flex-1" />}
+	) : (
+		<div class="hidden sm:block sm:flex-1" />
+	)}
 
 	{next ? (
 		<a
 			href={next.href}
-			class="group flex-1 flex items-center justify-end gap-4 p-4 md:p-6 rounded-2xl bg-astro-dark-800/40 border border-astro-dark-100/15 hover:border-amber-400/30 transition-all duration-300 text-right"
+			class:list={[
+				'group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl',
+				'bg-astro-dark-800/40 border border-astro-dark-100/15',
+				'hover:border-amber-400/30 transition-all duration-300',
+				'sm:text-right sm:justify-end',
+				'min-w-0',
+				hasOnlyNext ? 'sm:ml-auto sm:max-w-[50%]' : 'sm:flex-1',
+			]}
 		>
-			<div class="min-w-0">
-				<span class="text-xs text-astro-gray-200 uppercase tracking-wider">Suivant</span>
-				<p class="text-lg text-white font-medium truncate">{next.label}</p>
+			<div class="min-w-0 flex-1 sm:flex-initial order-2 sm:order-1 overflow-hidden">
+				<span class="text-[10px] sm:text-xs text-astro-gray-200 uppercase tracking-wider">Suivant</span>
+				<p class="text-base sm:text-lg text-white font-medium truncate">{next.label}</p>
 			</div>
-			<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0" aria-hidden="true" />
+			<Icon
+				name="ri/arrow-right-line"
+				class="size-4 sm:size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0 order-1 sm:order-2"
+				aria-hidden="true"
+			/>
 		</a>
-	) : <div class="flex-1" />}
+	) : (
+		<div class="hidden sm:block sm:flex-1" />
+	)}
 </nav>

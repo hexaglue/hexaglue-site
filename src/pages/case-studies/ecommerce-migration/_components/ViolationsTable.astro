@@ -14,39 +14,65 @@ interface Props {
 }
 
 const { rows } = Astro.props;
+const hasDelta = rows.some((r) => r.delta);
+const hasObservation = rows.some((r) => r.observation);
+
+const severityConfig = {
+	CRITICAL: {
+		short: 'CRIT',
+		icon: 'ri/error-warning-fill',
+		class: 'bg-red-400/10 text-red-400',
+	},
+	MAJOR: {
+		short: 'MAJ',
+		icon: 'ri/alert-fill',
+		class: 'bg-yellow-400/10 text-yellow-400',
+	},
+};
 ---
 
-<div class="overflow-x-auto">
-	<table class="w-full text-sm">
+<div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+	<table class="w-full text-xs sm:text-sm">
 		<thead>
 			<tr class="border-b border-astro-dark-100/15 text-astro-gray-300 text-left">
-				<th class="py-3 pr-4 font-medium">Contrainte</th>
-				<th class="py-3 px-3 font-medium text-right">Nombre</th>
-				<th class="py-3 px-3 font-medium text-center">Sévérité</th>
-				{rows.some(r => r.delta) && <th class="py-3 px-3 font-medium text-right">Delta</th>}
-				{rows.some(r => r.observation) && <th class="py-3 pl-3 font-medium hidden md:table-cell">Observation</th>}
+				<th class="py-2 sm:py-3 pr-2 sm:pr-4 font-medium">Contrainte</th>
+				<th class="py-2 sm:py-3 px-2 sm:px-3 font-medium text-right whitespace-nowrap">
+					<span class="hidden sm:inline">Nombre</span>
+					<span class="sm:hidden">Nb</span>
+				</th>
+				<th class="py-2 sm:py-3 px-2 sm:px-3 font-medium text-center whitespace-nowrap">
+					<span class="hidden sm:inline">Sévérité</span>
+					<span class="sm:hidden">Sév.</span>
+				</th>
+				{hasDelta && <th class="py-2 sm:py-3 px-2 sm:px-3 font-medium text-right whitespace-nowrap">Delta</th>}
+				{hasObservation && <th class="py-2 sm:py-3 pl-2 sm:pl-3 font-medium hidden md:table-cell">Observation</th>}
 			</tr>
 		</thead>
 		<tbody>
-			{rows.map((row) => (
-				<tr class="border-b border-astro-dark-100/10">
-					<td class="py-3 pr-4 text-white font-medium">{row.constraint}</td>
-					<td class="py-3 px-3 text-right text-white font-medium">{row.count}</td>
-					<td class="py-3 px-3 text-center">
-						<span class={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${row.severity === 'CRITICAL' ? 'bg-red-400/10 text-red-400' : 'bg-yellow-400/10 text-yellow-400'}`}>
-							{row.severity}
-						</span>
-					</td>
-					{rows.some(r => r.delta) && (
-						<td class={`py-3 px-3 text-right ${row.delta?.startsWith('+') ? 'text-red-400' : row.delta?.startsWith('-') ? 'text-astro-green' : 'text-astro-gray-300'}`}>
-							{row.delta || '='}
+			{rows.map((row) => {
+				const sev = severityConfig[row.severity];
+				return (
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-2 sm:py-3 pr-2 sm:pr-4 text-white font-medium">{row.constraint}</td>
+						<td class="py-2 sm:py-3 px-2 sm:px-3 text-right text-white font-medium tabular-nums">{row.count}</td>
+						<td class="py-2 sm:py-3 px-2 sm:px-3 text-center">
+							<span class={`inline-flex items-center gap-1 text-[10px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap ${sev.class}`}>
+								<Icon name={sev.icon} class="size-3 shrink-0 sm:hidden" aria-hidden="true" />
+								<span class="hidden sm:inline">{row.severity}</span>
+								<span class="sm:hidden">{sev.short}</span>
+							</span>
 						</td>
-					)}
-					{rows.some(r => r.observation) && (
-						<td class="py-3 pl-3 text-astro-gray-200 text-xs hidden md:table-cell">{row.observation}</td>
-					)}
-				</tr>
-			))}
+						{hasDelta && (
+							<td class={`py-2 sm:py-3 px-2 sm:px-3 text-right tabular-nums ${row.delta?.startsWith('+') ? 'text-red-400' : row.delta?.startsWith('-') ? 'text-astro-green' : 'text-astro-gray-300'}`}>
+								{row.delta || '='}
+							</td>
+						)}
+						{hasObservation && (
+							<td class="py-2 sm:py-3 pl-2 sm:pl-3 text-astro-gray-200 text-xs hidden md:table-cell">{row.observation}</td>
+						)}
+					</tr>
+				);
+			})}
 		</tbody>
 	</table>
 </div>
