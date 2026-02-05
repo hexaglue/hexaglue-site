@@ -1,0 +1,528 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from './_components/StepNavigation.astro';
+import AuditVerdict from './_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
+import MetricsTable from './_components/MetricsTable.astro';
+import InventoryTable from './_components/InventoryTable.astro';
+import RemediationTable, { type RemediationRow } from './_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+import ModificationList from './_components/ModificationList.astro';
+import ModificationGroup from './_components/ModificationGroup.astro';
+import ModificationItem from './_components/ModificationItem.astro';
+
+const applicationServiceConfig = `@Configuration
+public class ApplicationServiceConfig {
+
+    @Bean
+    public OrderUseCases orderUseCases(
+            OrderRepository orderRepository,
+            CustomerRepository customerRepository,
+            ProductRepository productRepository,
+            InventoryUseCases inventoryUseCases,
+            NotificationSender notificationSender) {
+        return new OrderApplicationService(
+                orderRepository, customerRepository,
+                productRepository, inventoryUseCases,
+                notificationSender);
+    }
+
+    @Bean
+    public CustomerUseCases customerUseCases(
+            CustomerRepository customerRepository,
+            NotificationSender notificationSender) {
+        return new CustomerApplicationService(
+                customerRepository, notificationSender);
+    }
+
+    @Bean
+    public ProductUseCases productUseCases(
+            ProductRepository productRepository) {
+        return new ProductCatalogService(productRepository);
+    }
+
+    @Bean
+    public ShippingUseCases shippingUseCases(
+            OrderRepository orderRepository,
+            ShippingRepository shippingRepository,
+            InventoryUseCases inventoryUseCases) {
+        return new ShippingApplicationService(
+                orderRepository, shippingRepository, inventoryUseCases);
+    }
+
+    @Bean
+    public ReviewUseCases reviewUseCases(
+            ReviewRepository reviewRepository,
+            ProductRepository productRepository) {
+        return new ReviewApplicationService(
+                reviewRepository, productRepository);
+    }
+
+    @Bean
+    public InventoryUseCases inventoryUseCases(
+            InventoryRepository inventoryRepository,
+            NotificationSender notificationSender) {
+        return new InventoryApplicationService(
+                inventoryRepository, notificationSender);
+    }
+
+    @Bean
+    public NotificationUseCases notificationUseCases(
+            NotificationRepository notificationRepository,
+            EmailSender emailSender) {
+        return new NotificationApplicationService(
+                notificationRepository, emailSender);
+    }
+}`;
+
+const hexaglueConfig = `classification:
+  exclude:
+    - "com.acme.shop.infrastructure.**"
+    - "com.acme.shop.exception.**"
+
+plugins:
+  io.hexaglue.plugin.jpa:
+    entitySuffix: "JpaEntity"
+    repositorySuffix: "JpaRepository"
+    adapterSuffix: "RepositoryAdapter"
+    generateRepositories: true
+    generateAdapters: true
+    generateEmbeddables: true
+    enableAuditing: false
+
+  io.hexaglue.plugin.livingdoc:
+    outputFormat: "markdown"
+    includeMetrics: true
+
+  io.hexaglue.plugin.audit.ddd:
+    failOnBlocker: false`;
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '95%', weight: '25%', contribution: '23.75', threshold: '≥ 90%', status: 'OK', delta: '-5' },
+    { dimension: 'Hexagonal Architecture', value: '90%', weight: '25%', contribution: '22.5', threshold: '≥ 90%', status: 'OK', delta: '+55' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Coupling', value: '31%', weight: '15%', contribution: '4.65', threshold: '≥ 70%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Cohesion', value: '63%', weight: '15%', contribution: '9.45', threshold: '≥ 80%', status: 'CRITICAL', delta: '-8' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'hexagonal:application-purity', count: 0, severity: 'MAJOR', delta: '-7', observation: 'Annotations Spring supprimées des services applicatifs' },
+    { constraint: 'hexagonal:port-coverage', count: 0, severity: 'MAJOR', delta: '-6', observation: 'Tous les ports couverts par des adaptateurs générés' },
+    { constraint: 'hexagonal:layer-isolation', count: 2, severity: 'MAJOR', delta: '+2', observation: 'OrderApplicationService et ShippingApplicationService dépendent de InventoryUseCases (UNCLASSIFIED)' },
+    { constraint: 'ddd:aggregate-boundary', count: 1, severity: 'MAJOR', delta: '+1', observation: "OrderLine accessible directement hors de l'agrégat Order" },
+];
+
+const remediationRows: RemediationRow[] = [
+    {
+        constraint: 'hexagonal:layer-isolation',
+        violations: 2,
+        severity: 'MAJOR',
+        manualEffort: 1,
+        hexaglueEffort: 0,
+        description: 'Dépendance à InventoryUseCases UNCLASSIFIED',
+    },
+    {
+        constraint: 'ddd:aggregate-boundary',
+        violations: 1,
+        severity: 'MAJOR',
+        manualEffort: 1,
+        hexaglueEffort: 0,
+        description: 'OrderLine exposé hors de l\'agrégat',
+    },
+];
+---
+
+<MainLayout
+  title="Étape 5 - Génération automatique de l'infrastructure | Migration E-Commerce"
+  description="Génération automatique de l'infrastructure avec HexaGlue : 29 fichiers générés (entités JPA, mappers, repositories). Score 60/100, 0 violation critique."
+>
+  <!-- Hero -->
+  <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <AmberStardust height="h-64 md:h-80" />
+    <div class="max-w-5xl mx-auto">
+      <div class="mt-8 max-w-3xl">
+        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+          Étape 5
+        </span>
+        <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+          Génération automatique de l'infrastructure
+        </h1>
+        <a
+          href="https://github.com/hexaglue/case-study-ecommerce/tree/step/5-generated"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+        >
+          <Icon name="logos/github" class="size-5" aria-hidden="true" />
+          <code class="text-sm text-amber-400">step/5-generated</code>
+        </a>
+        <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+          <li>Activation des plugins HexaGlue (JPA, living-doc, audit).</li>
+          <li>29 fichiers générés automatiquement.</li>
+          <li>Services applicatifs purifiés en POJOs purs.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modifications effectuées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Modifications"
+        title="Modifications effectuées"
+        description="Activation des plugins HexaGlue et purification des services applicatifs."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <ModificationList class="mt-10">
+        <ModificationGroup layer="application">
+          <ModificationItem action="purify" count={7} label="services applicatifs" details="suppression @Service, @Transactional → POJOs purs" />
+        </ModificationGroup>
+        <ModificationGroup layer="adapters">
+          <ModificationItem action="create" label="ApplicationServiceConfig.java" details="7 méthodes @Bean pour l'injection de dépendances" />
+        </ModificationGroup>
+        <ModificationGroup layer="configuration">
+          <ModificationItem action="configure" label="pom.xml" details="extensions=true, plugins jpa + living-doc + audit" />
+          <ModificationItem action="configure" label="hexaglue.yaml" details="exclude: infrastructure.**, exception.**" />
+        </ModificationGroup>
+      </ModificationList>
+
+      <Insight>
+        <ul>
+          <li><strong>Services applicatifs</strong> deviennent des POJOs purs</li>
+          <li><strong>@Service/@Transactional</strong> → configuration <strong>@Bean</strong> dans l'infrastructure</li>
+        </ul>
+        <p>Cette séparation respecte le principe d'inversion de dépendance.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Code généré automatiquement -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Génération"
+        title="Code généré automatiquement"
+        description="Fichiers d'infrastructure générés par le plugin JPA d'HexaGlue."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-8">
+        <div class="grid grid-cols-1 gap-6">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Entités JPA</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">8 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">CustomerJpaEntity, OrderJpaEntity, OrderLineJpaEntity, ProductJpaEntity, ReviewJpaEntity, ShippingJpaEntity, InventoryJpaEntity, NotificationJpaEntity</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Embeddables</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">2 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">MoneyEmbeddable, AddressEmbeddable</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Spring Data Repositories</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">CustomerJpaRepository, OrderJpaRepository, ProductJpaRepository, ReviewJpaRepository, ShippingJpaRepository, InventoryJpaRepository</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">MapStruct Mappers</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">12 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">6 interfaces + 6 implementations (CustomerMapper, OrderMapper, ProductMapper, ReviewMapper, ShippingMapper, InventoryMapper)</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Port Adapters</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">7 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">CustomerRepositoryAdapter, OrderRepositoryAdapter, ProductRepositoryAdapter, ReviewRepositoryAdapter, ShippingRepositoryAdapter, InventoryRepositoryAdapter, NotificationRepositoryAdapter</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between">
+              <span class="text-xl font-bold text-astro-brand-teal">Total</span>
+              <span class="px-4 py-2 bg-astro-brand-teal/20 text-astro-brand-teal rounded-full text-lg font-mono font-bold">29 fichiers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>29 fichiers générés</strong> : entités JPA, repositories, mappers, adaptateurs</li>
+          <li><strong>0 ligne manuelle</strong> pour la persistance : tout dérivé du domaine pur</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Verdict de l'audit -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Verdict"
+        title="Verdict de l'audit"
+        description="Résultat après activation de la génération et purification des services."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <AuditVerdict
+          score={60}
+          grade="D"
+          status="PASSED_WITH_WARNINGS"
+          violations={{ critical: 0, major: 3 }}
+          delta={{ score: 11, violations: -10 }}
+        />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Grade D</strong> atteint : 60/100 (+11)</li>
+          <li><strong>-7 application-purity</strong> : services applicatifs purifiés</li>
+          <li><strong>-6 port-coverage</strong> : adaptateurs générés couvrent tous les ports</li>
+          <li><strong>3 violations restantes</strong> : 2 layer-isolation + 1 aggregate-boundary</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Indicateurs de qualité -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Score"
+        title="Décomposition du score"
+        description="Contribution de chaque dimension au score global de 60/100."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <KpiTable rows={kpiRows} total="60.35" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Hexagonal Architecture</strong> bondit à 90% (+55) : services purifiés, adaptateurs générés</li>
+          <li><strong>DDD Compliance</strong> baisse à 95% (-5) : violation aggregate-boundary</li>
+          <li><strong>Cohésion</strong> diminue (-8%) : classe de configuration Spring ajoutée</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Violations détectées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Violations"
+        title="Violations détectées"
+        description="État des violations architecturales après purification des services."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <ViolationsTable rows={violationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Violations éliminées</strong> : 7 application-purity + 6 port-coverage</li>
+          <li><strong>Nouvelles violations</strong> : 2 layer-isolation (dépendance à InventoryUseCases UNCLASSIFIED)</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Couverture des ports -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Ports"
+        title="Couverture des ports"
+        description="Tous les ports disposent d'un adaptateur : 6 générés automatiquement, 8 implémentés manuellement."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+        <div class="flex items-center justify-between">
+          <span class="text-lg font-semibold">Ports couverts</span>
+          <span class="px-4 py-2 bg-green-500/20 text-green-400 rounded-full text-sm font-mono font-bold">14/14 (100%)</span>
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>6 repositories générés</strong> : driven ports de type REPOSITORY</li>
+          <li><strong>6 contrôleurs manuels</strong> : driving ports</li>
+          <li><strong>2 gateways manuels</strong> : services externes</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Exemples de code -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Code"
+        title="Exemples de code"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Configuration Spring <code>@Bean</code> et fichier <code>hexaglue.yaml</code> pour activer la génération.
+      </SectionCopy>
+
+      <div class="mt-10 space-y-6">
+        <div>
+          <Code code={applicationServiceConfig} lang="java" title="ApplicationServiceConfig.java" />
+        </div>
+
+        <div>
+          <Code code={hexaglueConfig} lang="yaml" title="hexaglue.yaml" />
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>@Bean</strong> remplace @Service/@Transactional dans les services</li>
+          <li><strong>Câblage Spring</strong> isolé dans l'infrastructure</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Métriques détaillées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Qualité"
+        title="Métriques de qualité"
+        description="Indicateurs DDD et qualité du code après génération automatique."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <MetricsTable
+          rows={[
+            {
+              metric: 'domain.purity',
+              value: '100%',
+              threshold: 'min 100%',
+              status: 'OK',
+              delta: '='
+            },
+            {
+              metric: 'aggregate.boundary',
+              value: '0%',
+              threshold: 'min 80%',
+              status: 'CRITICAL',
+              delta: '-100'
+            },
+            {
+              metric: 'aggregate.repository.coverage',
+              value: '100%',
+              threshold: 'min 100%',
+              status: 'OK',
+              delta: '='
+            },
+            {
+              metric: 'code.boilerplate.ratio',
+              value: '80.20%',
+              threshold: 'max 50%',
+              status: 'CRITICAL',
+              delta: '='
+            },
+            {
+              metric: 'code.complexity.average',
+              value: '1.12',
+              threshold: 'max 10',
+              status: 'OK',
+              delta: '='
+            }
+          ]}
+        />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>aggregate.boundary</strong> à 0% : OrderLine accessible directement hors de l'agrégat</li>
+          <li><strong>Boilerplate</strong> élevé : inclut le code généré automatiquement</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Plan de remédiation -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Remédiation"
+        title="Coût de mise en conformité"
+        description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <RemediationTable rows={remediationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>2 jours restants</strong> grâce à la génération automatique</li>
+          <li><strong>Corrections</strong> : classification InventoryUseCases + encapsulation OrderLine</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Bilan -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Bilan"
+        title="Ce que révèle cette étape"
+        description="Génération automatique de l'infrastructure et purification des services applicatifs."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <Insight class="mt-10">
+        <ul>
+          <li>Score 60/100 (+11) : grade D atteint grâce aux services purifiés et adaptateurs générés</li>
+          <li>29 fichiers générés automatiquement : entités JPA, repositories, mappers, adaptateurs</li>
+          <li>0 ligne d'infrastructure manuelle pour la persistance</li>
+          <li>Architecture hexagonale à 90% (+55) : les annotations Spring sont externalisées</li>
+          <li>Violations application-purity éliminées (-7) et port-coverage résolues (-6)</li>
+          <li>Nouvelles violations layer-isolation (+2) dues à InventoryUseCases UNCLASSIFIED</li>
+          <li>aggregate.boundary à 0% : OrderLine exposé hors de l'agrégat Order</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <StepNavigation
+        prev={{ href: '/case-studies/ecommerce-migration/step-4-pure-domain/', label: 'Étape 4 - Purification du domaine' }}
+        next={{ href: '/case-studies/ecommerce-migration/step-6-functional/', label: 'Étape 6 - Architecture hexagonale opérationnelle' }}
+      />
+    </div>
+  </section>
+</MainLayout>

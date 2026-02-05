@@ -1,0 +1,417 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from './_components/StepNavigation.astro';
+import AuditVerdict from './_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
+import MetricsTable, { type MetricRow } from './_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from './_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from './_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from './_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+
+const pomXmlConfig = `<plugin>
+    <groupId>io.hexaglue</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>5.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.shop</basePackage>
+        <failOnError>false</failOnError>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>io.hexaglue.plugins</groupId>
+            <artifactId>hexaglue-plugin-audit</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '0%', weight: '25%', contribution: '0.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Hexagonal Architecture', value: '0%', weight: '25%', contribution: '0.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Coupling', value: '30%', weight: '15%', contribution: '4.5', threshold: '≥ 70%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Cohesion', value: '58%', weight: '15%', contribution: '8.7', threshold: '≥ 80%', status: 'CRITICAL', delta: '-' },
+];
+
+const inventoryRows: InventoryRow[] = [
+    { component: 'Aggregate Roots', count: 0, delta: '-', observation: 'Aucun détecté' },
+    { component: 'Entities', count: 9, delta: '-', observation: 'Tous les @Entity JPA' },
+    { component: 'Value Objects', count: 14, delta: '-', observation: '3 enums + 8 services + 3 DTOs (faux positifs)' },
+    { component: 'Identifiers', count: 0, delta: '-', observation: '' },
+    { component: 'Domain Events', count: 1, delta: '-', observation: 'Spring ApplicationEvent (faux positif)' },
+    { component: 'Driving Ports', count: 0, delta: '-', observation: '' },
+    { component: 'Driven Ports', count: 6, delta: '-', observation: 'Les 6 repositories Spring Data' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'ddd:domain-purity', count: 10, severity: 'CRITICAL', delta: '-', observation: '9 modèles + OrderService avec imports JPA' },
+    { constraint: 'ddd:entity-identity', count: 9, severity: 'CRITICAL', delta: '-', observation: '9 entités sans champ identité typé' },
+    { constraint: 'hexagonal:layer-isolation', count: 12, severity: 'MAJOR', delta: '-', observation: '7 services dépendent des repositories' },
+    { constraint: 'hexagonal:port-direction', count: 6, severity: 'MAJOR', delta: '-', observation: '6 driven ports non utilisés par un service applicatif' },
+];
+
+const metricRows: MetricRow[] = [
+    { metric: 'Domain coverage', value: '80.00%', threshold: 'min 30%', status: 'OK', delta: '-' },
+    { metric: 'Code boilerplate', value: '81.58%', threshold: 'max 50%', status: 'CRITICAL', delta: '-' },
+    { metric: 'Domain purity', value: '58.33%', threshold: 'min 100%', status: 'CRITICAL', delta: '-' },
+    { metric: 'Aggregate boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '-' },
+    { metric: 'Code complexity', value: '1.11', threshold: 'max 10', status: 'OK', delta: '-' },
+];
+
+const packageStabilityRows: PackageStabilityRow[] = [
+    { package: 'shop.model', ca: 18, ce: 0, instability: 0.00, abstractness: 0.08, distance: 0.92, zone: 'Zone of Pain' },
+    { package: 'shop.dto', ca: 5, ce: 1, instability: 0.17, abstractness: 0.00, distance: 0.83, zone: 'Zone of Pain' },
+    { package: 'shop.service', ca: 5, ce: 18, instability: 0.78, abstractness: 0.00, distance: 0.22, zone: 'Main Sequence' },
+    { package: 'shop.repository', ca: 7, ce: 9, instability: 0.56, abstractness: 1.00, distance: 0.56, zone: 'Main Sequence' },
+    { package: 'shop.controller', ca: 0, ce: 15, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
+];
+
+const remediationRows: RemediationRow[] = [
+    {
+        constraint: 'ddd:entity-identity',
+        violations: 9,
+        severity: 'CRITICAL',
+        manualEffort: 4.5,
+        hexaglueEffort: 4.5,
+        description: 'Entités sans identifiant typé',
+    },
+    {
+        constraint: 'ddd:domain-purity',
+        violations: 10,
+        severity: 'CRITICAL',
+        manualEffort: 15,
+        hexaglueEffort: 15,
+        description: 'Annotations JPA dans le domaine',
+    },
+    {
+        constraint: 'hexagonal:port-coverage',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 18,
+        hexaglueEffort: 0,
+        description: 'Ports sans adaptateur (repositories Spring Data)',
+    },
+    {
+        constraint: 'hexagonal:layer-isolation',
+        violations: 12,
+        severity: 'MAJOR',
+        manualEffort: 6,
+        hexaglueEffort: 6,
+        description: 'Services dépendant des repositories',
+    },
+    {
+        constraint: 'hexagonal:port-direction',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 1,
+        hexaglueEffort: 1,
+        description: 'Ports appelés dans la mauvaise direction',
+    },
+];
+---
+
+<MainLayout
+    title="Étape 1 - Premier diagnostic avec HexaGlue | Migration E-Commerce"
+    description="Premier audit HexaGlue sur une application legacy Spring Boot. Score 13/100, 43 violations détectées dont 19 critiques. Diagnostic complet et quantifié."
+>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <AmberStardust height="h-64 md:h-80" />
+        <div class="max-w-5xl mx-auto">
+            <div class="mt-8 max-w-3xl">
+                <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+                    Étape 1
+                </span>
+                <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+                    Premier diagnostic avec HexaGlue
+                </h1>
+                <a
+                  href="https://github.com/hexaglue/case-study-ecommerce/tree/step/1-discovery"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+                >
+                  <Icon name="logos/github" class="size-5" aria-hidden="true" />
+                  <code class="text-sm text-amber-400">step/1-discovery</code>
+                </a>
+                <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+                    <li>Première intégration d'HexaGlue dans le projet e-commerce.</li>
+                    <li>Configuration du plugin Maven avec le plugin d'audit.</li>
+                    <li>Diagnostic initial de l'architecture.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Initiale -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Configuration"
+                title="Configuration initiale"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Intégration du plugin HexaGlue dans le <code>pom.xml</code> avec configuration minimale.
+                Aucun fichier <code>hexaglue.yaml</code> créé à ce stade.
+                Exécution de la première commande <code>mvn verify</code>.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <Code code={pomXmlConfig} lang="xml" title="pom.xml" />
+            </div>
+
+            <div class="mt-10">
+                <Code code="mvn verify" lang="shell" title="Shell" />
+            </div>
+        </div>
+    </section>
+
+    <!-- Verdict de l'Audit -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Verdict"
+                title="Verdict de l'audit"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Résultat de la première exécution de <code>mvn verify</code> sur le code existant.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <AuditVerdict
+                    score={13}
+                    grade="F"
+                    status="FAILED"
+                    violations={{ critical: 19, major: 24 }}
+                />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li>Score 13/100, grade F : aucune structure hexagonale ni pattern DDD</li>
+                    <li>43 violations détectées dont 19 CRITICAL</li>
+                    <li>Toutes les dimensions en zone critique</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Décomposition du Score -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Score"
+                title="Décomposition du score"
+                description="Contribution de chaque dimension au score global de 13/100."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <div class="mt-10">
+                <KpiTable rows={kpiRows} total="15.7" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>DDD Compliance</strong> à 0% : aucun pattern tactique DDD détecté</li>
+                    <li><strong>Dependencies</strong> à 0% : toutes les dépendances vont dans le mauvais sens</li>
+                    <li><strong>Hexagonal Architecture</strong> à 10% : seuls les 6 repositories Spring Data sont reconnus</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Inventaire Architectural -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Inventaire"
+                title="Inventaire architectural"
+                description="Composants architecturaux détectés automatiquement par HexaGlue."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <div class="mt-10">
+                <InventoryTable rows={inventoryRows} />
+            </div>
+
+            <Insight>
+                <p><strong>Faux positifs</strong> : les 14 value objects et l'événement domaine détectés ne le sont pas réellement. Sans patterns DDD explicites, HexaGlue classifie par heuristique.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Principales Violations -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Violations"
+                title="Violations détectées"
+                description="Violations des contraintes d'architecture détectées par l'audit."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <div class="mt-10">
+                <ViolationsTable rows={violationRows} />
+            </div>
+
+            <Insight>
+                <p><strong>Cause racine</strong> : les annotations JPA dans le modèle.</p>
+                <ul>
+                    <li><strong>ddd:entity-identity</strong> : les entités JPA ne peuvent pas avoir d'identité typée</li>
+                    <li><strong>ddd:domain-purity</strong> : le domaine dépend de javax.persistence</li>
+                </ul>
+                <p>Séparer le domaine de la persistance résoudrait les deux catégories.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Métriques de Qualité -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Qualité"
+                title="Métriques de qualité"
+                description="Métriques structurelles mesurées sur le code source."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <div class="mt-10">
+                <MetricsTable rows={metricRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Domain coverage</strong> à 80% : trompeuse, mesure le ratio de classes dans le package model, pas la conformité DDD</li>
+                    <li><strong>Code boilerplate</strong> à 81.58% : classes sans logique métier, uniquement des getters/setters</li>
+                    <li><strong>Aggregate boundary</strong> à 0% : aucun agrégat identifié, donc aucune frontière de cohérence</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Taux de Classification -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Classification"
+                title="Taux de classification"
+                description="Proportion de types Java classifiés par HexaGlue dans un rôle architectural."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <div class="mt-10 p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-astro-dark-100/15">
+                                <th class="pb-3 text-sm font-semibold text-astro-gray-300">Types analysés</th>
+                                <th class="pb-3 text-sm font-semibold text-astro-gray-300">Types classifiés</th>
+                                <th class="pb-3 text-sm font-semibold text-astro-gray-300">Taux</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-3 text-white">50</td>
+                                <td class="py-3 text-white">30</td>
+                                <td class="py-3 text-white">60%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <Insight>
+                <p><strong>40% des types non classifiés</strong> : DTOs, configurations, exceptions et utilitaires. Ces types techniques seraient générés ou réorganisés dans une architecture hexagonale.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Estimation de Remédiation -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Remédiation"
+                title="Coût de mise en conformité"
+                description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <div class="mt-10">
+                <RemediationTable rows={remediationRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>18 jours automatisables</strong> : génération des adaptateurs pour les 6 repositories</li>
+                    <li><strong>26,5 jours manuels</strong> : restructuration du domaine (identités typées, suppression des annotations JPA)</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Stabilité des Packages -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Stabilité"
+                title="Stabilité des packages"
+                description="Analyse des couplages entre packages selon les métriques de Robert C. Martin."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <div class="mt-10">
+                <PackageStabilityTable rows={packageStabilityRows} />
+            </div>
+
+            <Insight>
+                <p>Les packages <strong>model</strong> et <strong>dto</strong> sont en <strong>Zone of Pain</strong> (métriques de Martin) : très concrets, très sollicités, sans abstraction. Tout changement se propage à l'ensemble de l'application.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Bilan -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Bilan"
+                title="Ce que révèle cette étape"
+                description="Premier audit HexaGlue : une photographie quantifiée de l'état architectural du projet."
+                gradient="bg-orange-yellow-gradient"
+            />
+
+            <Insight class="mt-10">
+                <ul>
+                    <li>Score 15/100 (Grade F) : ligne de base quantifiée du projet legacy</li>
+                    <li>0% DDD Compliance : aucun pattern tactique DDD détecté</li>
+                    <li>9 entités sans identité typée : toutes les entités JPA manquent de champs identité</li>
+                    <li>10 violations de pureté du domaine : imports JPA dans le modèle de domaine</li>
+                    <li>81.58% de code boilerplate : getters/setters manuels dans les entités</li>
+                    <li>Remédiation estimée à 26.5 jours de travail manuel</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <StepNavigation
+                prev={{
+                    href: '/case-studies/ecommerce-migration/step-0-legacy/',
+                    label: 'Étape 0 - Le monolithe Spring Boot d\'origine'
+                }}
+                next={{
+                    href: '/case-studies/ecommerce-migration/step-2-configured/',
+                    label: 'Étape 2 - Suppression du bruit'
+                }}
+            />
+        </div>
+    </section>
+</MainLayout>

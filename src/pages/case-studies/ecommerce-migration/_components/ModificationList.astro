@@ -1,0 +1,20 @@
+---
+/**
+ * Conteneur principal pour la liste des modifications.
+ * Affiche une card unique avec des groupes séparés par des lignes.
+ */
+export interface Props {
+    /** Classes CSS additionnelles */
+    class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={[
+    'bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl',
+    'divide-y divide-astro-dark-100/15',
+    className
+]}>
+    <slot />
+</div>

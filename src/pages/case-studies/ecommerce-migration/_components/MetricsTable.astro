@@ -1,0 +1,62 @@
+---
+import { Icon } from 'astro-icon/components';
+
+export interface MetricRow {
+	metric: string;
+	value: string;
+	threshold: string;
+	status: 'OK' | 'WARNING' | 'CRITICAL';
+	delta?: string;
+	observation?: string;
+}
+
+interface Props {
+	rows: MetricRow[];
+}
+
+const { rows } = Astro.props;
+
+const statusIcon = {
+	OK: { name: 'ri/checkbox-circle-line', color: 'text-astro-green' },
+	WARNING: { name: 'ri/error-warning-line', color: 'text-yellow-400' },
+	CRITICAL: { name: 'ri/close-circle-line', color: 'text-red-400' },
+};
+---
+
+<div class="overflow-x-auto">
+	<table class="w-full text-sm">
+		<thead>
+			<tr class="border-b border-astro-dark-100/15 text-astro-gray-300 text-left">
+				<th class="py-3 pr-4 font-medium">Métrique</th>
+				<th class="py-3 px-3 font-medium text-right">Valeur</th>
+				<th class="py-3 px-3 font-medium text-right hidden md:table-cell">Seuil</th>
+				<th class="py-3 px-3 font-medium text-center">Status</th>
+				{rows.some(r => r.delta) && <th class="py-3 px-3 font-medium text-right">Delta</th>}
+				{rows.some(r => r.observation) && <th class="py-3 pl-3 font-medium hidden lg:table-cell">Observation</th>}
+			</tr>
+		</thead>
+		<tbody>
+			{rows.map((row) => {
+				const icon = statusIcon[row.status];
+				return (
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 text-white font-medium">{row.metric}</td>
+						<td class="py-3 px-3 text-right text-white">{row.value}</td>
+						<td class="py-3 px-3 text-right text-astro-gray-300 hidden md:table-cell">{row.threshold}</td>
+						<td class="py-3 px-3 text-center">
+							<Icon name={icon.name} class={`size-5 inline-block ${icon.color}`} aria-label={row.status} />
+						</td>
+						{rows.some(r => r.delta) && (
+							<td class={`py-3 px-3 text-right ${row.delta?.startsWith('+') ? 'text-astro-green' : row.delta?.startsWith('-') ? 'text-red-400' : 'text-astro-gray-300'}`}>
+								{row.delta || '='}
+							</td>
+						)}
+						{rows.some(r => r.observation) && (
+							<td class="py-3 pl-3 text-astro-gray-200 text-xs hidden lg:table-cell">{row.observation}</td>
+						)}
+					</tr>
+				);
+			})}
+		</tbody>
+	</table>
+</div>

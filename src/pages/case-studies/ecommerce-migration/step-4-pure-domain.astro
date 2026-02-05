@@ -1,0 +1,594 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+
+import StepNavigation from './_components/StepNavigation.astro';
+import AuditVerdict from './_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
+import MetricsTable from './_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from './_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from './_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from './_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+import ModificationList from './_components/ModificationList.astro';
+import ModificationGroup from './_components/ModificationGroup.astro';
+import ModificationItem from './_components/ModificationItem.astro';
+
+// Code examples
+const beforeIdentifier = `// Dans Order.java (via BaseEntity)
+@MappedSuperclass
+public abstract class BaseEntity {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+}`;
+
+const afterIdentifier = `public record OrderId(Long value) {
+    public OrderId {
+        if (value == null) {
+            throw new IllegalArgumentException("OrderId value must not be null");
+        }
+    }
+}`;
+
+const beforeEntity = `@Entity
+@Table(name = "orders")
+public class Order extends BaseEntity {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderLine> lines = new ArrayList<>();
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal totalAmount;
+    // getters, setters...
+}`;
+
+const afterEntity = `public class Order {
+    private OrderId id;
+    private final String orderNumber;
+    private final CustomerId customerId;
+    private final List<OrderLine> lines = new ArrayList<>();
+    private OrderStatus status;
+    private Money totalAmount;
+    private Address shippingAddress;
+
+    public static Order create(String orderNumber, CustomerId customerId, String currency) {
+        return new Order(null, orderNumber, customerId, OrderStatus.DRAFT,
+                Money.zero(currency), null, null, null, null, null, null, null, null);
+    }
+
+    public OrderPlacedEvent place(Address shippingAddress) {
+        if (status != OrderStatus.DRAFT) {
+            throw new IllegalStateException("Order can only be placed from DRAFT status");
+        }
+        this.shippingAddress = shippingAddress;
+        this.status = OrderStatus.PLACED;
+        this.placedAt = LocalDateTime.now();
+        return OrderPlacedEvent.now(id, customerId, totalAmount);
+    }
+    // markPaid(), ship(), deliver(), cancel()...
+}`;
+
+const valueObject = `public record Money(BigDecimal amount, String currency) {
+    public Money {
+        if (amount == null) throw new IllegalArgumentException("Amount must not be null");
+        amount = amount.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public static Money of(BigDecimal amount, String currency) {
+        return new Money(amount, currency);
+    }
+
+    public Money add(Money other) {
+        requireSameCurrency(other);
+        return new Money(this.amount.add(other.amount), this.currency);
+    }
+
+    public Money multiply(int quantity) {
+        return new Money(this.amount.multiply(BigDecimal.valueOf(quantity)), this.currency);
+    }
+}`;
+
+const domainEvent = `public record OrderPlacedEvent(
+        OrderId orderId,
+        CustomerId customerId,
+        Money totalAmount,
+        Instant occurredAt) {
+
+    public static OrderPlacedEvent now(OrderId orderId, CustomerId customerId, Money totalAmount) {
+        return new OrderPlacedEvent(orderId, customerId, totalAmount, Instant.now());
+    }
+}`;
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK', delta: '+100' },
+    { dimension: 'Hexagonal Architecture', value: '35%', weight: '25%', contribution: '8.8', threshold: '≥ 90%', status: 'CRITICAL', delta: '-65' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Coupling', value: '31%', weight: '15%', contribution: '4.7', threshold: '≥ 70%', status: 'CRITICAL', delta: '-6' },
+    { dimension: 'Cohesion', value: '71%', weight: '15%', contribution: '10.7', threshold: '≥ 80%', status: 'WARNING', delta: '+7' },
+];
+
+const inventoryRows: InventoryRow[] = [
+    { component: 'Aggregate Roots', count: 6, delta: '+6', observation: 'Customer, Order, Product, Inventory, Payment, Shipment' },
+    { component: 'Entities', count: 2, delta: '-7', observation: 'OrderLine, StockMovement' },
+    { component: 'Value Objects', count: 7, delta: '+4', observation: 'Money, Address, Email, Quantity + 3 enums' },
+    { component: 'Identifiers', count: 6, delta: '+6', observation: 'OrderId, CustomerId, ProductId, PaymentId, ShipmentId, InventoryId' },
+    { component: 'Domain Events', count: 1, delta: '+1', observation: 'OrderPlacedEvent' },
+    { component: 'Driving Ports', count: 6, delta: '=', observation: '' },
+    { component: 'Driven Ports', count: 9, delta: '=', observation: '' },
+    { component: 'Application Services', count: 7, delta: '+7', observation: 'Classifiés APPLICATION_SERVICE' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'ddd:entity-identity', count: 0, severity: 'CRITICAL', delta: '-9', observation: 'Identifiants typés créés' },
+    { constraint: 'ddd:domain-purity', count: 0, severity: 'CRITICAL', delta: '-9', observation: 'Annotations JPA supprimées' },
+    { constraint: 'hexagonal:port-coverage', count: 6, severity: 'MAJOR', delta: '+6', observation: 'Repos JPA supprimés, ports sans adaptateur' },
+    { constraint: 'hexagonal:application-purity', count: 7, severity: 'MAJOR', delta: '+7', observation: '7 services avec imports Spring' },
+];
+
+// Metrics data with deltas
+const metricsData = [
+  {
+    metric: 'Domain purity',
+    value: '100.00%',
+    threshold: 'min 100%',
+    status: 'OK' as const,
+    delta: '+75.00',
+  },
+  {
+    metric: 'Aggregate boundary',
+    value: '100.00%',
+    threshold: 'min 80%',
+    status: 'OK' as const,
+    delta: '+100.00',
+  },
+  {
+    metric: 'Code boilerplate',
+    value: '80.20%',
+    threshold: 'max 50%',
+    status: 'CRITICAL' as const,
+    delta: '-19.80',
+  },
+  {
+    metric: 'Aggregate avg size',
+    value: '14.33',
+    threshold: 'max 20',
+    status: 'OK' as const,
+    delta: '+14.33',
+  },
+  {
+    metric: 'Domain coverage',
+    value: '50.00%',
+    threshold: 'min 30%',
+    status: 'OK' as const,
+    delta: '+5.56',
+  },
+  {
+    metric: 'Classification rate',
+    value: '95.7%',
+    threshold: 'min 80%',
+    status: 'OK' as const,
+    delta: '+13.9',
+  },
+];
+
+// Package stability data (selected)
+const packageStabilityRows: PackageStabilityRow[] = [
+    { package: 'domain.order', ca: 23, ce: 2, instability: 0.08, abstractness: 0.00, distance: 0.92, zone: 'Zone of Pain' },
+    { package: 'application', ca: 0, ce: 28, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
+];
+
+const remediationRows: RemediationRow[] = [
+    {
+        constraint: 'ddd:entity-identity',
+        violations: 0,
+        severity: 'CRITICAL',
+        manualEffort: 0,
+        hexaglueEffort: 0,
+        description: 'Identifiants typés créés',
+    },
+    {
+        constraint: 'ddd:domain-purity',
+        violations: 0,
+        severity: 'CRITICAL',
+        manualEffort: 0,
+        hexaglueEffort: 0,
+        description: 'Domaine purifié',
+    },
+    {
+        constraint: 'hexagonal:port-coverage',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 18,
+        hexaglueEffort: 0,
+        description: 'Ports driven sans adaptateur (génération HexaGlue)',
+    },
+    {
+        constraint: 'hexagonal:application-purity',
+        violations: 7,
+        severity: 'MAJOR',
+        manualEffort: 7,
+        hexaglueEffort: 7,
+        description: 'Services applicatifs avec @Service/@Transactional',
+    },
+];
+---
+
+<MainLayout
+  title="Étape 4 - Purification du domaine | HexaGlue"
+  description="Purification du domaine : suppression des annotations JPA, création de 6 identifiants typés et 7 value objects. Patterns DDD en place, score 49/100."
+>
+  <!-- Hero Section -->
+  <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <AmberStardust height="h-64 md:h-80" />
+    <div class="max-w-5xl mx-auto">
+      <div class="mt-8 max-w-3xl">
+        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+          Étape 4
+        </span>
+        <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+          Purification du domaine
+        </h1>
+        <a
+          href="https://github.com/hexaglue/case-study-ecommerce/tree/step/4-pure-domain"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+        >
+          <Icon name="logos/github" class="size-5" aria-hidden="true" />
+          <code class="text-sm text-amber-400">step/4-pure-domain</code>
+        </a>
+        <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+          <li>Domaine pur sans annotations JPA.</li>
+          <li>Value objects et identifiants typés (records).</li>
+          <li>Logique métier dans les agrégats.</li>
+          <li>18 violations CRITICAL résolues.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modifications effectuées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Modifications"
+        title="Modifications effectuées"
+        description="Purification du domaine avec suppression des annotations JPA et création des patterns tactiques DDD."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <ModificationList class="mt-10">
+        <ModificationGroup layer="domain">
+          <ModificationItem action="create" count={6} label="identifiants typés" details="OrderId, CustomerId, ProductId, PaymentId, ShipmentId, InventoryId" />
+          <ModificationItem action="create" count={4} label="value objects" details="Money, Address, Email, Quantity" />
+          <ModificationItem action="create" count={1} label="domain event" details="OrderPlacedEvent" />
+          <ModificationItem action="purify" count={9} label="classes domaine" details="suppression @Entity, @ManyToOne, extends BaseEntity" />
+          <ModificationItem action="remove" label="BaseEntity" details="chaque agrégat définit son propre identifiant typé" />
+        </ModificationGroup>
+        <ModificationGroup layer="configuration">
+          <ModificationItem action="configure" label="hexaglue.yaml" details="application.** retiré des exclusions" />
+        </ModificationGroup>
+      </ModificationList>
+
+      <Insight>
+        <p><strong>Transformation fondamentale du DDD</strong> : séparer le modèle métier de l'infrastructure.</p>
+        <ul>
+          <li><strong>Identifiants typés</strong> (records) remplacent les Long</li>
+          <li><strong>Value objects</strong> encapsulent les règles de validation</li>
+          <li><strong>Agrégats</strong> protègent leurs invariants</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Audit Verdict -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Verdict"
+        title="Verdict de l'audit"
+        description="Résultat après purification du domaine et création des patterns tactiques DDD."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <AuditVerdict
+        score={49}
+        grade="F"
+        status="PASSED_WITH_WARNINGS"
+        violations={{
+          critical: 0,
+          major: 13,
+        }}
+          delta={{
+            score: 9,
+            violations: -5,
+          }}
+        />
+      </div>
+
+      <Insight>
+        <p><strong>PASSED avec Warnings</strong> : toutes les violations CRITICAL résolues.</p>
+        <ul>
+          <li><strong>6 port-coverage</strong> : repositories JPA supprimés</li>
+          <li><strong>7 application-purity</strong> : annotations Spring dans les services</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- KPI Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Score"
+        title="Décomposition du score"
+        description="Contribution de chaque dimension au score global de 49/100."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <KpiTable rows={kpiRows} total="49.2" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>DDD Compliance</strong> à 100% : patterns tactiques détectés (identifiants typés, value objects)</li>
+          <li><strong>Hexagonal Architecture</strong> chute à 35% : repositories JPA supprimés → 6 violations port-coverage</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Inventory Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Inventaire"
+        title="Inventaire architectural"
+        description="Composants détectés après purification du domaine."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <InventoryTable rows={inventoryRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>6 aggregate roots</strong> détectés grâce aux identifiants typés</li>
+          <li>9 entités JPA → <strong>6 agrégats</strong> + 2 entités internes + 1 event</li>
+          <li><strong>7 services applicatifs</strong> classifiés APPLICATION_SERVICE (implémentent des driving ports)</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Violations Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Violations"
+        title="Violations détectées"
+        description="Contraintes architecturales non respectées après purification."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <ViolationsTable rows={violationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Violations DDD résolues</strong> : entity-identity, domain-purity</li>
+          <li><strong>Nouvelles violations</strong> : port-coverage (6), application-purity (7)</li>
+        </ul>
+        <p>Les adapters seront générés par HexaGlue à l'étape suivante.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Code Examples: Identifiers -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Code"
+        title="Identifiants typés"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Transformation des identifiants <code>Long</code> en <code>record</code> immuables avec validation.
+      </SectionCopy>
+
+      <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div>
+          <Code code={beforeIdentifier} lang="java" title="AVANT - OrderId (Long)" />
+        </div>
+        <div>
+          <Code code={afterIdentifier} lang="java" title="APRÈS - OrderId (record)" />
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Record</strong> remplace le Long générique</li>
+          <li><strong>Validation</strong> au constructeur garantit la cohérence</li>
+          <li>HexaGlue classifie automatiquement comme <strong>IDENTIFIER</strong></li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Code Examples: Domain Entity -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Code"
+        title="Agrégat purifié"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Transformation de l'entité <code>@Entity</code> JPA en agrégat DDD avec logique métier.
+      </SectionCopy>
+
+      <div class="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div>
+          <Code code={beforeEntity} lang="java" title="AVANT - Order.java (avec JPA)" />
+        </div>
+        <div>
+          <Code code={afterEntity} lang="java" title="APRÈS - Order.java (purifié)" />
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Identifiants typés</strong> : CustomerId au lieu de Customer</li>
+          <li><strong>Value objects</strong> : Money, Address</li>
+          <li><strong>Logique métier</strong> : place(), markPaid()</li>
+          <li><strong>Annotations JPA supprimées</strong> : le mapping sera généré par HexaGlue</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Code Examples: Value Object & Domain Event -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Code"
+        title="Value Objects & Domain Events"
+        description="Records immuables encapsulant validation et comportement métier."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10 space-y-4">
+        <Code code={valueObject} lang="java" title="Money.java - Value Object" />
+        <Code code={domainEvent} lang="java" title="OrderPlacedEvent.java" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Value objects</strong> : encapsulent règles métier (Money valide et calcule)</li>
+          <li><strong>Domain events</strong> : capturent les faits métier significatifs</li>
+        </ul>
+        <p>Ces patterns sont détectés automatiquement par HexaGlue.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Metrics Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Qualité"
+        title="Métriques de qualité"
+        description="Indicateurs structurels après purification du domaine."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <MetricsTable rows={metricsData} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Domain purity</strong> à 100% : domaine pur</li>
+          <li><strong>Aggregate boundary</strong> à 100% : frontières de cohérence établies</li>
+          <li><strong>Boilerplate</strong> reste à 80% : getters conservés, mais logique métier dans le domaine</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Remediation -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Remédiation"
+        title="Coût de mise en conformité"
+        description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <RemediationTable rows={remediationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>25j manuels → 7j avec HexaGlue</strong> (72% d'économie)</li>
+          <li><strong>18j automatisables</strong> : port-coverage via plugin JPA</li>
+          <li><strong>7j restants</strong> : purification des services (@Service/@Transactional → infrastructure)</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Package Stability -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Stabilité"
+        title="Stabilité des packages"
+        description="Analyse des couplages selon les métriques de Robert C. Martin."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <PackageStabilityTable rows={packageStabilityRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>domain.order</strong> en Zone of Pain (D=0.92) : attendu pour un core domain</li>
+          <li><strong>application</strong> sur la Main Sequence : correctement positionnée</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Bilan Section -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Bilan"
+        title="Ce que révèle cette étape"
+        description="Purification du domaine réussie, patterns tactiques DDD en place."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <Insight class="mt-10">
+        <ul>
+          <li>Score 49/100 (+9) : passage au statut PASSED_WITH_WARNINGS</li>
+          <li>DDD Compliance à 100% : identifiants typés, value objects, agrégats avec logique métier</li>
+          <li>Domain purity à 100% : zéro import JPA dans le domaine</li>
+          <li>18 violations CRITICAL résolues : le domaine est maintenant pur et testable</li>
+          <li>13 violations MAJOR : 6 port-coverage + 7 application-purity</li>
+          <li>Remédiation : 25j manuel → 7j avec HexaGlue (72% d'économie)</li>
+          <li>Prochaine étape : activer la génération HexaGlue pour l'infrastructure</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <StepNavigation
+        prev={{
+          href: '/case-studies/ecommerce-migration/step-3-hexagonal/',
+          label: 'Étape 3 - Réorganisation en couches hexagonales'
+        }}
+        next={{
+          href: '/case-studies/ecommerce-migration/step-5-generated/',
+          label: 'Étape 5 - Génération automatique de l\'infrastructure'
+        }}
+      />
+    </div>
+  </section>
+</MainLayout>

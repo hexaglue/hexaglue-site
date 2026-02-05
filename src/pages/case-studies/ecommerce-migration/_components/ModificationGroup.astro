@@ -1,0 +1,69 @@
+---
+import { Icon } from 'astro-icon/components';
+
+/**
+ * Groupe de modifications par couche architecturale.
+ */
+export interface Props {
+    /** Nom de la couche */
+    layer: 'domain' | 'application' | 'ports' | 'adapters' | 'configuration' | 'fixes';
+    /** Classes CSS additionnelles */
+    class?: string;
+}
+
+const { layer, class: className = '' } = Astro.props;
+
+// Configuration par couche
+const layerConfig = {
+    domain: {
+        label: 'Domain',
+        icon: 'ri/box-3-line',
+        color: 'text-purple-400',
+        bg: 'bg-purple-500/10',
+    },
+    ports: {
+        label: 'Ports',
+        icon: 'ri/git-branch-line',
+        color: 'text-blue-400',
+        bg: 'bg-blue-500/10',
+    },
+    application: {
+        label: 'Application',
+        icon: 'ri/stack-line',
+        color: 'text-amber-400',
+        bg: 'bg-amber-500/10',
+    },
+    adapters: {
+        label: 'Adapters',
+        icon: 'ri/plug-line',
+        color: 'text-green-400',
+        bg: 'bg-green-500/10',
+    },
+    configuration: {
+        label: 'Configuration',
+        icon: 'ri/file-settings-line',
+        color: 'text-teal-400',
+        bg: 'bg-teal-500/10',
+    },
+    fixes: {
+        label: 'Corrections',
+        icon: 'ri/bug-line',
+        color: 'text-red-400',
+        bg: 'bg-red-500/10',
+    },
+};
+
+const config = layerConfig[layer];
+---
+
+<div class:list={['p-6', className]}>
+    <div class="flex items-center gap-3 mb-4">
+        <div class:list={['w-8 h-8 rounded-lg flex items-center justify-center', config.bg]}>
+            <Icon name={config.icon} class:list={['w-4 h-4', config.color]} />
+        </div>
+        <h3 class:list={['font-semibold', config.color]}>{config.label}</h3>
+    </div>
+    <ul class="space-y-2 ml-11">
+        <slot />
+    </ul>
+</div>

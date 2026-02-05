@@ -1,0 +1,70 @@
+---
+import { Icon } from 'astro-icon/components';
+
+export interface KpiRow {
+	dimension: string;
+	value: string;
+	weight: string;
+	contribution: string;
+	threshold: string;
+	status: 'OK' | 'WARNING' | 'CRITICAL';
+	delta?: string;
+}
+
+interface Props {
+	rows: KpiRow[];
+	total: string;
+}
+
+const { rows, total } = Astro.props;
+
+const statusIcon = {
+	OK: { name: 'ri/checkbox-circle-line', color: 'text-astro-green' },
+	WARNING: { name: 'ri/error-warning-line', color: 'text-yellow-400' },
+	CRITICAL: { name: 'ri/close-circle-line', color: 'text-red-400' },
+};
+---
+
+<div class="overflow-x-auto">
+	<table class="w-full text-sm">
+		<thead>
+			<tr class="border-b border-astro-dark-100/15 text-astro-gray-300 text-left">
+				<th class="py-3 pr-4 font-medium">Dimension</th>
+				<th class="py-3 px-3 font-medium text-right">Score</th>
+				<th class="py-3 px-3 font-medium text-right hidden md:table-cell">Poids</th>
+				<th class="py-3 px-3 font-medium text-right hidden md:table-cell">Contribution</th>
+				<th class="py-3 px-3 font-medium text-right hidden lg:table-cell">Seuil</th>
+				<th class="py-3 px-3 font-medium text-center">Status</th>
+				{rows.some(r => r.delta) && <th class="py-3 pl-3 font-medium text-right">Delta</th>}
+			</tr>
+		</thead>
+		<tbody>
+			{rows.map((row) => {
+				const icon = statusIcon[row.status];
+				return (
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 text-white font-medium">{row.dimension}</td>
+						<td class="py-3 px-3 text-right text-white">{row.value}</td>
+						<td class="py-3 px-3 text-right text-astro-gray-300 hidden md:table-cell">{row.weight}</td>
+						<td class="py-3 px-3 text-right text-astro-gray-200 hidden md:table-cell">{row.contribution}</td>
+						<td class="py-3 px-3 text-right text-astro-gray-300 hidden lg:table-cell">{row.threshold}</td>
+						<td class="py-3 px-3 text-center">
+							<Icon name={icon.name} class={`size-5 inline-block ${icon.color}`} aria-label={row.status} />
+						</td>
+						{rows.some(r => r.delta) && (
+							<td class={`py-3 pl-3 text-right ${row.delta?.startsWith('+') ? 'text-astro-green' : row.delta?.startsWith('-') ? 'text-red-400' : 'text-astro-gray-300'}`}>
+								{row.delta || '='}
+							</td>
+						)}
+					</tr>
+				);
+			})}
+		</tbody>
+		<tfoot>
+			<tr class="border-t-2 border-astro-dark-100/30">
+				<td class="py-3 pr-4 text-white font-bold">TOTAL</td>
+				<td class="py-3 px-3 text-right text-white font-bold" colspan="3">{total}</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>

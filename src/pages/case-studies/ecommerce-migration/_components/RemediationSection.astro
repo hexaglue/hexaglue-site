@@ -1,0 +1,246 @@
+---
+import { Icon } from 'astro-icon/components';
+
+export interface RemediationAction {
+    priority: number;
+    severity: 'BLOCKER' | 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO';
+    title: string;
+    description?: string;
+    effort: {
+        days: number;
+        description?: string;
+    };
+    impact: string;
+    affectedTypes?: string[];
+    relatedIssues?: string[];
+}
+
+export interface RemediationData {
+    summary: string;
+    actions: RemediationAction[];
+    totalEffort: {
+        days: number;
+        cost: {
+            amount: number;
+            currency: string;
+            dailyRate: number;
+        } | null;
+    };
+    /** Delta par rapport à l'étape précédente (ex: "-7j") */
+    delta?: string;
+    /** Comparaison optionnelle avec l'effort manuel */
+    comparison?: {
+        manual: {
+            days: number;
+            cost: number;
+        };
+        withHexaGlue: {
+            days: number;
+            cost: number;
+        };
+        savings: {
+            days: number;
+            cost: number;
+            percentage: number;
+        };
+    };
+}
+
+export type DisplayMode = 'summary' | 'actions' | 'comparison';
+
+interface Props {
+    data: RemediationData;
+    mode?: DisplayMode;
+    showAffectedTypes?: boolean;
+}
+
+const { data, mode = 'summary', showAffectedTypes = false } = Astro.props;
+
+const severityColors: Record<RemediationAction['severity'], string> = {
+    BLOCKER: 'bg-red-500/10 text-red-400 border-red-400/20',
+    CRITICAL: 'bg-red-400/10 text-red-400 border-red-400/20',
+    MAJOR: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20',
+    MINOR: 'bg-blue-400/10 text-blue-400 border-blue-400/20',
+    INFO: 'bg-astro-gray-400/10 text-astro-gray-400 border-astro-gray-400/20',
+};
+
+const formatNumber = (n: number) => n.toLocaleString('fr-FR');
+const formatDays = (days: number) => days === 0 ? '0' : `${formatNumber(days)}`;
+const formatCost = (amount: number) => `${formatNumber(amount)} €`;
+
+const isCompliant = data.actions.length === 0;
+---
+
+{mode === 'comparison' && data.comparison ? (
+    <!-- Mode comparaison : Manuel vs HexaGlue -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/20 rounded-2xl">
+            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Icon name="ri/time-line" class="size-5 text-astro-gray-400" />
+                Remédiation manuelle
+            </h3>
+            <div class="space-y-3">
+                {data.actions.map((action) => (
+                    <div class="flex items-baseline justify-between">
+                        <span class="text-astro-gray-200">{action.title}</span>
+                        <span class="text-white font-mono">{formatDays(action.effort.days)} j</span>
+                    </div>
+                ))}
+            </div>
+            <div class="mt-4 pt-4 border-t border-astro-dark-100/20">
+                <div class="flex items-baseline justify-between">
+                    <span class="text-astro-gray-300 font-medium">Total</span>
+                    <div class="text-right">
+                        <div class="text-xl font-bold text-white">{formatDays(data.comparison.manual.days)} jours</div>
+                        <div class="text-sm text-astro-gray-400">{formatCost(data.comparison.manual.cost)}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 bg-astro-green/5 border border-astro-green/20 rounded-2xl">
+            <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Icon name="ri/magic-line" class="size-5 text-astro-green" />
+                Avec HexaGlue
+            </h3>
+            <div class="space-y-3">
+                <div class="flex items-baseline justify-between">
+                    <span class="text-astro-gray-200">Configuration initiale</span>
+                    <span class="text-white font-mono">{formatDays(data.comparison.withHexaGlue.days)} j</span>
+                </div>
+                <div class="flex items-baseline justify-between">
+                    <span class="text-astro-gray-200">Génération automatique</span>
+                    <span class="text-astro-green font-mono">0 j</span>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-astro-green/20">
+                <div class="flex items-baseline justify-between">
+                    <span class="text-astro-gray-300 font-medium">Total</span>
+                    <div class="text-right">
+                        <div class="text-xl font-bold text-astro-green">{formatDays(data.comparison.withHexaGlue.days)} jours</div>
+                        <div class="text-sm text-astro-gray-400">{formatCost(data.comparison.withHexaGlue.cost)}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 p-3 bg-astro-green/10 rounded-lg">
+                <div class="flex items-center gap-2 text-astro-green">
+                    <Icon name="ri/sparkling-2-line" class="size-5" />
+                    <span class="font-semibold">Économie : {data.comparison.savings.percentage} %</span>
+                </div>
+                <div class="text-sm text-astro-gray-300 mt-1">
+                    {formatDays(data.comparison.savings.days)} jours · {formatCost(data.comparison.savings.cost)}
+                </div>
+            </div>
+        </div>
+    </div>
+) : isCompliant ? (
+    <!-- Conformité totale -->
+    <div class="p-6 bg-astro-green/5 border border-astro-green/20 rounded-2xl">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-astro-green/10 flex items-center justify-center">
+                <Icon name="ri/checkbox-circle-line" class="size-6 text-astro-green" />
+            </div>
+            <div>
+                <div class="text-lg font-semibold text-astro-green">Architecture conforme</div>
+                <div class="text-astro-gray-300">{data.summary}</div>
+            </div>
+        </div>
+    </div>
+) : mode === 'actions' ? (
+    <!-- Mode actions : Summary + liste d'actions -->
+    <div class="space-y-6">
+        <!-- En-tête avec métriques -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-astro-dark-800/40 rounded-xl">
+            <div class="flex items-center gap-3">
+                <Icon name="ri/time-line" class="size-5 text-astro-gray-400" />
+                <span class="text-astro-gray-300">Effort estimé</span>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <span class="px-4 py-2 bg-astro-dark-800/60 rounded-lg font-bold text-white">
+                    {formatDays(data.totalEffort.days)} jours
+                </span>
+                {data.totalEffort.cost && (
+                    <span class="px-4 py-2 bg-astro-dark-800/60 rounded-lg font-bold text-white">
+                        {formatCost(data.totalEffort.cost.amount)}
+                    </span>
+                )}
+                {data.delta && (
+                    <span class={`px-4 py-2 rounded-lg font-bold ${data.delta.startsWith('-') ? 'bg-astro-green/10 text-astro-green' : 'bg-red-400/10 text-red-400'}`}>
+                        {data.delta}
+                    </span>
+                )}
+            </div>
+        </div>
+
+        <!-- Liste des actions -->
+        <div class="space-y-4">
+            {data.actions.map((action, index) => (
+                <div class="flex items-start gap-4 p-4 bg-astro-dark-800/30 rounded-xl border border-astro-dark-100/10">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-astro-accent-500/10 flex items-center justify-center">
+                        <span class="text-sm font-bold text-astro-accent-500">{index + 1}</span>
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <h4 class="font-semibold text-white">{action.title}</h4>
+                            <span class={`text-xs font-medium px-2 py-0.5 rounded-full border ${severityColors[action.severity]}`}>
+                                {action.severity}
+                            </span>
+                            <span class="text-sm text-astro-gray-400 font-mono">
+                                {formatDays(action.effort.days)} j
+                            </span>
+                        </div>
+                        {action.description && (
+                            <p class="text-sm text-astro-gray-300 mb-2">{action.description}</p>
+                        )}
+                        <div class="text-xs text-astro-gray-400">{action.impact}</div>
+                        {showAffectedTypes && action.affectedTypes && action.affectedTypes.length > 0 && (
+                            <div class="mt-2 flex flex-wrap gap-1">
+                                {action.affectedTypes.slice(0, 5).map((type) => (
+                                    <span class="text-xs px-2 py-0.5 bg-astro-dark-800/60 rounded text-astro-gray-400">
+                                        {type.split('.').pop()}
+                                    </span>
+                                ))}
+                                {action.affectedTypes.length > 5 && (
+                                    <span class="text-xs px-2 py-0.5 bg-astro-dark-800/60 rounded text-astro-gray-400">
+                                        +{action.affectedTypes.length - 5}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+) : (
+    <!-- Mode summary : Métriques simples -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div>
+            <div class="text-sm text-astro-gray-300 mb-1">Effort total</div>
+            <div class="text-2xl font-bold text-white">{formatDays(data.totalEffort.days)} jours</div>
+            {data.delta && (
+                <div class={`text-sm mt-1 ${data.delta.startsWith('-') ? 'text-astro-green' : 'text-red-400'}`}>
+                    {data.delta} par rapport à l'étape précédente
+                </div>
+            )}
+        </div>
+        {data.totalEffort.cost && (
+            <div>
+                <div class="text-sm text-astro-gray-300 mb-1">Coût estimé</div>
+                <div class="text-2xl font-bold text-white">{formatCost(data.totalEffort.cost.amount)}</div>
+                <div class="text-sm text-astro-gray-400 mt-1">
+                    {formatCost(data.totalEffort.cost.dailyRate)}/jour
+                </div>
+            </div>
+        )}
+        <div>
+            <div class="text-sm text-astro-gray-300 mb-1">Actions requises</div>
+            <div class="text-2xl font-bold text-white">{data.actions.length}</div>
+            {data.actions.length > 0 && (
+                <div class="text-sm text-astro-gray-400 mt-1">
+                    {data.actions.filter(a => a.severity === 'CRITICAL' || a.severity === 'BLOCKER').length} critiques
+                </div>
+            )}
+        </div>
+    </div>
+)}

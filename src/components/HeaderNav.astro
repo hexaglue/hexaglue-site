@@ -16,22 +16,31 @@ const socialLinks = siteInfo.socialLinks.filter((link) => link.showInHeader);
 	<div class="hidden shrink flex-row items-center gap-12 lg:flex text-base">
 		<HeaderDropDown
 			label="Ressources"
+			theme="green"
 			items={[
 				{ href: '/getting-started/', label: 'Documentation', icon: 'file-alt', prefetch: true },
-				{ href: 'https://github.com/hexaglue/hexaglue/tree/main/examples', label: 'Exemples', icon: 'ri/code-box-line' },
 				{ href: 'https://github.com/hexaglue/hexaglue', label: 'GitHub', icon: 'logos/github' },
 			]}
 		/>
 		<HeaderDropDown
+			label="Exemples"
+			theme="orange"
+			items={[
+				{ href: '/case-studies/', label: 'Études de cas', icon: 'file-alt', prefetch: true },
+				{ href: 'https://github.com/hexaglue/hexaglue/tree/main/examples', label: 'Exemples de code', icon: 'ri/code-box-line' },
+			]}
+		/>
+		<HeaderDropDown
 			label="Entreprise"
+			theme="purple"
 			items={[
 				{ href: '/services/', label: 'Services', icon: 'ri/building-4-line', prefetch: true },
-				{ href: '/case-studies/', label: 'Etude de cas', icon: 'file-alt', prefetch: true },
 				{ href: '/contact/', label: 'Contact', icon: 'email', prefetch: true },
 			]}
 		/>
 		<HeaderDropDown
 			label="Communauté"
+			theme="blue"
 			items={[
 				{ href: 'https://github.com/hexaglue/hexaglue/discussions', label: 'GitHub Discussions', icon: 'logos/github' },
 				{ href: 'https://github.com/hexaglue/hexaglue/blob/main/CONTRIBUTING.md', label: 'Contribuer', icon: 'ri/code-s-slash-line' },

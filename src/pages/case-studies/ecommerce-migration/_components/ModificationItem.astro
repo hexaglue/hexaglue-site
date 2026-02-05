@@ -1,0 +1,87 @@
+---
+import { Icon } from 'astro-icon/components';
+
+/**
+ * Item individuel dans une liste de modifications.
+ */
+export interface Props {
+    /**
+     * Type d'action effectuée.
+     * Détermine le verbe affiché (créer, définir, implémenter, etc.)
+     */
+    action: 'create' | 'define' | 'implement' | 'purify' | 'refactor' | 'configure' | 'remove' | 'fix' | 'move';
+    /** Nombre d'éléments (optionnel, affiché avant le label) */
+    count?: number;
+    /** Label décrivant ce qui a été modifié */
+    label: string;
+    /** Détails supplémentaires (optionnel) */
+    details?: string;
+    /** Classes CSS additionnelles */
+    class?: string;
+}
+
+const { action, count, label, details, class: className = '' } = Astro.props;
+
+// Configuration par action : verbe, icône, couleur
+const actionConfig = {
+    create: {
+        verb: 'Créer',
+        icon: 'ri/add-circle-line',
+        color: 'text-green-400',
+    },
+    define: {
+        verb: 'Définir',
+        icon: 'ri/draft-line',
+        color: 'text-blue-400',
+    },
+    implement: {
+        verb: 'Implémenter',
+        icon: 'ri/code-s-slash-line',
+        color: 'text-purple-400',
+    },
+    purify: {
+        verb: 'Purifier',
+        icon: 'ri/sparkling-2-line',
+        color: 'text-cyan-400',
+    },
+    refactor: {
+        verb: 'Refactoriser',
+        icon: 'ri/loop-left-line',
+        color: 'text-orange-400',
+    },
+    configure: {
+        verb: 'Configurer',
+        icon: 'ri/settings-3-line',
+        color: 'text-amber-400',
+    },
+    remove: {
+        verb: 'Supprimer',
+        icon: 'ri/delete-bin-line',
+        color: 'text-red-400',
+    },
+    fix: {
+        verb: 'Corriger',
+        icon: 'ri/bug-line',
+        color: 'text-red-400',
+    },
+    move: {
+        verb: 'Déplacer',
+        icon: 'ri/drag-move-line',
+        color: 'text-blue-400',
+    },
+};
+
+const config = actionConfig[action];
+
+// Construire le texte
+const countText = count !== undefined ? `${count} ` : '';
+const mainText = `${config.verb} ${countText}${label}`;
+---
+
+<li class:list={['flex items-start gap-2 text-sm', className]}>
+    <Icon name={config.icon} class:list={['w-4 h-4 mt-0.5 flex-shrink-0', config.color]} />
+    <span class="text-astro-gray-200">
+        {mainText}
+        {details && <span class="text-astro-gray-400"> ({details})</span>}
+    </span>
+</li>

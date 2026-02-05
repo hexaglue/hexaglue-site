@@ -1,0 +1,242 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import StepNavigation from './_components/StepNavigation.astro';
+import Insight from '~/components/Insight.astro';
+
+const orderEntityCode = `@Entity
+@Table(name = "orders")
+public class Order extends BaseEntity {
+
+    @Column(nullable = false, unique = true)
+    private String orderNumber;
+
+    // Anti-pattern: direct entity reference instead of ID
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderLine> lines = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status = OrderStatus.DRAFT;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal totalAmount;
+
+    private String currency;
+    private String shippingStreet;
+    private String shippingCity;
+    private String shippingZipCode;
+    private String shippingCountry;
+
+    // getters, setters...
+}`;
+
+const packageStructure = `com.acme.shop/
+├── ShopApplication.java
+├── controller/         (5 classes)
+├── service/            (8 classes)
+├── model/             (11 classes)
+├── repository/         (6 interfaces)
+├── dto/                (7 records)
+├── config/             (2 classes)
+├── exception/          (4 classes)
+├── event/              (1 classe)
+└── util/               (2 classes)`;
+
+const verificationCommand = `mvn clean compile`;
+
+const antiPatterns = [
+	{ num: 1, pattern: 'Couplage domaine/persistence', example: 'Order, Customer, Product sont annotées @Entity: le domaine dépend de JPA' },
+	{ num: 2, pattern: 'Pas d\'abstraction entre les services', example: 'Orchestration et logique métier sont dans les mêmes @Service, sans distinction de rôle' },
+	{ num: 3, pattern: 'Pas d\'inversion de dépendance', example: 'Les services appellent directement Spring Data: aucun port, aucune abstraction' },
+	{ num: 4, pattern: 'Données séparées du comportement', example: 'Les entités ne sont que des getters/setters, la logique vit dans les services' },
+	{ num: 5, pattern: 'Absence de typage métier', example: 'Le montant est un BigDecimal, l\'email un String: aucun value object' },
+	{ num: 6, pattern: 'Couplage fort entre agrégats', example: 'Order référence l\'entité Customer au lieu d\'un identifiant typé CustomerId' },
+	{ num: 7, pattern: 'Héritage technique imposé', example: 'Un @MappedSuperclass force Long id, createdAt, updatedAt pour toutes les entités' },
+	{ num: 8, pattern: 'Dépendance au framework pour les événements', example: 'OrderCreatedEvent hérite d\'ApplicationEvent, concept métier lié à Spring' },
+	{ num: 9, pattern: 'Fuite de responsabilité', example: 'La validation du prix est dans ProductController au lieu du domaine' },
+	{ num: 10, pattern: 'Aucune séparation des couches', example: 'Chaque classe est à la fois un bean Spring et une entité JPA' },
+];
+---
+
+<MainLayout
+	title="Étape 0 - Le monolithe Spring Boot d'origine | Migration E-Commerce"
+	description="Point de départ : application Spring Boot e-commerce avec 10 anti-patterns typiques. Domaine couplé à JPA, logique dans les services, aucune abstraction."
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="max-w-5xl mx-auto">
+			<div class="mt-8 max-w-3xl">
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+					Étape 0
+				</span>
+
+				<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+					Le monolithe Spring Boot d'origine
+				</h1>
+
+				<a
+				  href="https://github.com/hexaglue/case-study-ecommerce/tree/step/0-legacy"
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+				>
+				  <Icon name="logos/github" class="size-5" aria-hidden="true" />
+				  <code class="text-sm text-amber-400">step/0-legacy</code>
+				</a>
+
+				<ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+					<li>Application e-commerce classique Spring Boot.</li>
+					<li>Anti-patterns typiques d'une application enterprise.</li>
+					<li>50 classes Java, Spring Boot 3.2.5, Spring Data JPA, H2.</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- Anti-patterns Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Les 10 anti-patterns"
+				title="Ce qui ne va pas"
+				description="Cette application concentre les problèmes classiques du code en entreprise : couplage infrastructure/domaine, logique dispersée, absence de séparation des responsabilités."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<div class="mt-10 overflow-x-auto">
+				<table class="w-full text-left border-collapse">
+					<thead>
+						<tr class="border-b border-astro-dark-100/15">
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300 w-16">#</th>
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300">Anti-pattern</th>
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300">Exemple</th>
+						</tr>
+					</thead>
+					<tbody>
+						{antiPatterns.map((item) => (
+							<tr class="border-b border-astro-dark-100/10 hover:bg-astro-dark-800/20 transition-colors">
+								<td class="py-4 px-4 text-sm text-astro-gray-300 font-mono">{item.num}</td>
+								<td class="py-4 px-4 text-sm text-white font-medium">{item.pattern}</td>
+								<td class="py-4 px-4 text-sm text-astro-gray-300 font-light">{item.example}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Package Structure Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Structure"
+				title="Organisation des packages"
+				description="L'application suit un découpage technique classique : controller, service, model, repository."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<div class="mt-10">
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<Code code={packageStructure} lang="text" />
+				</div>
+			</div>
+
+			<Insight>
+				<p><strong>Code métier et code technique imbriqués</strong> dans les mêmes classes. Changer de framework ou migrer l'infrastructure implique de réécrire le domaine.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Code Example Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Code legacy"
+				title="Exemple : Order.java"
+				description="La classe Order telle qu'elle existe dans l'application. 50 lignes, annotations JPA, getters/setters."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<div class="mt-10">
+				<Code code={orderEntityCode} lang="java" title="Order.java" />
+			</div>
+
+			<Insight>
+				<ul>
+					<li><strong>Domaine invisible</strong> sous les annotations JPA (@Entity, @Table, @ManyToOne)</li>
+					<li><strong>Couplage fort</strong> : Order référence Customer au lieu d'un identifiant typé</li>
+					<li><strong>Absence de typage métier</strong> : String pour la devise, adresse éclatée en primitives</li>
+					<li><strong>Héritage technique</strong> imposé par BaseEntity (@MappedSuperclass)</li>
+					<li><strong>Aucun comportement métier</strong> : uniquement des getters/setters</li>
+				</ul>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Verification Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Vérification"
+				title="Est-ce que le projet compile ?"
+				description="Vérifions que l'application fonctionne avant de commencer la migration."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<div class="mt-10">
+				<Code code={verificationCommand} lang="bash" />
+			</div>
+
+			<div class="mt-4 p-3 bg-astro-green/10 border border-astro-green/20 rounded-lg">
+				<p class="text-sm text-astro-green font-mono">BUILD SUCCESS - 50 source files</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Bilan Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Bilan"
+				title="Ce que révèle cette étape"
+				description="L'application compile et fonctionne, mais l'architecture pose des problèmes de fond."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<Insight class="mt-10">
+				<ul>
+					<li><strong>Domaine enfoui</strong> sous l'infrastructure Spring et JPA</li>
+					<li><strong>Logique métier indistincte</strong> du code technique</li>
+					<li><strong>Classes domaine</strong> = data holders sans comportement</li>
+					<li><strong>Services</strong> contiennent toute la logique</li>
+					<li><strong>Références entre agrégats</strong> violent les principes DDD</li>
+					<li><strong>Code difficile</strong> à tester, maintenir et faire évoluer</li>
+				</ul>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Navigation -->
+	<section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<StepNavigation
+				next={{
+					href: '/case-studies/ecommerce-migration/step-1-discovery/',
+					label: 'Étape 1 - Premier diagnostic avec HexaGlue'
+				}}
+			/>
+		</div>
+	</section>
+</MainLayout>
+

@@ -1,0 +1,551 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from './_components/StepNavigation.astro';
+import AuditVerdict from './_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
+import MetricsTable from './_components/MetricsTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Link from '../../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import ModificationList from './_components/ModificationList.astro';
+import ModificationGroup from './_components/ModificationGroup.astro';
+import ModificationItem from './_components/ModificationItem.astro';
+
+const title = 'Étape 6 - Architecture hexagonale opérationnelle | Migration E-Commerce';
+const description = 'Architecture hexagonale opérationnelle : application e-commerce fonctionnelle de bout en bout. Score final 63/100, 100% conformité hexagonale, 1 violation.';
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '95%', weight: '25%', contribution: '23.75', threshold: '≥ 90%', status: 'OK', delta: '=' },
+    { dimension: 'Hexagonal Architecture', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK', delta: '+10' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Coupling', value: '31%', weight: '15%', contribution: '4.65', threshold: '≥ 70%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Cohesion', value: '64%', weight: '15%', contribution: '9.6', threshold: '≥ 80%', status: 'WARNING', delta: '+1' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'hexagonal:layer-isolation', count: 0, severity: 'MAJOR', delta: '-2', observation: 'InventoryUseCases refactorée' },
+    { constraint: 'ddd:aggregate-boundary', count: 1, severity: 'MAJOR', delta: '=', observation: 'OrderLine - limitation classificateur' },
+];
+---
+
+<MainLayout title={title} description={description}>
+  <!-- Hero -->
+  <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <AmberStardust height="h-64 md:h-80" />
+    <div class="max-w-5xl mx-auto">
+      <div class="mt-8 max-w-3xl">
+        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+          Étape 6
+        </span>
+        <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+          Architecture hexagonale opérationnelle
+        </h1>
+        <a
+          href="https://github.com/hexaglue/case-study-ecommerce/tree/main"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+        >
+          <Icon name="logos/github" class="size-5" aria-hidden="true" />
+          <code class="text-sm text-amber-400">main</code>
+        </a>
+        <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+          <li>Validation bout en bout avec infrastructure générée.</li>
+          <li>Migration Long→UUID, convention reconstitute().</li>
+          <li>Refactoring InventoryUseCases.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modifications effectuées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Modifications"
+        title="Modifications effectuées"
+        description="Corrections apportées pour rendre l'application fonctionnelle de bout en bout."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <ModificationList class="mt-10">
+        <ModificationGroup layer="domain">
+          <ModificationItem action="fix" count={6} label="identifiants" details="Long → UUID avec méthode generate()" />
+          <ModificationItem action="implement" label="convention reconstitute()" details="factory method pour restaurer les agrégats depuis la base" />
+        </ModificationGroup>
+        <ModificationGroup layer="ports">
+          <ModificationItem action="refactor" label="InventoryUseCases" details="5 → 2 méthodes, CONFLICTING → DRIVING_PORT" />
+        </ModificationGroup>
+        <ModificationGroup layer="application">
+          <ModificationItem action="refactor" label="OrderApplicationService" details="utilise InventoryRepository (driven port) directement" />
+        </ModificationGroup>
+        <ModificationGroup layer="adapters">
+          <ModificationItem action="create" label="DTOs de réponse REST" details="évite JSON imbriqué (CustomerId.value.value)" />
+          <ModificationItem action="implement" label="POST /api/inventory/initialize" details="endpoint pour initialiser le stock" />
+        </ModificationGroup>
+      </ModificationList>
+
+      <Insight>
+        <p><strong>6 corrections ciblées</strong>, chacune découlant d'un constat HexaGlue :</p>
+        <ul>
+          <li>Migration Long → UUID</li>
+          <li>Convention reconstitute()</li>
+          <li>DTOs REST</li>
+          <li>Endpoint inventaire</li>
+          <li>Refactoring InventoryUseCases</li>
+          <li>Orchestration via driven ports</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Test bout en bout -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Validation"
+        title="Test bout en bout"
+        description="Scénario complet : création client, produit, commande, paiement et livraison."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="border-b border-astro-dark-100/15">
+                <th class="px-6 py-4 text-sm font-semibold text-astro-gray-200">#</th>
+                <th class="px-6 py-4 text-sm font-semibold text-astro-gray-200">Endpoint</th>
+                <th class="px-6 py-4 text-sm font-semibold text-astro-gray-200">Résultat</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-astro-dark-100/15">
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">1</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">POST /api/customers</td>
+                <td class="px-6 py-4 text-sm text-white">Customer créé (UUID)</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">2</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">POST /api/products</td>
+                <td class="px-6 py-4 text-sm text-white">Product créé</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">3</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">POST /api/inventory/initialize</td>
+                <td class="px-6 py-4 text-sm text-white">HTTP 201</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">4</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">{"GET /api/inventory/{id}/available"}</td>
+                <td class="px-6 py-4 text-sm text-white">100</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">5</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">POST /api/orders</td>
+                <td class="px-6 py-4 text-sm text-white">Order PLACED, 2599.98 EUR</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">6</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">{"GET /api/inventory/{id}/available"}</td>
+                <td class="px-6 py-4 text-sm text-white">98 (2 réservées)</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">7</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">POST /api/payments</td>
+                <td class="px-6 py-4 text-sm text-white">Payment AUTHORIZED</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">8</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">POST /api/payments/capture</td>
+                <td class="px-6 py-4 text-sm text-white">Payment CAPTURED</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">9</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">POST /api/shipments</td>
+                <td class="px-6 py-4 text-sm text-white">Shipment PENDING</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">10</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">{"POST /api/shipments/{tracking}/ship"}</td>
+                <td class="px-6 py-4 text-sm text-white">IN_TRANSIT</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">11</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">{"POST /api/shipments/{tracking}/deliver"}</td>
+                <td class="px-6 py-4 text-sm text-white">DELIVERED</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 text-sm text-astro-gray-200 font-mono">12</td>
+                <td class="px-6 py-4 text-sm font-mono text-purple-300">{"GET /api/orders/{id}"}</td>
+                <td class="px-6 py-4 text-sm text-white">Order DELIVERED</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <Insight>
+        <p><strong>Parcours complet fonctionnel</strong> : de la création client jusqu'à la livraison. L'infrastructure générée assure la persistance sans code manuel.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Audit Verdict -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Verdict"
+        title="Verdict de l'audit"
+        description="Résultat final après corrections et validation fonctionnelle."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <AuditVerdict
+          score={63}
+          grade="D"
+          status="PASSED_WITH_WARNINGS"
+          violations={{ critical: 0, major: 1 }}
+          delta={{ score: 3, violations: -2 }}
+        />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>63/100</strong>, grade D maintenu</li>
+          <li><strong>1 seule violation</strong> restante</li>
+          <li><strong>Hexagonal Architecture</strong> à 100% grâce au refactoring InventoryUseCases</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- KPI Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Score"
+        title="Décomposition du score"
+        description="Contribution de chaque dimension au score global de 63/100."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <KpiTable rows={kpiRows} total="63.0" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Hexagonal Architecture</strong> à 100% : services applicatifs = POJOs purs</li>
+          <li><strong>Dépendance InventoryUseCases</strong> résolue</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Violations Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Violations"
+        title="Violations détectées"
+        description="État des violations après refactoring d'InventoryUseCases."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <ViolationsTable rows={violationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>layer-isolation</strong> résolues (-2)</li>
+          <li><strong>1 aggregate-boundary</strong> subsiste : OrderLine sans identifiant explicite</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Metrics Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Qualité"
+        title="Métriques de qualité"
+        description="Indicateurs DDD et qualité du code final."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10">
+        <MetricsTable
+          rows={[
+            { metric: 'domain.purity', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
+            { metric: 'aggregate.boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
+            { metric: 'aggregate.repository.coverage', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
+            { metric: 'code.complexity', value: '1.11', threshold: 'max 10', status: 'OK', delta: '=' },
+            { metric: 'aggregate.avgSize', value: '15.33', threshold: 'max 20', status: 'OK', delta: '+1.00' },
+            { metric: 'code.boilerplate', value: '81.48%', threshold: 'max 50%', status: 'CRITICAL', delta: '+1.28' },
+          ]}
+        />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Domaine</strong> 100% pur</li>
+          <li><strong>Complexité</strong> maîtrisée (1.11)</li>
+          <li><strong>Agrégats</strong> de taille raisonnable (15.33)</li>
+          <li><strong>Boilerplate</strong> élevé (81%) : inclut le code généré</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Build Verification -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Build"
+        title="Vérification du build"
+        description="Compilation, audit et démarrage de l'application."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-8">
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <Icon name="ri/checkbox-circle-line" class="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+            <div>
+              <code class="text-sm font-mono text-purple-300">mvn clean compile</code>
+              <p class="text-sm text-astro-gray-200 mt-1">
+                BUILD SUCCESS (99 fichiers source : 68 manuels + 28 générés + 3 MapStruct)
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <Icon name="ri/checkbox-circle-line" class="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+            <div>
+              <code class="text-sm font-mono text-purple-300">mvn clean verify</code>
+              <p class="text-sm text-astro-gray-200 mt-1">
+                BUILD SUCCESS (audit PASSED avec 1 avertissement)
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <Icon name="ri/checkbox-circle-line" class="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+            <div>
+              <code class="text-sm font-mono text-purple-300">mvn spring-boot:run</code>
+              <p class="text-sm text-astro-gray-200 mt-1">
+                Application démarre sur le port 8080
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>99 fichiers</strong> compilés : 68 manuels + 28 générés + 3 MapStruct</li>
+          <li><strong>Audit</strong> : PASSED avec 1 avertissement</li>
+          <li><strong>Application</strong> démarre et fonctionne</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Final Summary -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy label="Résultat" title="Bilan final" gradient="bg-orange-yellow-gradient" />
+
+      <div class="mt-8 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-8">
+        <div class="flex items-start gap-4 mb-6">
+          <Icon name="ri/trophy-line" class="w-8 h-8 text-yellow-400 flex-shrink-0" />
+          <div>
+            <h3 class="text-2xl font-bold text-white mb-2">Application fonctionnelle</h3>
+            <p class="text-astro-gray-200">
+              L'application fonctionne de bout en bout avec infrastructure 100% générée.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div>
+            <div class="text-3xl font-bold text-white mb-1">63/100</div>
+            <div class="text-sm text-astro-gray-200">Score final</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold text-yellow-400 mb-1">D</div>
+            <div class="text-sm text-astro-gray-200">Grade</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold text-orange-400 mb-1">1</div>
+            <div class="text-sm text-astro-gray-200">Violation</div>
+          </div>
+          <div>
+            <div class="text-3xl font-bold text-green-400 mb-1">29</div>
+            <div class="text-sm text-astro-gray-200">Fichiers générés</div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-white/10">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="text-sm text-astro-gray-200 mb-1">Hexagonal Architecture</div>
+              <div class="text-2xl font-bold text-green-400">100%</div>
+            </div>
+            <div>
+              <div class="text-sm text-astro-gray-200 mb-1">DDD Compliance</div>
+              <div class="text-2xl font-bold text-green-400">95%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bilan -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Bilan"
+        title="Ce que révèle cette étape"
+        description="Enseignements clés de la migration vers une architecture hexagonale avec HexaGlue."
+        gradient="bg-orange-yellow-gradient"
+      />
+
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri/checkbox-circle-line" class="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Infrastructure 100% générée</h3>
+              <p class="text-sm text-astro-gray-200">
+                L'application fonctionne de bout en bout avec toute l'infrastructure de persistance générée automatiquement.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri/building-line" class="w-6 h-6 text-purple-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Convention reconstitute()</h3>
+              <p class="text-sm text-astro-gray-200">
+                La méthode factory reconstitute() est essentielle pour que les mappers générés puissent restaurer les agrégats.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri/fingerprint-line" class="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Identifiants UUID</h3>
+              <p class="text-sm text-astro-gray-200">
+                HexaGlue attend des identifiants UUID avec la stratégie ASSIGNED. La méthode generate() est requise.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri/database-line" class="w-6 h-6 text-green-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">0 infrastructure manuelle</h3>
+              <p class="text-sm text-astro-gray-200">
+                Aucun code de persistance n'a été écrit manuellement. Tout est généré par HexaGlue.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri/node-tree" class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Refactoring InventoryUseCases</h3>
+              <p class="text-sm text-astro-gray-200">
+                Les services d'application orchestrent les agrégats directement via les driven ports plutôt que via des use cases intermédiaires.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri/error-warning-line" class="w-6 h-6 text-orange-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">1 violation résiduelle</h3>
+              <p class="text-sm text-astro-gray-200">
+                OrderLine n'est pas classifié comme ENTITY en raison d'une limitation du classificateur (absence d'identifiant explicite).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Insight class="mt-10">
+        <ul>
+          <li>Score final 63/100 (+50 depuis l'étape 0) : architecture hexagonale validée</li>
+          <li>Architecture hexagonale 100% : services applicatifs purifiés, ports/adaptateurs respectés</li>
+          <li>29 fichiers générés automatiquement : 0 ligne d'infrastructure manuelle pour la persistance</li>
+          <li>Convention reconstitute() : factory method essentielle pour restaurer les agrégats</li>
+          <li>Identifiants UUID avec generate() : stratégie ASSIGNED requise par HexaGlue</li>
+          <li>1 violation résiduelle : limitation classificateur sur OrderLine (pas d'identifiant explicite)</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 md:py-24 mb-12 relative">
+    <div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+      <h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+        <span class="text-astro-gray-300">Une architecture propre.</span><br/>
+        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Une dette technique résorbée.</span>
+      </h2>
+
+      <p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+        Un domaine testable sans infrastructure, des adaptateurs générés, une maintenance simplifiée. Découvrez comment HexaGlue peut transformer votre projet Java.
+      </p>
+
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="/getting-started/"
+          class="px-6 py-3 group inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-white hover:bg-astro-gray-100 text-base font-medium transition-all ease-in-out duration-300"
+        >
+          <span class="bg-clip-text text-transparent bg-orange-yellow-gradient group-hover:text-[#92400e] transition-all ease-in-out duration-500">
+            Guide de démarrage
+          </span>
+          <Icon name="ri/arrow-right-line" class="size-5 text-amber-500" aria-hidden="true" />
+        </a>
+        <Link href="/case-studies/ecommerce-migration/" class="secondary">
+          <Icon name="ri/arrow-left-line" class="size-5" aria-hidden="true" />
+          <span>Vue d'ensemble</span>
+        </Link>
+      </div>
+    </div>
+    <div
+      class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+    ></div>
+  </section>
+
+  <!-- Step Navigation -->
+  <section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <StepNavigation
+        prev={{ href: '/case-studies/ecommerce-migration/step-5-generated/', label: 'Étape 5 - Génération automatique de l\'infrastructure' }}
+      />
+    </div>
+  </section>
+</MainLayout>

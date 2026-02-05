@@ -6,22 +6,31 @@ import SocialLinks from './SocialLinks.astro';
 const nav: Nav = [
 	{
 		label: 'Ressources',
+		theme: 'green',
 		items: [
 			{ href: '/getting-started/', label: 'Documentation', icon: 'file-alt', prefetch: true },
-			{ href: 'https://github.com/hexaglue/hexaglue/tree/main/examples', label: 'Exemples', icon: 'ri/code-box-line' },
 			{ href: 'https://github.com/hexaglue/hexaglue', label: 'GitHub', icon: 'logos/github' },
 		],
 	},
 	{
+		label: 'Exemples',
+		theme: 'orange',
+		items: [
+			{ href: '/case-studies/', label: 'Études de cas', icon: 'file-alt', prefetch: true },
+			{ href: 'https://github.com/hexaglue/hexaglue/tree/main/examples', label: 'Exemples de code', icon: 'ri/code-box-line' },
+		],
+	},
+	{
 		label: 'Entreprise',
+		theme: 'purple',
 		items: [
 			{ href: '/services/', label: 'Services', icon: 'ri/building-4-line', prefetch: true },
-			{ href: '/case-studies/', label: 'Etude de cas', icon: 'file-alt', prefetch: true },
 			{ href: '/contact/', label: 'Contact', icon: 'email', prefetch: true },
 		],
 	},
 	{
 		label: 'Communauté',
+		theme: 'blue',
 		items: [
 			{ href: 'https://github.com/hexaglue/hexaglue/discussions', label: 'GitHub Discussions', icon: 'logos/github' },
 			{ href: 'https://github.com/hexaglue/hexaglue/blob/main/CONTRIBUTING.md', label: 'Contribuer', icon: 'ri/code-s-slash-line' },
@@ -40,9 +49,29 @@ interface GroupLink extends Link {
 }
 interface Group {
 	label: string;
+	theme?: 'blue' | 'orange' | 'green' | 'purple';
 	items: GroupLink[];
 }
 type Nav = Array<Link | Group>;
+
+const themeAccents: Record<string, { border: string; bg: string }> = {
+	blue: {
+		border: 'rgba(50, 69, 255, 0.40)',
+		bg: 'rgba(50, 69, 255, 0.06)',
+	},
+	orange: {
+		border: 'rgba(255, 125, 84, 0.40)',
+		bg: 'rgba(255, 125, 84, 0.06)',
+	},
+	green: {
+		border: 'rgba(74, 242, 200, 0.35)',
+		bg: 'rgba(74, 242, 200, 0.05)',
+	},
+	purple: {
+		border: 'rgba(188, 82, 238, 0.40)',
+		bg: 'rgba(188, 82, 238, 0.06)',
+	},
+};
 ---
 
 <nav
@@ -70,7 +99,12 @@ type Nav = Array<Link | Group>;
 							class="inline-block size-3 rotate-0 transition-transform group-open:-rotate-180 duration-300"
 						/>
 					</summary>
-					<div class="mt-4 flex flex-col gap-4 text-xl font-light">
+					<div
+						class="mt-4 flex flex-col gap-4 text-xl font-light"
+						style={item.theme && themeAccents[item.theme]
+							? `border-left: 2px solid ${themeAccents[item.theme].border}; background: linear-gradient(90deg, ${themeAccents[item.theme].bg} 0%, transparent 100%); padding-left: 1rem; border-radius: 0.5rem;`
+							: undefined}
+					>
 						{item.items.map((link) => {
 							const isExternal = link.href.startsWith('http://') || link.href.startsWith('https://');
 							return (

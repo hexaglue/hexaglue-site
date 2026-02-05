@@ -1,0 +1,148 @@
+---
+import { Icon } from 'astro-icon/components';
+
+export interface RemediationRow {
+    /** Identifiant de la contrainte (ex: "ddd:entity-identity") */
+    constraint: string;
+    /** Nombre de violations */
+    violations: number;
+    /** Sévérité de la contrainte */
+    severity: 'BLOCKER' | 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO';
+    /** Effort manuel en jours */
+    manualEffort: number;
+    /** Effort avec HexaGlue en jours (0 si automatisé) */
+    hexaglueEffort: number;
+    /** Description optionnelle */
+    description?: string;
+    /** Types affectés (optionnel) */
+    affectedTypes?: string[];
+}
+
+interface Props {
+    rows: RemediationRow[];
+    /** Taux journalier pour le calcul des coûts */
+    dailyRate?: number;
+    /** Afficher les types affectés */
+    showAffectedTypes?: boolean;
+}
+
+const { rows, dailyRate = 500, showAffectedTypes = false } = Astro.props;
+
+const formatNumber = (n: number) => n.toLocaleString('fr-FR');
+const formatDays = (days: number) => `${formatNumber(days)} j`;
+const formatCost = (amount: number) => `${formatNumber(amount)} €`;
+
+// Calculs des totaux
+const totalViolations = rows.reduce((sum, r) => sum + r.violations, 0);
+const totalManual = rows.reduce((sum, r) => sum + r.manualEffort, 0);
+const totalHexaglue = rows.reduce((sum, r) => sum + r.hexaglueEffort, 0);
+const totalSavings = totalManual - totalHexaglue;
+const savingsPercentage = totalManual > 0 ? Math.round((totalSavings / totalManual) * 100) : 0;
+
+const severityColors: Record<RemediationRow['severity'], string> = {
+    BLOCKER: 'text-red-500',
+    CRITICAL: 'text-red-400',
+    MAJOR: 'text-yellow-400',
+    MINOR: 'text-blue-400',
+    INFO: 'text-astro-gray-400',
+};
+---
+
+<div class="overflow-x-auto">
+    <table class="w-full text-sm border-separate border-spacing-0">
+        <thead>
+            <tr class="text-astro-gray-300 text-left text-xs sm:text-sm">
+                <th class="py-3 pr-4 font-medium border-b border-astro-dark-100/15 whitespace-nowrap">Contrainte</th>
+                <th class="py-3 px-2 sm:px-3 font-medium text-center border-b border-astro-dark-100/15 whitespace-nowrap">Violations</th>
+                <th class="py-3 px-2 sm:px-3 font-medium text-center border-b border-astro-dark-100/15 whitespace-nowrap">Manuel</th>
+                <th class="py-2 px-2 sm:px-3 font-medium text-center bg-astro-green/5 border-t border-l border-r border-b border-astro-green/20 rounded-t-lg whitespace-nowrap">Avec<br>HexaGlue</th>
+            </tr>
+        </thead>
+        <tbody>
+            {rows.map((row) => {
+                const isSaved = row.hexaglueEffort < row.manualEffort;
+                const isFullySaved = row.hexaglueEffort === 0 && row.manualEffort > 0;
+                return (
+                    <tr>
+                        <td class="py-3 pr-4 border-b border-astro-dark-100/10">
+                            <div class="flex items-center gap-2">
+                                <span class={`text-xs font-medium ${severityColors[row.severity]}`}>●</span>
+                                <span class="text-white font-medium">{row.constraint}</span>
+                            </div>
+                            {row.description && (
+                                <div class="text-xs text-astro-gray-400 mt-0.5 ml-4">{row.description}</div>
+                            )}
+                            {showAffectedTypes && row.affectedTypes && row.affectedTypes.length > 0 && (
+                                <div class="mt-1 ml-4 flex flex-wrap gap-1">
+                                    {row.affectedTypes.slice(0, 4).map((type) => (
+                                        <span class="text-xs px-1.5 py-0.5 bg-astro-dark-800/60 rounded text-astro-gray-400">
+                                            {type.split('.').pop()}
+                                        </span>
+                                    ))}
+                                    {row.affectedTypes.length > 4 && (
+                                        <span class="text-xs px-1.5 py-0.5 bg-astro-dark-800/60 rounded text-astro-gray-400">
+                                            +{row.affectedTypes.length - 4}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+                        </td>
+                        <td class="py-3 px-3 text-center text-astro-gray-200 border-b border-astro-dark-100/10">{row.violations}</td>
+                        <td class="py-3 px-3 text-center text-astro-gray-200 border-b border-astro-dark-100/10">{formatDays(row.manualEffort)}</td>
+                        <td class="py-2 px-3 text-center bg-astro-green/5 border-l border-r border-b border-astro-green/20">
+                            {isFullySaved ? (
+                                <span class="inline-flex items-center gap-1 text-astro-green font-medium">
+                                    <Icon name="ri/sparkling-2-line" class="size-4" />
+                                    {formatDays(row.hexaglueEffort)}
+                                </span>
+                            ) : isSaved ? (
+                                <span class="text-astro-green font-medium">{formatDays(row.hexaglueEffort)}</span>
+                            ) : (
+                                <span class="text-astro-gray-200">{formatDays(row.hexaglueEffort)}</span>
+                            )}
+                        </td>
+                    </tr>
+                );
+            })}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="py-5 pr-4 text-lg font-bold text-white border-t-2 border-astro-dark-100/20">Total</td>
+                <td class="py-5 px-3 text-center text-lg font-bold text-white border-t-2 border-astro-dark-100/20">{totalViolations}</td>
+                <td class="py-5 px-3 text-center border-t-2 border-astro-dark-100/20">
+                    <div class="text-lg font-bold text-white">{formatDays(totalManual)}</div>
+                    <div class="text-sm text-astro-gray-400">{formatCost(totalManual * dailyRate)}</div>
+                </td>
+                <td class="py-3 px-3 text-center bg-astro-green/5 border-b border-l border-r border-astro-green/20 rounded-b-lg">
+                    <div class="text-lg font-bold text-astro-green">{formatDays(totalHexaglue)}</div>
+                    <div class="text-sm text-astro-gray-400">{formatCost(totalHexaglue * dailyRate)}</div>
+                </td>
+            </tr>
+            {savingsPercentage > 0 && (
+                <tr>
+                    <td colspan="4" class="pt-2">
+                        <div class="flex items-center justify-end gap-2 text-astro-green">
+                            <Icon name="ri/sparkling-2-line" class="size-5" />
+                            <span class="font-semibold">
+                                Économie : {formatDays(totalSavings)} ({savingsPercentage} %)
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            )}
+        </tfoot>
+    </table>
+</div>
+
+<div class="mt-4 pt-4 border-t border-astro-dark-100/10 flex flex-wrap gap-x-6 gap-y-2 text-xs text-astro-gray-300">
+    <div class="flex items-center gap-1.5">
+        <span class="text-red-400">●</span> CRITICAL
+    </div>
+    <div class="flex items-center gap-1.5">
+        <span class="text-yellow-400">●</span> MAJOR
+    </div>
+    <div class="flex items-center gap-1.5">
+        <Icon name="ri/sparkling-2-line" class="size-4 text-astro-green" />
+        <span>Automatisé par HexaGlue</span>
+    </div>
+</div>

@@ -3,6 +3,7 @@ import { Icon } from 'astro-icon/components';
 
 interface Props {
 	label: string;
+	theme?: 'blue' | 'orange' | 'green' | 'purple';
 	items: Array<{
 		href: string;
 		icon: string;
@@ -11,6 +12,31 @@ interface Props {
 		badge?: string;
 	}>;
 }
+
+const themes: Record<string, { glow: string; border: string }> = {
+	blue: {
+		glow: 'rgba(50, 69, 255, 0.10)',
+		border: 'rgba(50, 69, 255, 0.25)',
+	},
+	orange: {
+		glow: 'rgba(255, 125, 84, 0.10)',
+		border: 'rgba(255, 125, 84, 0.25)',
+	},
+	green: {
+		glow: 'rgba(74, 242, 200, 0.08)',
+		border: 'rgba(74, 242, 200, 0.22)',
+	},
+	purple: {
+		glow: 'rgba(188, 82, 238, 0.10)',
+		border: 'rgba(188, 82, 238, 0.25)',
+	},
+};
+
+const { label, items, theme } = Astro.props;
+const t = theme ? themes[theme] : undefined;
+const panelStyle = t
+	? `background: radial-gradient(ellipse at top center, ${t.glow} 0%, #0D0F14 80%); border-color: ${t.border};`
+	: undefined;
 ---
 
 <header-drop-down>
@@ -40,6 +66,7 @@ interface Props {
 				'opacity-0 group-open:opacity-100',
 				'transition-all duration-500',
 			]}
+			style={panelStyle}
 		>
 			<slot />
 			{

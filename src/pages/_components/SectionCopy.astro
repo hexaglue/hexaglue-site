@@ -3,29 +3,54 @@ interface Props {
 	label: string;
 	title: string;
 	description?: string;
+	gradient?: string;
 }
 
-const { label, title, description } = Astro.props;
+const { label, title, description, gradient = 'bg-blue-green-gradient' } = Astro.props;
+const hasDefaultSlot = Astro.slots.has('default');
 ---
 
 <style>
 	.section-title {
 		font-variation-settings: 'wght' 700;
 	}
+	.section-description :global(code) {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-sm text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	.section-description :global(strong) {
+		@apply font-semibold text-white;
+	}
+	.section-description :global(em) {
+		@apply italic;
+	}
+	.section-description :global(br) {
+		@apply block mt-2;
+	}
+	.section-description :global(ul) {
+		@apply list-disc list-inside mt-2 space-y-1;
+	}
+	.section-description :global(ol) {
+		@apply list-decimal list-inside mt-2 space-y-1;
+	}
 </style>
 
 <div class="w-full">
-	<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold">{label}</span>
+	<span class:list={["bg-clip-text text-transparent font-semibold", gradient]}>{label}</span>
 
 	<h2 class="section-title mt-1 font-heading text-[30px] text-white text-balance">
 		{title}
 	</h2>
 	{
-		description && (
-			<p class="mt-3 w-full lg:w-2/3 xl:w-1/2 text-base text-astro-gray-200 lg:text-balance font-light">
+		hasDefaultSlot ? (
+			<div class="section-description mt-3 text-base text-astro-gray-200 font-light">
+				<slot />
+			</div>
+		) : description ? (
+			<p class="mt-3 text-base text-astro-gray-200 font-light">
 				{description}
 			</p>
-		)
+		) : null
 	}
 
 	<div class="mt-4">

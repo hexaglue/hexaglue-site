@@ -1,0 +1,59 @@
+---
+import { Icon } from 'astro-icon/components';
+
+export interface Props {
+	title?: string;
+	icon?: string;
+	variant?: 'amber' | 'green' | 'red';
+	class?: string;
+}
+
+const {
+	title,
+	icon = 'ri/eye-line',
+	variant = 'amber',
+	class: className = ''
+} = Astro.props;
+
+const variantStyles = {
+	amber: {
+		border: 'border-amber-400/40',
+		bg: 'bg-amber-400/[0.03]',
+		icon: 'text-amber-400',
+		title: 'text-amber-400',
+	},
+	green: {
+		border: 'border-emerald-400/40',
+		bg: 'bg-emerald-400/[0.03]',
+		icon: 'text-emerald-400',
+		title: 'text-emerald-400',
+	},
+	red: {
+		border: 'border-red-400/40',
+		bg: 'bg-red-400/[0.03]',
+		icon: 'text-red-400',
+		title: 'text-red-400',
+	},
+};
+
+const styles = variantStyles[variant];
+---
+
+<div class:list={[
+	'mt-6 p-5 border-l-2 rounded-r-xl',
+	styles.border,
+	styles.bg,
+	className
+]}>
+	<div class="flex items-start gap-3">
+		<Icon name={icon} class:list={['size-5 shrink-0 mt-0.5', styles.icon]} aria-hidden="true" />
+		<div class="space-y-2">
+			{title && (
+				<p class:list={['text-base font-medium', styles.title]}>{title}</p>
+			)}
+			<div class="text-base text-astro-gray-200 leading-relaxed [&>ul]:space-y-1 [&>ul]:list-disc [&>ul]:list-inside">
+				<slot />
+			</div>
+		</div>
+	</div>
+</div>

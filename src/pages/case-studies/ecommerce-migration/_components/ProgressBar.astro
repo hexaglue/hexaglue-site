@@ -1,0 +1,29 @@
+---
+interface Props {
+	score: number;
+	maxScore?: number;
+}
+
+const { score, maxScore = 100 } = Astro.props;
+const percentage = Math.min(100, (score / maxScore) * 100);
+
+const getColor = (s: number) => {
+	if (s < 30) return 'bg-red-400';
+	if (s < 50) return 'bg-yellow-400';
+	if (s < 70) return 'bg-astro-blue';
+	return 'bg-astro-green';
+};
+---
+
+<div class="w-full">
+	<div class="flex justify-between items-center mb-2">
+		<span class="text-sm text-astro-gray-400">Score</span>
+		<span class="text-sm font-medium text-white">{score}/{maxScore}</span>
+	</div>
+	<div class="h-3 bg-astro-dark-800/60 rounded-full overflow-hidden">
+		<div
+			class={`h-full rounded-full transition-all duration-500 ${getColor(score)}`}
+			style={`width: ${percentage}%`}
+		/>
+	</div>
+</div>

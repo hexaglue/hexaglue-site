@@ -1,0 +1,66 @@
+---
+export interface PackageStabilityRow {
+    package: string;
+    ca: number;
+    ce: number;
+    instability: number;
+    abstractness: number;
+    distance: number;
+    zone: 'Zone of Pain' | 'Main Sequence' | 'Zone of Uselessness';
+}
+
+interface Props {
+    rows: PackageStabilityRow[];
+}
+
+const { rows } = Astro.props;
+---
+
+<div class="overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="border-b border-astro-dark-100/15 text-astro-gray-300 text-left">
+                <th class="py-3 pr-4 font-medium">Package</th>
+                <th class="py-3 px-3 font-medium text-right">Ca</th>
+                <th class="py-3 px-3 font-medium text-right">Ce</th>
+                <th class="py-3 px-3 font-medium text-right">I</th>
+                <th class="py-3 px-3 font-medium text-right">A</th>
+                <th class="py-3 px-3 font-medium text-right">D</th>
+                <th class="py-3 pl-3 font-medium">Zone</th>
+            </tr>
+        </thead>
+        <tbody>
+            {rows.map((row) => (
+                <tr class="border-b border-astro-dark-100/10">
+                    <td class="py-3 pr-4 text-white font-medium">{row.package}</td>
+                    <td class="py-3 px-3 text-right text-astro-gray-200">{row.ca}</td>
+                    <td class="py-3 px-3 text-right text-astro-gray-200">{row.ce}</td>
+                    <td class="py-3 px-3 text-right text-astro-gray-200">{row.instability.toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right text-astro-gray-200">{row.abstractness.toFixed(2)}</td>
+                    <td class={`py-3 px-3 text-right ${row.distance > 0.7 ? 'text-red-400' : 'text-astro-gray-200'}`}>
+                        {row.distance.toFixed(2)}
+                    </td>
+                    <td class="py-3 pl-3">
+                        <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                            row.zone === 'Zone of Pain'
+                                ? 'bg-red-400/10 text-red-400'
+                                : row.zone === 'Zone of Uselessness'
+                                    ? 'bg-yellow-400/10 text-yellow-400'
+                                    : 'bg-emerald-400/10 text-emerald-400'
+                        }`}>
+                            {row.zone}
+                        </span>
+                    </td>
+                </tr>
+            ))}
+        </tbody>
+    </table>
+    <div class="mt-4 pt-4 border-t border-astro-dark-100/10 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2 text-xs text-astro-gray-300">
+        <div><strong class="text-astro-gray-200">Ca</strong> = Afferent Coupling <span class="text-astro-gray-400">(dépendants)</span></div>
+        <div><strong class="text-astro-gray-200">Ce</strong> = Efferent Coupling <span class="text-astro-gray-400">(dépendances)</span></div>
+        <div><strong class="text-astro-gray-200">I</strong> = Instability <span class="text-astro-gray-400">(0 = stable, 1 = instable)</span></div>
+        <div><strong class="text-astro-gray-200">A</strong> = Abstractness <span class="text-astro-gray-400">(0 = concret, 1 = abstrait)</span></div>
+        <div><strong class="text-astro-gray-200">D</strong> = Distance <span class="text-astro-gray-400">(0 = optimal, > 0.7 = problème)</span></div>
+        <div><strong class="text-astro-gray-200">Zone</strong> = Position sur le graphe A/I</div>
+    </div>
+</div>

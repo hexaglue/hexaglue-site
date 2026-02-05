@@ -1,0 +1,43 @@
+---
+export interface InventoryRow {
+	component: string;
+	count: number;
+	delta?: string;
+	observation?: string;
+}
+
+interface Props {
+	rows: InventoryRow[];
+}
+
+const { rows } = Astro.props;
+---
+
+<div class="overflow-x-auto">
+	<table class="w-full text-sm">
+		<thead>
+			<tr class="border-b border-astro-dark-100/15 text-astro-gray-300 text-left">
+				<th class="py-3 pr-4 font-medium">Composant</th>
+				<th class="py-3 px-3 font-medium text-right">Nombre</th>
+				{rows.some(r => r.delta) && <th class="py-3 px-3 font-medium text-right">Delta</th>}
+				{rows.some(r => r.observation) && <th class="py-3 pl-3 font-medium hidden md:table-cell">Observation</th>}
+			</tr>
+		</thead>
+		<tbody>
+			{rows.map((row) => (
+				<tr class="border-b border-astro-dark-100/10">
+					<td class="py-3 pr-4 text-white font-medium">{row.component}</td>
+					<td class="py-3 px-3 text-right text-white font-medium">{row.count}</td>
+					{rows.some(r => r.delta) && (
+						<td class={`py-3 px-3 text-right font-medium ${row.delta?.startsWith('+') ? 'text-astro-green' : row.delta?.startsWith('-') ? 'text-red-400' : 'text-astro-gray-300'}`}>
+							{row.delta || '='}
+						</td>
+					)}
+					{rows.some(r => r.observation) && (
+						<td class="py-3 pl-3 text-astro-gray-200 text-xs hidden md:table-cell">{row.observation}</td>
+					)}
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>

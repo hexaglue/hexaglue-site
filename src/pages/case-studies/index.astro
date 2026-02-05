@@ -1,0 +1,213 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+---
+
+<MainLayout
+	title="Études de cas"
+	description="Découvrez comment des équipes utilisent HexaGlue pour gouverner leur architecture Java."
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Retours d'expérience
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Études de Cas.<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Des résultats concrets.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Découvrez comment des équipes utilisent HexaGlue pour gouverner leur architecture Java.
+			</p>
+		</div>
+	</section>
+
+	<!-- Featured Case Study -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64" />
+
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Mise en avant"
+				title="Migration d'un site E-Commerce"
+				description="Suivez la migration pas-à-pas d'une application Spring Boot vers une architecture hexagonale complète, à l'aide d'HexaGlue."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<a href="/case-studies/ecommerce-migration/" class="featured-card group mt-8 block p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+				<div class="flex flex-col md:flex-row md:items-center gap-6">
+					<div class="p-4 w-fit rounded-xl bg-astro-green/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri/shopping-cart-2-line" class="size-8 text-astro-green" aria-hidden="true" />
+					</div>
+					<div class="flex-1">
+						<h3 class="text-xl md:text-2xl font-semibold text-white mb-2">D'un legacy à une architecture hexagonal</h3>
+						<p class="text-astro-gray-200 font-light mb-4">
+							50 classes Spring Boot, 10 anti-patterns, 37 violations initiales.<br>
+							Migration progressive guidée par les rapports d'audit HexaGlue jusqu'à une architecture hexagonale, avec génération automatique de l'infrastructure.
+						</p>
+						<div class="flex flex-wrap items-center gap-4">
+							<div class="flex items-center gap-6">
+								<div class="text-center">
+									<div class="text-2xl font-bold text-red-400">15</div>
+									<div class="text-xs text-astro-gray-400">Score initial</div>
+								</div>
+								<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400" aria-hidden="true" />
+								<div class="text-center">
+									<div class="text-2xl font-bold text-astro-green">63</div>
+									<div class="text-xs text-astro-gray-400">Score final</div>
+								</div>
+							</div>
+							<div class="hidden md:block w-px h-10 bg-astro-dark-100/15" />
+							<div class="flex items-center gap-4">
+								<div class="text-center">
+									<div class="text-lg font-bold text-red-400">37</div>
+									<div class="text-xs text-astro-gray-400">Violations</div>
+								</div>
+								<Icon name="ri/arrow-right-line" class="size-4 text-astro-gray-400" aria-hidden="true" />
+								<div class="text-center">
+									<div class="text-lg font-bold text-astro-green">1</div>
+									<div class="text-xs text-astro-gray-400">Violation</div>
+								</div>
+							</div>
+							<div class="hidden md:block w-px h-10 bg-astro-dark-100/15" />
+							<div class="text-center">
+								<div class="text-lg font-bold text-astro-green">29</div>
+								<div class="text-xs text-astro-gray-400">Fichiers générés</div>
+							</div>
+						</div>
+					</div>
+					<Icon name="ri/arrow-right-line" class="size-6 text-astro-gray-400 group-hover:text-amber-400 transition-colors hidden md:block" aria-hidden="true" />
+				</div>
+			</a>
+		</div>
+	</section>
+
+	<!-- Upcoming Case Studies -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="À venir"
+				title="Prochaines études de cas"
+				description="Des retours concrets sur l'utilisation de HexaGlue en production."
+				gradient="bg-orange-yellow-gradient"
+			/>
+		</div>
+
+		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+				<div class="p-3 w-fit rounded-xl bg-astro-green/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+					<Icon name="ri/stack-line" class="size-6 text-astro-green" aria-hidden="true" />
+				</div>
+				<h3 class="text-lg font-semibold text-white mb-2">Standardisation DDD</h3>
+				<p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+					Comment des équipes standardisent leurs pratiques DDD à travers plusieurs projets et équipes.
+				</p>
+			</div>
+
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+				<div class="p-3 w-fit rounded-xl bg-astro-blue/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+					<Icon name="ri/code-box-line" class="size-6 text-astro-blue" aria-hidden="true" />
+				</div>
+				<h3 class="text-lg font-semibold text-white mb-2">Réduction du boilerplate</h3>
+				<p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+					Mesures concrètes de réduction de code répétitif grâce à la génération automatique.
+				</p>
+			</div>
+
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+				<div class="p-3 w-fit rounded-xl bg-astro-purple/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+					<Icon name="ri/file-list-3-line" class="size-6 text-astro-purple" aria-hidden="true" />
+				</div>
+				<h3 class="text-lg font-semibold text-white mb-2">Documentation vivante</h3>
+				<p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+					Comment maintenir une documentation toujours synchronisée avec le code.
+				</p>
+			</div>
+
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+				<div class="p-3 w-fit rounded-xl bg-red-400/10 mb-4 group-hover:scale-110 transition-transform duration-300">
+					<Icon name="ri/shield-check-line" class="size-6 text-red-400" aria-hidden="true" />
+				</div>
+				<h3 class="text-lg font-semibold text-white mb-2">Détection des violations</h3>
+				<p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+					Retours sur la détection précoce des violations architecturales à la compilation.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Vous utilisez HexaGlue ?</span><br/>
+				Partagez votre succès.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light">
+				Partagez votre expérience et aidez d'autres équipes à découvrir comment HexaGlue peut transformer leur architecture.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/contact/" class="primary">
+					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
+						Partagez votre histoire
+					</span>
+				</Link>
+				<Link href="/getting-started/" class="secondary">
+					<Icon name="ri/file-list-3-line" class="size-5" aria-hidden="true" />
+					<span>Démarrer avec HexaGlue</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	.case-study-card {
+		position: relative;
+	}
+
+	.case-study-card::before {
+		content: '';
+		position: absolute;
+		inset: 30% 15%;
+		background: radial-gradient(ellipse at center, rgba(255, 125, 84, 0.06) 0%, transparent 70%);
+		border-radius: 50%;
+		filter: blur(25px);
+		z-index: -1;
+		opacity: 0;
+		transition: opacity 0.4s ease-out;
+	}
+
+	.case-study-card:hover::before {
+		opacity: 1;
+	}
+
+	.featured-card::before {
+		content: '';
+		position: absolute;
+		inset: 20% 10%;
+		background: radial-gradient(ellipse at center, rgba(255, 125, 84, 0.08) 0%, transparent 70%);
+		border-radius: 50%;
+		filter: blur(30px);
+		z-index: -1;
+		opacity: 0;
+		transition: opacity 0.4s ease-out;
+	}
+
+	.featured-card:hover::before {
+		opacity: 1;
+	}
+</style>

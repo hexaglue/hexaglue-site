@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+	prev?: { href: string; label: string };
+	next?: { href: string; label: string };
+}
+
+const { prev, next } = Astro.props;
+---
+
+<nav aria-label="Navigation entre etapes" class="mt-16 pt-8 border-t border-astro-dark-100/15 flex items-stretch justify-between gap-4">
+	{prev ? (
+		<a
+			href={prev.href}
+			class="group flex-1 flex items-center gap-4 p-4 md:p-6 rounded-2xl bg-astro-dark-800/40 border border-astro-dark-100/15 hover:border-amber-400/30 transition-all duration-300"
+		>
+			<Icon name="ri/arrow-left-line" class="size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0" aria-hidden="true" />
+			<div class="min-w-0">
+				<span class="text-xs text-astro-gray-200 uppercase tracking-wider">Précédent</span>
+				<p class="text-lg text-white font-medium truncate">{prev.label}</p>
+			</div>
+		</a>
+	) : <div class="flex-1" />}
+
+	{next ? (
+		<a
+			href={next.href}
+			class="group flex-1 flex items-center justify-end gap-4 p-4 md:p-6 rounded-2xl bg-astro-dark-800/40 border border-astro-dark-100/15 hover:border-amber-400/30 transition-all duration-300 text-right"
+		>
+			<div class="min-w-0">
+				<span class="text-xs text-astro-gray-200 uppercase tracking-wider">Suivant</span>
+				<p class="text-lg text-white font-medium truncate">{next.label}</p>
+			</div>
+			<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0" aria-hidden="true" />
+		</a>
+	) : <div class="flex-1" />}
+</nav>
