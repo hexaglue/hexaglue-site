@@ -72,7 +72,7 @@ const violationRows: ViolationRow[] = [
         gradient="bg-orange-yellow-gradient"
       >
         Cette dernière étape résout les points identifiés par HexaGlue pour rendre l'application fonctionnelle de bout en bout :
-        migration des identifiants, convention de reconstruction des agrégats, et refactoring du dernier composant UNCLASSIFIED.
+        migration des identifiants, convention de reconstruction des agrégats, et refactoring du dernier composant non classifié.
       </SectionCopy>
 
       <ModificationList class="mt-10">
@@ -81,7 +81,7 @@ const violationRows: ViolationRow[] = [
           <ModificationItem action="implement" label="convention reconstitute()" details="factory method pour restaurer les agrégats depuis la base" />
         </ModificationGroup>
         <ModificationGroup layer="ports">
-          <ModificationItem action="refactor" label="InventoryUseCases" details="5 → 2 méthodes, CONFLICTING → DRIVING_PORT" />
+          <ModificationItem action="refactor" label="InventoryUseCases" details="5 → 2 méthodes, Conflicting → Driving Port" />
         </ModificationGroup>
         <ModificationGroup layer="application">
           <ModificationItem action="refactor" label="OrderApplicationService" details="utilise InventoryRepository (driven port) directement" />
@@ -96,7 +96,7 @@ const violationRows: ViolationRow[] = [
         <p><strong>6 corrections ciblées</strong>, chacune découlant d'un constat du rapport d'audit :</p>
         <ul>
           <li><strong>Domaine</strong> : migration <code>Long</code> &rarr; <code>UUID</code> avec méthode <code>generate()</code>, et ajout de la convention <code>reconstitute()</code> pour la restauration des agrégats depuis la base</li>
-          <li><strong>Ports</strong> : <code>InventoryUseCases</code> refactoré de 5 à 2 méthodes, classifié DRIVING_PORT au lieu de CONFLICTING</li>
+          <li><strong>Ports</strong> : <code>InventoryUseCases</code> refactoré de 5 à 2 méthodes, classifié Driving Port au lieu de Conflicting</li>
           <li><strong>Application</strong> : <code>OrderApplicationService</code> utilise directement les driven ports au lieu de passer par des use cases intermédiaires</li>
           <li><strong>Adaptateurs</strong> : DTOs de réponse REST pour éviter la sérialisation imbriquée, et endpoint d'initialisation du stock</li>
         </ul>
@@ -252,7 +252,7 @@ const violationRows: ViolationRow[] = [
       <Insight>
         <ul>
           <li><strong><code>mvn clean compile</code></strong> : 99 fichiers compilés (68 manuels + 28 générés par HexaGlue + 3 MapStruct). La génération s'exécute automatiquement pendant la phase <code>compile</code></li>
-          <li><strong><code>mvn clean verify</code></strong> : l'audit passe avec un seul avertissement (<code>aggregate-boundary</code>). Le build n'échoue pas car le seuil est configuré sur CRITICAL</li>
+          <li><strong><code>mvn clean verify</code></strong> : l'audit passe avec un seul avertissement (<code>aggregate-boundary</code>). Le build n'échoue pas car le seuil est configuré sur Critical</li>
           <li><strong><code>mvn spring-boot:run</code></strong> : l'application démarre sur le port 8080, prête pour le test de bout en bout</li>
         </ul>
       </Insight>
@@ -269,7 +269,7 @@ const violationRows: ViolationRow[] = [
         title="Verdict de l'audit"
         gradient="bg-orange-yellow-gradient"
       >
-        Le dernier rapport d'audit confirme la progression : 63/100, grade D, et une seule violation MAJOR résiduelle.
+        Le dernier rapport d'audit confirme la progression : 63/100, grade D, et une seule violation Major résiduelle.
         L'architecture hexagonale atteint 100% de conformité.
       </SectionCopy>
 
@@ -333,8 +333,8 @@ const violationRows: ViolationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong><code>layer-isolation</code> résolues (-2)</strong> : <code>InventoryUseCases</code> est passé de CONFLICTING à DRIVING_PORT, les services applicatifs qui en dépendaient ne violent plus l'isolation des couches</li>
-          <li><strong><code>aggregate-boundary</code> subsiste (1)</strong> : <code>OrderLine</code> n'a pas d'identifiant explicite, donc le classificateur ne le reconnaît pas comme ENTITY membre de l'agrégat <code>Order</code>. C'est une limitation connue, pas un défaut d'architecture</li>
+          <li><strong><code>layer-isolation</code> résolues (-2)</strong> : <code>InventoryUseCases</code> est passé de Conflicting à Driving Port, les services applicatifs qui en dépendaient ne violent plus l'isolation des couches</li>
+          <li><strong><code>aggregate-boundary</code> subsiste (1)</strong> : <code>OrderLine</code> n'a pas d'identifiant explicite, donc le classificateur ne le reconnaît pas comme Entity membre de l'agrégat <code>Order</code>. C'est une limitation connue, pas un défaut d'architecture</li>
         </ul>
       </Insight>
     </div>
@@ -355,12 +355,12 @@ const violationRows: ViolationRow[] = [
       <div class="mt-10">
         <MetricsTable
           rows={[
-            { metric: 'domain.purity', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
-            { metric: 'aggregate.boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
-            { metric: 'aggregate.repository.coverage', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
-            { metric: 'code.complexity', value: '1.11', threshold: 'max 10', status: 'OK', delta: '=' },
-            { metric: 'aggregate.avgSize', value: '15.33', threshold: 'max 20', status: 'OK', delta: '+1.00' },
-            { metric: 'code.boilerplate', value: '81.48%', threshold: 'max 50%', status: 'CRITICAL', delta: '+1.28' },
+            { metric: 'Domain purity', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
+            { metric: 'Aggregate boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
+            { metric: 'Repository coverage', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
+            { metric: 'Code complexity', value: '1.11', threshold: 'max 10', status: 'OK', delta: '-0.01' },
+            { metric: 'Aggregate avg size', value: '15.33', threshold: 'max 20', status: 'OK', delta: '+1.00' },
+            { metric: 'Code boilerplate', value: '81.48%', threshold: 'max 50%', status: 'CRITICAL', delta: '+1.28' },
           ]}
         />
       </div>
@@ -508,7 +508,7 @@ const violationRows: ViolationRow[] = [
             <div>
               <h3 class="text-lg font-semibold text-white mb-2">1 violation résiduelle</h3>
               <p class="text-sm text-astro-gray-200">
-                OrderLine n'est pas classifié comme ENTITY en raison d'une limitation du classificateur (absence d'identifiant explicite).
+                OrderLine n'est pas classifié comme Entity en raison d'une limitation du classificateur (absence d'identifiant explicite).
               </p>
             </div>
           </div>

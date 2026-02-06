@@ -111,8 +111,8 @@ const kpiRows: KpiRow[] = [
     { dimension: 'DDD Compliance', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK', delta: '+100' },
     { dimension: 'Hexagonal Architecture', value: '35%', weight: '25%', contribution: '8.8', threshold: '≥ 90%', status: 'CRITICAL', delta: '-65' },
     { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
-    { dimension: 'Coupling', value: '31%', weight: '15%', contribution: '4.7', threshold: '≥ 70%', status: 'CRITICAL', delta: '-6' },
-    { dimension: 'Cohesion', value: '71%', weight: '15%', contribution: '10.7', threshold: '≥ 80%', status: 'WARNING', delta: '+7' },
+    { dimension: 'Coupling', value: '31%', weight: '15%', contribution: '4.7', threshold: '≥ 70%', status: 'CRITICAL', delta: '-7' },
+    { dimension: 'Cohesion', value: '71%', weight: '15%', contribution: '10.7', threshold: '≥ 80%', status: 'WARNING', delta: '+6' },
 ];
 
 const inventoryRows: InventoryRow[] = [
@@ -123,7 +123,7 @@ const inventoryRows: InventoryRow[] = [
     { component: 'Domain Events', count: 1, delta: '+1', observation: 'OrderPlacedEvent' },
     { component: 'Driving Ports', count: 6, delta: '=', observation: '' },
     { component: 'Driven Ports', count: 9, delta: '=', observation: '' },
-    { component: 'Application Services', count: 7, delta: '+7', observation: 'Classifiés APPLICATION_SERVICE' },
+    { component: 'Application Services', count: 7, delta: '+7', observation: 'Classifiés Application Service' },
 ];
 
 const violationRows: ViolationRow[] = [
@@ -249,7 +249,7 @@ const remediationRows: RemediationRow[] = [
           <li>Domaine pur sans annotations JPA.</li>
           <li>Value objects et identifiants typés (records).</li>
           <li>Logique métier dans les agrégats.</li>
-          <li>18 violations CRITICAL résolues.</li>
+          <li>18 violations Critical résolues.</li>
         </ul>
       </div>
     </div>
@@ -291,7 +291,7 @@ const remediationRows: RemediationRow[] = [
           <li><strong>Agrégats</strong> : protègent leurs invariants via des méthodes métier (<code>place()</code>, <code>cancel()</code>...)</li>
           <li><strong>Repositories JPA supprimés</strong> : le domaine purifié n'est plus compatible avec les anciens adaptateurs, ils seront régénérés par HexaGlue</li>
         </ul>
-        <p>Le retrait de <code>com.acme.shop.infrastructure.**</code> des exclusions permet à HexaGlue d'analyser les services applicatifs. Puisqu'ils implémentent des driving ports, ils sont correctement classifiés comme APPLICATION_SERVICE.</p>
+        <p>Le retrait de <code>com.acme.shop.infrastructure.**</code> des exclusions permet à HexaGlue d'analyser les services applicatifs. Puisqu'ils implémentent des driving ports, ils sont correctement classifiés comme Application Service.</p>
       </Insight>
     </div>
   </section>
@@ -378,7 +378,7 @@ const remediationRows: RemediationRow[] = [
           <li><strong>Value objects</strong> : <code>Money</code> encapsule les opérations monétaires (addition, multiplication) et valide ses invariants à la construction</li>
           <li><strong>Domain events</strong> : <code>OrderPlacedEvent</code> capture un fait métier significatif avec toutes les informations nécessaires à son traitement</li>
         </ul>
-        <p>HexaGlue détecte automatiquement ces patterns et les classifie comme VALUE_OBJECT et DOMAIN_EVENT.</p>
+        <p>HexaGlue détecte automatiquement ces patterns et les classifie comme Value Object et Domain Event.</p>
       </Insight>
     </div>
   </section>
@@ -393,7 +393,7 @@ const remediationRows: RemediationRow[] = [
         title="Verdict de l'audit"
         gradient="bg-orange-yellow-gradient"
       >
-        Le verdict passe au statut <strong>PASSED_WITH_WARNINGS</strong> : toutes les violations critiques sont résolues, il ne reste que des violations majeures.
+        Le verdict passe au statut <strong>Passed with Warnings</strong> : toutes les violations critiques sont résolues, il ne reste que des violations majeures.
       </SectionCopy>
 
       <div class="mt-10">
@@ -413,7 +413,7 @@ const remediationRows: RemediationRow[] = [
       </div>
 
       <Insight>
-        <p>C'est un tournant dans la migration : les 18 violations CRITICAL ont toutes disparu. Le score progresse de 9 points et l'audit passe au statut PASSED_WITH_WARNINGS. Les 13 violations MAJOR restantes seront détaillées dans les sections suivantes.</p>
+        <p>C'est un tournant dans la migration : les 18 violations Critical ont toutes disparu. Le score progresse de 9 points et l'audit passe au statut Passed with Warnings. Les 13 violations Major restantes seront détaillées dans les sections suivantes.</p>
       </Insight>
     </div>
   </section>
@@ -437,7 +437,7 @@ const remediationRows: RemediationRow[] = [
         <ul>
           <li><strong>DDD Compliance</strong> à 100% (+100) : HexaGlue détecte les identifiants typés, value objects, agrégats et domain events</li>
           <li><strong>Hexagonal Architecture</strong> chute à 35% (-65) : la suppression des repositories JPA laisse 6 driven ports sans adaptateur</li>
-          <li><strong>Cohesion</strong> progresse à 71% (+7) : les agrégats regroupent des concepts cohérents avec leur logique métier</li>
+          <li><strong>Cohesion</strong> progresse à 71% (+6) : les agrégats regroupent des concepts cohérents avec leur logique métier</li>
         </ul>
         <p>La chute de la dimension hexagonale est temporaire : les adaptateurs seront générés à l'étape suivante.</p>
       </Insight>
@@ -464,7 +464,7 @@ const remediationRows: RemediationRow[] = [
         <ul>
           <li><strong>6 aggregate roots</strong> détectés : grâce aux identifiants typés, HexaGlue promeut les entités en agrégats</li>
           <li><strong>9 entities &rarr; 6 agrégats + 2 entités internes</strong> : <code>OrderLine</code> et <code>StockMovement</code> restent des entités internes à leur agrégat</li>
-          <li><strong>7 application services</strong> classifiés : ils implémentent des driving ports, HexaGlue les reconnaît comme APPLICATION_SERVICE</li>
+          <li><strong>7 application services</strong> classifiés : ils implémentent des driving ports, HexaGlue les reconnaît comme Application Service</li>
           <li><strong>6 identifiants + 7 value objects + 1 domain event</strong> : le modèle DDD est complet</li>
         </ul>
       </Insight>
@@ -488,7 +488,7 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>entity-identity</strong> et <strong>domain-purity</strong> à 0 : les identifiants typés et la suppression des annotations JPA résolvent les 18 violations CRITICAL</li>
+          <li><strong>entity-identity</strong> et <strong>domain-purity</strong> à 0 : les identifiants typés et la suppression des annotations JPA résolvent les 18 violations Critical</li>
           <li><strong>port-coverage</strong> (+6) : les repositories JPA ont été supprimés avec les annotations, les driven ports n'ont plus d'implémentation</li>
           <li><strong>application-purity</strong> (+7) : les services applicatifs utilisent encore <code>@Service</code> et <code>@Transactional</code> de Spring</li>
         </ul>
@@ -590,14 +590,24 @@ const remediationRows: RemediationRow[] = [
       <Insight class="mt-10">
         <p>Les constats principaux :</p>
         <ul>
-          <li><strong>Score 49/100 (+9)</strong> : passage au statut PASSED_WITH_WARNINGS, les 18 violations CRITICAL sont résolues</li>
+          <li><strong>Score 49/100 (+9)</strong> : passage au statut Passed with Warnings, les 18 violations Critical sont résolues</li>
           <li><strong>DDD Compliance à 100%</strong> : identifiants typés, value objects, agrégats avec logique métier, domain events</li>
           <li><strong>Domain purity à 100%</strong> : zéro import JPA dans le domaine, le code métier est testable sans infrastructure</li>
-          <li><strong>13 violations MAJOR</strong> restantes : 6 driven ports sans adaptateur et 7 services avec annotations Spring</li>
+          <li><strong>13 violations Major</strong> restantes : 6 driven ports sans adaptateur et 7 services avec annotations Spring</li>
           <li><strong>72% d'économie</strong> : 25 jours manuels réduits à 7 jours grâce à la génération automatique</li>
         </ul>
-        <p>L'étape suivante active la génération automatique de HexaGlue pour recréer toute la couche d'infrastructure.</p>
       </Insight>
+    </div>
+  </section>
+
+  <!-- Transition -->
+  <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+        <p class="text-lg text-astro-gray-200">
+          L'étape suivante active la génération automatique de HexaGlue pour recréer toute la couche d'infrastructure.
+        </p>
+      </div>
     </div>
   </section>
 

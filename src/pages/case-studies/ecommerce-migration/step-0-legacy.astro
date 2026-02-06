@@ -225,8 +225,7 @@ const antiPatterns = [
 				title="Ce que révèle cette étape"
 				gradient="bg-orange-yellow-gradient"
 			>
-				L'application compile et fonctionne, mais l'architecture pose des problèmes de fond.<br>
-				L'étape suivante va brancher HexaGlue sur ce projet pour obtenir un premier diagnostic chiffré.
+				L'application compile et fonctionne, mais l'architecture pose des problèmes de fond.
 			</SectionCopy>
 
 			<Insight class="mt-10">
@@ -237,8 +236,18 @@ const antiPatterns = [
 					<li><strong>Couplage fort</strong> : les services appellent directement Spring Data, les agrégats se référencent mutuellement par entité au lieu d'identifiant</li>
 					<li><strong>Impossible à tester isolément</strong> : chaque test unitaire nécessite le contexte Spring complet</li>
 				</ul>
-				<p>HexaGlue va quantifier précisément ces problèmes à l'étape suivante.</p>
 			</Insight>
+		</div>
+	</section>
+
+	<!-- Transition -->
+	<section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+				<p class="text-lg text-astro-gray-200">
+					L'étape suivante va brancher HexaGlue sur ce projet pour obtenir un premier diagnostic chiffré.
+				</p>
+			</div>
 		</div>
 	</section>
 

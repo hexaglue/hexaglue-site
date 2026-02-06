@@ -114,7 +114,7 @@ const kpiRows: KpiRow[] = [
 const violationRows: ViolationRow[] = [
     { constraint: 'hexagonal:application-purity', count: 0, severity: 'MAJOR', delta: '-7', observation: 'Annotations Spring supprimées des services applicatifs' },
     { constraint: 'hexagonal:port-coverage', count: 0, severity: 'MAJOR', delta: '-6', observation: 'Tous les ports couverts par des adaptateurs générés' },
-    { constraint: 'hexagonal:layer-isolation', count: 2, severity: 'MAJOR', delta: '+2', observation: 'OrderApplicationService et ShippingApplicationService dépendent de InventoryUseCases (UNCLASSIFIED)' },
+    { constraint: 'hexagonal:layer-isolation', count: 2, severity: 'MAJOR', delta: '+2', observation: 'OrderApplicationService et ShippingApplicationService dépendent de InventoryUseCases (Unclassified)' },
     { constraint: 'ddd:aggregate-boundary', count: 1, severity: 'MAJOR', delta: '+1', observation: "OrderLine accessible directement hors de l'agrégat Order" },
 ];
 
@@ -333,7 +333,7 @@ const remediationRows: RemediationRow[] = [
       </div>
 
       <Insight>
-        <p>Le score progresse de 11 points grâce à deux actions combinées : la purification des services applicatifs et la génération automatique des adaptateurs. Les 3 violations MAJOR restantes relèvent de choix de conception, pas de défauts structurels : elles sont détaillées dans les sections suivantes.</p>
+        <p>Le score progresse de 11 points grâce à deux actions combinées : la purification des services applicatifs et la génération automatique des adaptateurs. Les 3 violations Major restantes relèvent de choix de conception, pas de défauts structurels : elles sont détaillées dans les sections suivantes.</p>
       </Insight>
     </div>
   </section>
@@ -371,7 +371,7 @@ const remediationRows: RemediationRow[] = [
         title="Violations détectées"
         gradient="bg-orange-yellow-gradient"
       >
-        Les 13 violations MAJOR de l'étape précédente sont résolues. Trois nouvelles violations apparaissent, liées à des points de conception plus fins.
+        Les 13 violations Major de l'étape précédente sont résolues. Trois nouvelles violations apparaissent, liées à des points de conception plus fins.
       </SectionCopy>
 
       <div class="mt-10">
@@ -381,7 +381,7 @@ const remediationRows: RemediationRow[] = [
       <Insight>
         <ul>
           <li><strong>application-purity</strong> (-7) et <strong>port-coverage</strong> (-6) : entièrement résolues par la purification des services et la génération des adaptateurs</li>
-          <li><strong>layer-isolation</strong> (+2) : deux services applicatifs dépendent de <code>InventoryUseCases</code>, classifié UNCLASSIFIED car HexaGlue n'a pas pu déterminer son rôle architectural. L'annoter comme <code>APPLICATION_SERVICE</code> résoudra ces violations</li>
+          <li><strong>layer-isolation</strong> (+2) : deux services applicatifs dépendent de <code>InventoryUseCases</code>, classifié Unclassified car HexaGlue n'a pas pu déterminer son rôle architectural. L'annoter comme Application Service résoudra ces violations</li>
           <li><strong>aggregate-boundary</strong> (+1) : <code>OrderLine</code> est accessible directement depuis l'extérieur de l'agrégat <code>Order</code></li>
         </ul>
       </Insight>
@@ -433,35 +433,35 @@ const remediationRows: RemediationRow[] = [
         <MetricsTable
           rows={[
             {
-              metric: 'domain.purity',
+              metric: 'Domain purity',
               value: '100%',
               threshold: 'min 100%',
               status: 'OK',
               delta: '='
             },
             {
-              metric: 'aggregate.boundary',
+              metric: 'Aggregate boundary',
               value: '0%',
               threshold: 'min 80%',
               status: 'CRITICAL',
               delta: '-100'
             },
             {
-              metric: 'aggregate.repository.coverage',
+              metric: 'Repository coverage',
               value: '100%',
               threshold: 'min 100%',
               status: 'OK',
               delta: '='
             },
             {
-              metric: 'code.boilerplate.ratio',
+              metric: 'Code boilerplate',
               value: '80.20%',
               threshold: 'max 50%',
               status: 'CRITICAL',
               delta: '='
             },
             {
-              metric: 'code.complexity.average',
+              metric: 'Code complexity',
               value: '1.12',
               threshold: 'max 10',
               status: 'OK',
@@ -499,9 +499,9 @@ const remediationRows: RemediationRow[] = [
       </div>
 
       <Insight>
-        <p>Il ne reste que <strong>2 jours d'effort</strong>, contre 9 à l'étape précédente :</p>
+        <p>Il ne reste que <strong>2 jours d'effort</strong>, contre 25 à l'étape précédente :</p>
         <ul>
-          <li><strong>Classification</strong> : annoter <code>InventoryUseCases</code> comme <code>APPLICATION_SERVICE</code> pour résoudre les violations <code>layer-isolation</code></li>
+          <li><strong>Classification</strong> : annoter <code>InventoryUseCases</code> comme Application Service pour résoudre les violations <code>layer-isolation</code></li>
           <li><strong>Encapsulation</strong> : rendre <code>OrderLine</code> accessible uniquement via l'agrégat <code>Order</code> pour restaurer <code>aggregate.boundary</code></li>
         </ul>
         <p>Ces deux corrections sont manuelles : elles relèvent de décisions de conception, pas de génération de code.</p>
@@ -527,13 +527,23 @@ const remediationRows: RemediationRow[] = [
       <Insight class="mt-10">
         <p>HexaGlue démontre ici sa double capacité : analyser <strong>et</strong> construire.</p>
         <ul>
-          <li><strong>Score 60/100 (+11)</strong> : la purification des services applicatifs et la génération de l'infrastructure font passer le grade de E à D</li>
+          <li><strong>Score 60/100 (+11)</strong> : la purification des services applicatifs et la génération de l'infrastructure font passer le grade de F à D</li>
           <li><strong>29 fichiers générés, 0 ligne manuelle</strong> : toute la couche de persistance (entités JPA, repositories, mappers, embeddables) est produite au compile-time</li>
           <li><strong>100% de couverture des ports</strong> : chaque port, driving ou driven, dispose d'un adaptateur fonctionnel</li>
           <li><strong>2 corrections restantes</strong> : classifier <code>InventoryUseCases</code> et encapsuler <code>OrderLine</code> dans son agrégat</li>
         </ul>
-        <p>L'étape suivante résout ces derniers points pour atteindre la conformité complète.</p>
       </Insight>
+    </div>
+  </section>
+
+  <!-- Transition -->
+  <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+        <p class="text-lg text-astro-gray-200">
+          L'étape suivante résout ces derniers points pour atteindre la conformité complète.
+        </p>
+      </div>
     </div>
   </section>
 

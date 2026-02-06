@@ -76,8 +76,8 @@ const kpiRows: KpiRow[] = [
     { dimension: 'DDD Compliance', value: '0%', weight: '25%', contribution: '0.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '=' },
     { dimension: 'Hexagonal Architecture', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK', delta: '+60' },
     { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
-    { dimension: 'Coupling', value: '37%', weight: '15%', contribution: '5.6', threshold: '≥ 70%', status: 'CRITICAL', delta: '+16' },
-    { dimension: 'Cohesion', value: '64%', weight: '15%', contribution: '9.6', threshold: '≥ 80%', status: 'CRITICAL', delta: '+6' },
+    { dimension: 'Coupling', value: '38%', weight: '15%', contribution: '5.7', threshold: '≥ 70%', status: 'CRITICAL', delta: '+17' },
+    { dimension: 'Cohesion', value: '65%', weight: '15%', contribution: '9.8', threshold: '≥ 80%', status: 'WARNING', delta: '+7' },
 ];
 
 const inventoryRows: InventoryRow[] = [
@@ -100,8 +100,8 @@ const violationRows: ViolationRow[] = [
 const packageStabilityRows: PackageStabilityRow[] = [
     { package: 'ports.out', ca: 15, ce: 9, instability: 0.38, abstractness: 1.00, distance: 0.38, zone: 'Main Sequence' },
     { package: 'ports.in', ca: 12, ce: 9, instability: 0.43, abstractness: 1.00, distance: 0.43, zone: 'Main Sequence' },
-    { package: 'domain.order', ca: 7, ce: 3, instability: 0.30, abstractness: 0.00, distance: 0.70, zone: 'Main Sequence' },
-    { package: 'domain.product', ca: 9, ce: 1, instability: 0.10, abstractness: 0.00, distance: 0.90, zone: 'Zone of Pain' },
+    { package: 'domain.order', ca: 8, ce: 3, instability: 0.27, abstractness: 0.00, distance: 0.73, zone: 'Zone of Pain' },
+    { package: 'domain.product', ca: 10, ce: 1, instability: 0.09, abstractness: 0.00, distance: 0.91, zone: 'Zone of Pain' },
     { package: 'application', ca: 0, ce: 26, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
 ];
 
@@ -289,7 +289,7 @@ const remediationRows: RemediationRow[] = [
                 gradient="bg-orange-yellow-gradient"
             >
                 Le verdict montre l'impact de la restructuration hexagonale sur le score global.
-                Les violations MAJOR ont toutes été résolues, seules les violations CRITICAL liées au DDD persistent.
+                Les violations Major ont toutes été résolues, seules les violations Critical liées au DDD persistent.
             </SectionCopy>
 
             <div class="mt-10">
@@ -305,8 +305,8 @@ const remediationRows: RemediationRow[] = [
             <Insight>
                 <ul>
                     <li><strong>+19 points</strong> : la mise en place des ports et services applicatifs fait bondir le score</li>
-                    <li><strong>0 violation MAJOR</strong> : toutes les violations hexagonales (port-coverage, port-direction) sont résolues</li>
-                    <li><strong>18 violations CRITICAL</strong> restantes : elles concernent toutes le couplage domaine/JPA, un problème structurel que la réorganisation en couches ne suffit pas à résoudre</li>
+                    <li><strong>0 violation Major</strong> : toutes les violations hexagonales (port-coverage, port-direction) sont résolues</li>
+                    <li><strong>18 violations Critical</strong> restantes : elles concernent toutes le couplage domaine/JPA, un problème structurel que la réorganisation en couches ne suffit pas à résoudre</li>
                 </ul>
             </Insight>
         </div>
@@ -324,7 +324,7 @@ const remediationRows: RemediationRow[] = [
             </SectionCopy>
 
             <div class="mt-10">
-                <KpiTable rows={kpiRows} total="40.2" />
+                <KpiTable rows={kpiRows} total="40.5" />
             </div>
 
             <Insight>
@@ -356,7 +356,7 @@ const remediationRows: RemediationRow[] = [
                 <ul>
                     <li><strong>6 driving ports</strong> créés : un par cas d'usage métier (<code>OrderUseCases</code>, <code>CustomerUseCases</code>...)</li>
                     <li><strong>9 driven ports</strong> : les 6 repositories existants plus 3 ports vers des systèmes externes</li>
-                    <li>Les 9 entités restent classifiées <strong>ENTITY</strong> et non AGGREGATE_ROOT : sans identifiants typés, HexaGlue ne peut pas les promouvoir</li>
+                    <li>Les 9 entités restent classifiées <strong>Entity</strong> et non Aggregate Root : sans identifiants typés, HexaGlue ne peut pas les promouvoir</li>
                 </ul>
             </Insight>
         </div>
@@ -383,7 +383,6 @@ const remediationRows: RemediationRow[] = [
                     <li><strong>port-coverage</strong> et <strong>port-direction</strong> passent à 0 : chaque port a son adaptateur, et les directions sont respectées</li>
                     <li><strong>entity-identity</strong> (9) et <strong>domain-purity</strong> (9) sont inchangées : les entités utilisent toujours un <code>Long id</code> et importent <code>javax.persistence</code></li>
                 </ul>
-                <p>La prochaine étape devra s'attaquer à ces violations DDD en purifiant le domaine.</p>
             </Insight>
         </div>
     </section>
@@ -467,7 +466,7 @@ const remediationRows: RemediationRow[] = [
                 <ul>
                     <li><strong>ports.in</strong> et <strong>ports.out</strong> sur la Main Sequence : abstraits (100%) et stables, c'est exactement le rôle attendu des ports</li>
                     <li><strong>application</strong> instable à 100% : normal, les services applicatifs dépendent de tout mais personne ne dépend d'eux directement</li>
-                    <li><strong>domain.product</strong> en Zone of Pain (D=0.90) : ce package est très sollicité mais sans abstraction, il faudra à terme introduire des interfaces</li>
+                    <li><strong>domain.order</strong> et <strong>domain.product</strong> en Zone of Pain (D=0.73 et D=0.91) : ces packages sont très sollicités mais sans abstraction, il faudra à terme introduire des interfaces</li>
                 </ul>
             </Insight>
         </div>
@@ -490,12 +489,22 @@ const remediationRows: RemediationRow[] = [
                 <p>Les constats principaux :</p>
                 <ul>
                     <li><strong>Score 40/100 (+19)</strong> : la dimension Hexagonal Architecture atteint 100%</li>
-                    <li><strong>0 violation MAJOR</strong> : toutes les contraintes hexagonales sont satisfaites</li>
+                    <li><strong>0 violation Major</strong> : toutes les contraintes hexagonales sont satisfaites</li>
                     <li><strong>DDD Compliance à 0%</strong> : le domaine reste couplé à JPA, sans identifiants typés ni agrégats</li>
                     <li><strong>Remédiation divisée par 2</strong> : de 37,5 à 18 jours, concentrés sur la purification du domaine</li>
                 </ul>
-                <p>L'étape suivante consiste à purifier le domaine : créer des identifiants typés et supprimer les annotations JPA.</p>
             </Insight>
+        </div>
+    </section>
+
+    <!-- Transition -->
+    <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+                <p class="text-lg text-astro-gray-200">
+                    L'étape suivante consiste à purifier le domaine : créer des identifiants typés et supprimer les annotations JPA.
+                </p>
+            </div>
         </div>
     </section>
 

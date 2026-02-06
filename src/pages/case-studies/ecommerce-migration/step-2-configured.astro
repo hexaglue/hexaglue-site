@@ -65,7 +65,7 @@ const alternatives = [
 		cons: 'Perd la visibilité sur les services',
 	},
 	{
-		choice: 'Classifier APPLICATION_SERVICE',
+		choice: 'Classifier Application Service',
 		status: null,
 		pros: 'Corrige le rôle architectural',
 		cons: 'Prématuré sans ports',
@@ -186,7 +186,7 @@ const remediationRows: RemediationRow[] = [
 				title="Alternatives évaluées"
 				gradient="bg-orange-yellow-gradient"
 			>
-				Avant d'exclure, trois approches ont été envisagées pour traiter les services mal classifiés comme <code>VALUE_OBJECT</code>.
+				Avant d'exclure, trois approches ont été envisagées pour traiter les services mal classifiés comme Value Object.
 			</SectionCopy>
 
 			<div class="mt-10 overflow-x-auto">
@@ -219,7 +219,7 @@ const remediationRows: RemediationRow[] = [
 
 			<Insight title="Constat">
 				<ul>
-					<li>Sans ports définis, les services Spring ne peuvent pas être classifiés comme APPLICATION_SERVICE</li>
+					<li>Sans ports définis, les services Spring ne peuvent pas être classifiés comme Application Service</li>
 					<li>L'exclusion temporaire permet d'obtenir un rapport exploitable</li>
 					<li>Les vrais problèmes architecturaux (pureté du domaine) restent visibles</li>
 				</ul>
@@ -410,8 +410,18 @@ const remediationRows: RemediationRow[] = [
 					<li><strong>DDD Compliance à 0%</strong> : la configuration ne peut pas compenser l'absence de patterns DDD dans le code</li>
 					<li><strong>18 jours automatisables</strong> sur 37,5 au total grâce à la génération d'adaptateurs</li>
 				</ul>
-				<p>L'étape suivante consiste à restructurer l'application en couches hexagonales.</p>
-			</Insight>
+				</Insight>
+		</div>
+	</section>
+
+	<!-- Transition -->
+	<section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+				<p class="text-lg text-astro-gray-200">
+					L'étape suivante consiste à restructurer l'application en couches hexagonales.
+				</p>
+			</div>
 		</div>
 	</section>
 

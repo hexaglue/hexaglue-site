@@ -6,7 +6,7 @@ export interface PackageStabilityRow {
     instability: number;
     abstractness: number;
     distance: number;
-    zone: 'Zone of Pain' | 'Main Sequence' | 'Zone of Uselessness';
+    zone: 'Zone of Pain' | 'Main Sequence' | 'Zone of Uselessness' | 'Stable Core';
 }
 
 interface Props {
@@ -46,7 +46,9 @@ const { rows } = Astro.props;
                                 ? 'bg-red-400/10 text-red-400'
                                 : row.zone === 'Zone of Uselessness'
                                     ? 'bg-yellow-400/10 text-yellow-400'
-                                    : 'bg-emerald-400/10 text-emerald-400'
+                                    : row.zone === 'Stable Core'
+                                        ? 'bg-blue-400/10 text-blue-400'
+                                        : 'bg-emerald-400/10 text-emerald-400'
                         }`}>
                             {row.zone}
                         </span>

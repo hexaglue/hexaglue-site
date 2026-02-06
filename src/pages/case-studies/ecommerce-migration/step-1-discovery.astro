@@ -56,6 +56,7 @@ const violationRows: ViolationRow[] = [
     { constraint: 'ddd:entity-identity', count: 9, severity: 'CRITICAL', delta: '-', observation: '9 entités sans champ identité typé' },
     { constraint: 'hexagonal:layer-isolation', count: 12, severity: 'MAJOR', delta: '-', observation: '7 services dépendent des repositories' },
     { constraint: 'hexagonal:port-direction', count: 6, severity: 'MAJOR', delta: '-', observation: '6 driven ports non utilisés par un service applicatif' },
+    { constraint: 'hexagonal:port-coverage', count: 6, severity: 'MAJOR', delta: '-', observation: '6 driven ports sans adaptateur d\'infrastructure' },
 ];
 
 const metricRows: MetricRow[] = [
@@ -69,7 +70,7 @@ const metricRows: MetricRow[] = [
 const packageStabilityRows: PackageStabilityRow[] = [
     { package: 'shop.model', ca: 18, ce: 0, instability: 0.00, abstractness: 0.08, distance: 0.92, zone: 'Zone of Pain' },
     { package: 'shop.dto', ca: 5, ce: 1, instability: 0.17, abstractness: 0.00, distance: 0.83, zone: 'Zone of Pain' },
-    { package: 'shop.service', ca: 5, ce: 18, instability: 0.78, abstractness: 0.00, distance: 0.22, zone: 'Main Sequence' },
+    { package: 'shop.service', ca: 5, ce: 18, instability: 0.78, abstractness: 0.00, distance: 0.22, zone: 'Stable Core' },
     { package: 'shop.repository', ca: 7, ce: 9, instability: 0.56, abstractness: 1.00, distance: 0.56, zone: 'Main Sequence' },
     { package: 'shop.controller', ca: 0, ce: 15, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
 ];
@@ -79,8 +80,8 @@ const remediationRows: RemediationRow[] = [
         constraint: 'ddd:entity-identity',
         violations: 9,
         severity: 'CRITICAL',
-        manualEffort: 4.5,
-        hexaglueEffort: 4.5,
+        manualEffort: 4,
+        hexaglueEffort: 4,
         description: 'Entités sans identifiant typé',
     },
     {
@@ -111,8 +112,8 @@ const remediationRows: RemediationRow[] = [
         constraint: 'hexagonal:port-direction',
         violations: 6,
         severity: 'MAJOR',
-        manualEffort: 1,
-        hexaglueEffort: 1,
+        manualEffort: 1.5,
+        hexaglueEffort: 1.5,
         description: 'Ports appelés dans la mauvaise direction',
     },
 ];
@@ -240,7 +241,7 @@ const remediationRows: RemediationRow[] = [
             </SectionCopy>
 
             <div class="mt-10">
-                <KpiTable rows={kpiRows} total="15.7" />
+                <KpiTable rows={kpiRows} total="13.2" />
             </div>
 
             <Insight>
@@ -289,7 +290,7 @@ const remediationRows: RemediationRow[] = [
                 gradient="bg-orange-yellow-gradient"
             >
                 Chaque violation correspond à une règle architecturale enfreinte par le code.
-                Elles sont classées par sévérité : <strong>CRITICAL</strong> pour les problèmes structurels fondamentaux, <strong>MAJOR</strong> pour les écarts significatifs.
+                Elles sont classées par sévérité : <strong>Critical</strong> pour les problèmes structurels fondamentaux, <strong>Major</strong> pour les écarts significatifs.
             </SectionCopy>
 
             <div class="mt-10">
@@ -297,13 +298,17 @@ const remediationRows: RemediationRow[] = [
             </div>
 
             <Insight>
-                <p>Les violations ont une cause racine commune : les annotations JPA dans le modèle de domaine.</p>
+                <p>Les 19 violations <strong>Critical</strong> ont une cause racine commune : les annotations JPA dans le modèle de domaine.</p>
                 <ul>
                     <li><strong>ddd:entity-identity</strong> : les entités JPA utilisent un <code>Long id</code> généré, pas un identifiant métier typé</li>
                     <li><strong>ddd:domain-purity</strong> : le domaine importe <code>javax.persistence</code>, il dépend directement de l'infrastructure</li>
-                    <li><strong>hexagonal:layer-isolation</strong> : les services appellent les repositories sans passer par des ports</li>
                 </ul>
-                <p>Séparer le domaine de la persistance résoudrait les deux premières catégories de violations.</p>
+                <p>Les 24 violations <strong>Major</strong> signalent l'absence de structure hexagonale :</p>
+                <ul>
+                    <li><strong>hexagonal:layer-isolation</strong> : les services appellent les repositories sans passer par des ports</li>
+                    <li><strong>hexagonal:port-direction</strong> : les driven ports ne sont consommés par aucun service applicatif</li>
+                    <li><strong>hexagonal:port-coverage</strong> : les 6 repositories n'ont pas d'adaptateur d'infrastructure</li>
+                </ul>
             </Insight>
         </div>
     </section>
@@ -453,8 +458,18 @@ const remediationRows: RemediationRow[] = [
                     <li><strong>81% de boilerplate</strong> : le code métier est noyé dans les getters/setters techniques</li>
                     <li><strong>44,5 jours de remédiation</strong> estimés, dont 18 automatisables par HexaGlue</li>
                 </ul>
-                <p>L'étape suivante consiste à supprimer le bruit dans la classification pour affiner le diagnostic.</p>
             </Insight>
+        </div>
+    </section>
+
+    <!-- Transition -->
+    <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+                <p class="text-lg text-astro-gray-200">
+                    L'étape suivante consiste à supprimer le bruit dans la classification pour affiner le diagnostic.
+                </p>
+            </div>
         </div>
     </section>
 
