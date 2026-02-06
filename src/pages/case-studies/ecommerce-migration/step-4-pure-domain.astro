@@ -4,6 +4,7 @@ import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 
 import StepNavigation from './_components/StepNavigation.astro';
+import AuditReport from './_components/AuditReport.astro';
 import AuditVerdict from './_components/AuditVerdict.astro';
 import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
 import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
@@ -260,9 +261,11 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Modifications"
         title="Modifications effectuées"
-        description="Purification du domaine avec suppression des annotations JPA et création des patterns tactiques DDD."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Le domaine est purifié : toutes les annotations JPA sont supprimées et remplacées par des patterns tactiques DDD (identifiants typés, value objects, agrégats avec logique métier).
+        Les adaptateurs JPA de persistance sont également supprimés, puisque le domaine qu'ils mappaient n'existe plus sous cette forme.
+      </SectionCopy>
 
       <ModificationList class="mt-10">
         <ModificationGroup layer="domain">
@@ -272,125 +275,23 @@ const remediationRows: RemediationRow[] = [
           <ModificationItem action="purify" count={9} label="classes domaine" details="suppression @Entity, @ManyToOne, extends BaseEntity" />
           <ModificationItem action="remove" label="BaseEntity" details="chaque agrégat définit son propre identifiant typé" />
         </ModificationGroup>
+        <ModificationGroup layer="adapters">
+          <ModificationItem action="remove" count={6} label="repositories JPA" details="JpaOrderRepository, JpaCustomerRepository, etc." />
+        </ModificationGroup>
         <ModificationGroup layer="configuration">
-          <ModificationItem action="configure" label="hexaglue.yaml" details="application.** retiré des exclusions" />
+          <ModificationItem action="configure" label="hexaglue.yaml" details="com.acme.shop.infrastructure.** est retiré des exclusions" />
         </ModificationGroup>
       </ModificationList>
 
       <Insight>
-        <p><strong>Transformation fondamentale du DDD</strong> : séparer le modèle métier de l'infrastructure.</p>
+        <p>C'est la transformation fondamentale du DDD : séparer le modèle métier de l'infrastructure.</p>
         <ul>
-          <li><strong>Identifiants typés</strong> (records) remplacent les Long</li>
-          <li><strong>Value objects</strong> encapsulent les règles de validation</li>
-          <li><strong>Agrégats</strong> protègent leurs invariants</li>
+          <li><strong>Identifiants typés</strong> (records) : remplacent les <code>Long</code> génériques, chaque agrégat a son propre type d'identifiant</li>
+          <li><strong>Value objects</strong> : encapsulent les règles de validation et le comportement (ex. <code>Money</code> sait additionner et multiplier)</li>
+          <li><strong>Agrégats</strong> : protègent leurs invariants via des méthodes métier (<code>place()</code>, <code>cancel()</code>...)</li>
+          <li><strong>Repositories JPA supprimés</strong> : le domaine purifié n'est plus compatible avec les anciens adaptateurs, ils seront régénérés par HexaGlue</li>
         </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Audit Verdict -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Verdict"
-        title="Verdict de l'audit"
-        description="Résultat après purification du domaine et création des patterns tactiques DDD."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <AuditVerdict
-        score={49}
-        grade="F"
-        status="PASSED_WITH_WARNINGS"
-        violations={{
-          critical: 0,
-          major: 13,
-        }}
-          delta={{
-            score: 9,
-            violations: -5,
-          }}
-        />
-      </div>
-
-      <Insight>
-        <p><strong>PASSED avec Warnings</strong> : toutes les violations CRITICAL résolues.</p>
-        <ul>
-          <li><strong>6 port-coverage</strong> : repositories JPA supprimés</li>
-          <li><strong>7 application-purity</strong> : annotations Spring dans les services</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- KPI Table -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Score"
-        title="Décomposition du score"
-        description="Contribution de chaque dimension au score global de 49/100."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <KpiTable rows={kpiRows} total="49.2" />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>DDD Compliance</strong> à 100% : patterns tactiques détectés (identifiants typés, value objects)</li>
-          <li><strong>Hexagonal Architecture</strong> chute à 35% : repositories JPA supprimés → 6 violations port-coverage</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Inventory Table -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Inventaire"
-        title="Inventaire architectural"
-        description="Composants détectés après purification du domaine."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <InventoryTable rows={inventoryRows} />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>6 aggregate roots</strong> détectés grâce aux identifiants typés</li>
-          <li>9 entités JPA → <strong>6 agrégats</strong> + 2 entités internes + 1 event</li>
-          <li><strong>7 services applicatifs</strong> classifiés APPLICATION_SERVICE (implémentent des driving ports)</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Violations Table -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Violations"
-        title="Violations détectées"
-        description="Contraintes architecturales non respectées après purification."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <ViolationsTable rows={violationRows} />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>Violations DDD résolues</strong> : entity-identity, domain-purity</li>
-          <li><strong>Nouvelles violations</strong> : port-coverage (6), application-purity (7)</li>
-        </ul>
-        <p>Les adapters seront générés par HexaGlue à l'étape suivante.</p>
+        <p>Le retrait de <code>com.acme.shop.infrastructure.**</code> des exclusions permet à HexaGlue d'analyser les services applicatifs. Puisqu'ils implémentent des driving ports, ils sont correctement classifiés comme APPLICATION_SERVICE.</p>
       </Insight>
     </div>
   </section>
@@ -417,9 +318,9 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>Record</strong> remplace le Long générique</li>
-          <li><strong>Validation</strong> au constructeur garantit la cohérence</li>
-          <li>HexaGlue classifie automatiquement comme <strong>IDENTIFIER</strong></li>
+          <li>Le <strong>record</strong> remplace le <code>Long</code> générique : on ne peut plus confondre un <code>OrderId</code> avec un <code>CustomerId</code></li>
+          <li>La <strong>validation</strong> au constructeur garantit qu'aucun identifiant nul ne circule dans le domaine</li>
+          <li>HexaGlue détecte automatiquement ce pattern et classifie le type comme <strong>IDENTIFIER</strong></li>
         </ul>
       </Insight>
     </div>
@@ -447,10 +348,10 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>Identifiants typés</strong> : CustomerId au lieu de Customer</li>
-          <li><strong>Value objects</strong> : Money, Address</li>
-          <li><strong>Logique métier</strong> : place(), markPaid()</li>
-          <li><strong>Annotations JPA supprimées</strong> : le mapping sera généré par HexaGlue</li>
+          <li><strong>Identifiants typés</strong> : <code>CustomerId</code> au lieu de la référence directe à <code>Customer</code>, ce qui découple les agrégats entre eux</li>
+          <li><strong>Value objects</strong> : <code>Money</code> et <code>Address</code> encapsulent des concepts métier avec leur propre validation</li>
+          <li><strong>Logique métier</strong> : les méthodes <code>place()</code>, <code>markPaid()</code> protègent les invariants de l'agrégat</li>
+          <li><strong>Annotations JPA supprimées</strong> : le mapping de persistance sera généré par HexaGlue à l'étape 5</li>
         </ul>
       </Insight>
     </div>
@@ -462,9 +363,10 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Code"
         title="Value Objects & Domain Events"
-        description="Records immuables encapsulant validation et comportement métier."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Les value objects et domain events sont implémentés en records Java : immuables, avec validation intégrée et comportement métier.
+      </SectionCopy>
 
       <div class="mt-10 space-y-4">
         <Code code={valueObject} lang="java" title="Money.java - Value Object" />
@@ -473,10 +375,124 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>Value objects</strong> : encapsulent règles métier (Money valide et calcule)</li>
-          <li><strong>Domain events</strong> : capturent les faits métier significatifs</li>
+          <li><strong>Value objects</strong> : <code>Money</code> encapsule les opérations monétaires (addition, multiplication) et valide ses invariants à la construction</li>
+          <li><strong>Domain events</strong> : <code>OrderPlacedEvent</code> capture un fait métier significatif avec toutes les informations nécessaires à son traitement</li>
         </ul>
-        <p>Ces patterns sont détectés automatiquement par HexaGlue.</p>
+        <p>HexaGlue détecte automatiquement ces patterns et les classifie comme VALUE_OBJECT et DOMAIN_EVENT.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <AuditReport description="Résultat après purification du domaine et création des patterns tactiques DDD.">
+
+  <!-- Audit Verdict -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Verdict"
+        title="Verdict de l'audit"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le verdict passe au statut <strong>PASSED_WITH_WARNINGS</strong> : toutes les violations critiques sont résolues, il ne reste que des violations majeures.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <AuditVerdict
+        score={49}
+        grade="F"
+        status="PASSED_WITH_WARNINGS"
+        violations={{
+          critical: 0,
+          major: 13,
+        }}
+          delta={{
+            score: 9,
+            violations: -5,
+          }}
+        />
+      </div>
+
+      <Insight>
+        <p>C'est un tournant dans la migration : les 18 violations CRITICAL ont toutes disparu. Le score progresse de 9 points et l'audit passe au statut PASSED_WITH_WARNINGS. Les 13 violations MAJOR restantes seront détaillées dans les sections suivantes.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- KPI Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Score"
+        title="Décomposition du score"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le score passe de 40 à 49/100. La dimension DDD atteint 100%, mais la dimension hexagonale recule temporairement.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <KpiTable rows={kpiRows} total="49.2" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>DDD Compliance</strong> à 100% (+100) : HexaGlue détecte les identifiants typés, value objects, agrégats et domain events</li>
+          <li><strong>Hexagonal Architecture</strong> chute à 35% (-65) : la suppression des repositories JPA laisse 6 driven ports sans adaptateur</li>
+          <li><strong>Cohesion</strong> progresse à 71% (+7) : les agrégats regroupent des concepts cohérents avec leur logique métier</li>
+        </ul>
+        <p>La chute de la dimension hexagonale est temporaire : les adaptateurs seront générés à l'étape suivante.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Inventory Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Inventaire"
+        title="Inventaire architectural"
+        gradient="bg-orange-yellow-gradient"
+      >
+        L'inventaire est transformé : les entités JPA ont cédé la place aux patterns tactiques DDD.
+        Les services applicatifs apparaissent maintenant qu'ils ne sont plus exclus du périmètre.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <InventoryTable rows={inventoryRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>6 aggregate roots</strong> détectés : grâce aux identifiants typés, HexaGlue promeut les entités en agrégats</li>
+          <li><strong>9 entities &rarr; 6 agrégats + 2 entités internes</strong> : <code>OrderLine</code> et <code>StockMovement</code> restent des entités internes à leur agrégat</li>
+          <li><strong>7 application services</strong> classifiés : ils implémentent des driving ports, HexaGlue les reconnaît comme APPLICATION_SERVICE</li>
+          <li><strong>6 identifiants + 7 value objects + 1 domain event</strong> : le modèle DDD est complet</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Violations Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Violations"
+        title="Violations détectées"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Les violations DDD sont entièrement résolues. En contrepartie, de nouvelles violations hexagonales apparaissent suite à la suppression des repositories JPA.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <ViolationsTable rows={violationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>entity-identity</strong> et <strong>domain-purity</strong> à 0 : les identifiants typés et la suppression des annotations JPA résolvent les 18 violations CRITICAL</li>
+          <li><strong>port-coverage</strong> (+6) : les repositories JPA ont été supprimés avec les annotations, les driven ports n'ont plus d'implémentation</li>
+          <li><strong>application-purity</strong> (+7) : les services applicatifs utilisent encore <code>@Service</code> et <code>@Transactional</code> de Spring</li>
+        </ul>
+        <p>Les adaptateurs JPA seront régénérés automatiquement par HexaGlue à l'étape suivante.</p>
       </Insight>
     </div>
   </section>
@@ -487,9 +503,10 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Qualité"
         title="Métriques de qualité"
-        description="Indicateurs structurels après purification du domaine."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Les métriques de qualité reflètent la transformation du domaine. Les indicateurs DDD passent au vert.
+      </SectionCopy>
 
       <div class="mt-10">
         <MetricsTable rows={metricsData} />
@@ -497,9 +514,10 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>Domain purity</strong> à 100% : domaine pur</li>
-          <li><strong>Aggregate boundary</strong> à 100% : frontières de cohérence établies</li>
-          <li><strong>Boilerplate</strong> reste à 80% : getters conservés, mais logique métier dans le domaine</li>
+          <li><strong>Domain purity</strong> à 100% : aucun import d'infrastructure dans le domaine, c'est l'objectif fondamental de la purification</li>
+          <li><strong>Aggregate boundary</strong> à 100% : chaque agrégat a son identifiant typé et ses frontières de cohérence</li>
+          <li><strong>Classification rate</strong> à 95,7% : quasi toutes les classes ont un rôle architectural identifié</li>
+          <li><strong>Boilerplate</strong> reste à 80% : les getters sont conservés, mais le domaine contient maintenant de la logique métier</li>
         </ul>
       </Insight>
     </div>
@@ -511,9 +529,10 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Remédiation"
         title="Coût de mise en conformité"
-        description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Le tableau de remédiation montre que les contraintes DDD sont résolues. L'effort restant concerne la couche hexagonale et les annotations Spring.
+      </SectionCopy>
 
       <div class="mt-10">
         <RemediationTable rows={remediationRows} />
@@ -521,10 +540,11 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>25j manuels → 7j avec HexaGlue</strong> (72% d'économie)</li>
-          <li><strong>18j automatisables</strong> : port-coverage via plugin JPA</li>
-          <li><strong>7j restants</strong> : purification des services (@Service/@Transactional → infrastructure)</li>
+          <li><strong>entity-identity</strong> et <strong>domain-purity</strong> à 0 : plus aucun effort nécessaire sur le domaine</li>
+          <li><strong>port-coverage</strong> (18j) : entièrement automatisable par le plugin JPA de HexaGlue, qui génèrera les entités JPA, mappers et repositories</li>
+          <li><strong>application-purity</strong> (7j) : déplacement des annotations <code>@Service</code> et <code>@Transactional</code> vers la couche infrastructure</li>
         </ul>
+        <p>Au total : 25 jours manuels réduits à 7 jours avec HexaGlue (72% d'économie).</p>
       </Insight>
     </div>
   </section>
@@ -535,9 +555,10 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Stabilité"
         title="Stabilité des packages"
-        description="Analyse des couplages selon les métriques de Robert C. Martin."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        L'analyse de stabilité montre comment la purification du domaine a modifié les dépendances entre packages.
+      </SectionCopy>
 
       <div class="mt-10">
         <PackageStabilityTable rows={packageStabilityRows} />
@@ -545,12 +566,14 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>domain.order</strong> en Zone of Pain (D=0.92) : attendu pour un core domain</li>
-          <li><strong>application</strong> sur la Main Sequence : correctement positionnée</li>
+          <li><strong>domain.order</strong> en Zone of Pain (D=0.92) : ce package est très sollicité (23 dépendants) et concret, ce qui est attendu pour un core domain riche en logique métier</li>
+          <li><strong>application</strong> sur la Main Sequence : parfaitement instable (I=1.00), les services applicatifs dépendent de tout mais personne ne dépend d'eux</li>
         </ul>
       </Insight>
     </div>
   </section>
+
+  </AuditReport>
 
   <!-- Bilan Section -->
   <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -558,20 +581,22 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Bilan"
         title="Ce que révèle cette étape"
-        description="Purification du domaine réussie, patterns tactiques DDD en place."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Le domaine est purifié et tous les patterns tactiques DDD sont en place.
+        Le code métier est maintenant indépendant de toute technologie d'infrastructure.
+      </SectionCopy>
 
       <Insight class="mt-10">
+        <p>Les constats principaux :</p>
         <ul>
-          <li>Score 49/100 (+9) : passage au statut PASSED_WITH_WARNINGS</li>
-          <li>DDD Compliance à 100% : identifiants typés, value objects, agrégats avec logique métier</li>
-          <li>Domain purity à 100% : zéro import JPA dans le domaine</li>
-          <li>18 violations CRITICAL résolues : le domaine est maintenant pur et testable</li>
-          <li>13 violations MAJOR : 6 port-coverage + 7 application-purity</li>
-          <li>Remédiation : 25j manuel → 7j avec HexaGlue (72% d'économie)</li>
-          <li>Prochaine étape : activer la génération HexaGlue pour l'infrastructure</li>
+          <li><strong>Score 49/100 (+9)</strong> : passage au statut PASSED_WITH_WARNINGS, les 18 violations CRITICAL sont résolues</li>
+          <li><strong>DDD Compliance à 100%</strong> : identifiants typés, value objects, agrégats avec logique métier, domain events</li>
+          <li><strong>Domain purity à 100%</strong> : zéro import JPA dans le domaine, le code métier est testable sans infrastructure</li>
+          <li><strong>13 violations MAJOR</strong> restantes : 6 driven ports sans adaptateur et 7 services avec annotations Spring</li>
+          <li><strong>72% d'économie</strong> : 25 jours manuels réduits à 7 jours grâce à la génération automatique</li>
         </ul>
+        <p>L'étape suivante active la génération automatique de HexaGlue pour recréer toute la couche d'infrastructure.</p>
       </Insight>
     </div>
   </section>

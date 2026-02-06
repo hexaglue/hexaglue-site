@@ -3,6 +3,7 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import StepNavigation from './_components/StepNavigation.astro';
+import AuditReport from './_components/AuditReport.astro';
 import AuditVerdict from './_components/AuditVerdict.astro';
 import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
 import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
@@ -142,9 +143,9 @@ const remediationRows: RemediationRow[] = [
                   <code class="text-sm text-amber-400">step/1-discovery</code>
                 </a>
                 <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
-                    <li>Première intégration d'HexaGlue dans le projet e-commerce.</li>
-                    <li>Configuration du plugin Maven avec le plugin d'audit.</li>
-                    <li>Diagnostic initial de l'architecture.</li>
+                    <li>Intégration d'HexaGlue pour analyser l'architecture du projet.</li>
+                    <li>Activation du plugin d'audit pour mesurer la conformité DDD et hexagonale.</li>
+                    <li>Génération du premier rapport d'audit architectural.</li>
                 </ul>
             </div>
         </div>
@@ -158,20 +159,47 @@ const remediationRows: RemediationRow[] = [
                 title="Configuration initiale"
                 gradient="bg-orange-yellow-gradient"
             >
-                Intégration du plugin HexaGlue dans le <code>pom.xml</code> avec configuration minimale.
-                Aucun fichier <code>hexaglue.yaml</code> créé à ce stade.
-                Exécution de la première commande <code>mvn verify</code>.
+                Le plugin Maven HexaGlue analyse le code source à la compilation pour en extraire un modèle architectural.
+                Le plugin d'audit (<code>hexaglue-plugin-audit</code>) évalue ce modèle contre les principes DDD et hexagonaux, puis produit un rapport avec un score de conformité.
             </SectionCopy>
 
             <div class="mt-10">
                 <Code code={pomXmlConfig} lang="xml" title="pom.xml" />
             </div>
 
+            <Insight>
+                <ul>
+                    <li><code>extensions=true</code> : permet à HexaGlue de s'intégrer au cycle de vie Maven et de déclencher l'analyse automatiquement à la compilation</li>
+                    <li><code>basePackage</code> : le package racine à analyser, toutes les classes sous <code>com.acme.shop</code> seront classifiées</li>
+                    <li><code>failOnError=false</code> : le build ne sera pas bloqué par les violations, utile pour un premier diagnostic</li>
+                </ul>
+            </Insight>
+
+        </div>
+    </section>
+
+    <!-- Exécution de l'audit -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Exécution"
+                title="Lancement de l'audit"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Grâce à <code>extensions=true</code>, HexaGlue s'intègre automatiquement au cycle Maven :<br>
+                <ul>
+                    <li>la classification architecturale du code source s'exécute pendant la phase <code>compile</code>,</li>
+                    <li>le plugin d'audit évalue le résultat et génère le rapport pendant la phase <code>verify</code>.</li>
+                </ul>
+            </SectionCopy>
+
             <div class="mt-10">
                 <Code code="mvn verify" lang="shell" title="Shell" />
             </div>
         </div>
     </section>
+
+    <AuditReport description="Résultat de la première exécution de l'audit HexaGlue sur le code existant.">
 
     <!-- Verdict de l'Audit -->
     <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -181,7 +209,7 @@ const remediationRows: RemediationRow[] = [
                 title="Verdict de l'audit"
                 gradient="bg-orange-yellow-gradient"
             >
-                Résultat de la première exécution de <code>mvn verify</code> sur le code existant.
+                Le verdict synthétise le score global, la note et le nombre de violations. C'est la première chose que le développeur voit en ouvrant le rapport.
             </SectionCopy>
 
             <div class="mt-10">
@@ -194,11 +222,7 @@ const remediationRows: RemediationRow[] = [
             </div>
 
             <Insight>
-                <ul>
-                    <li>Score 13/100, grade F : aucune structure hexagonale ni pattern DDD</li>
-                    <li>43 violations détectées dont 19 CRITICAL</li>
-                    <li>Toutes les dimensions en zone critique</li>
-                </ul>
+                <p>Le grade F indique une architecture non conforme aux principes DDD et hexagonaux. L'application n'a ni couche de ports, ni identifiants typés, ni séparation domaine/infrastructure. Les 19 violations critiques proviennent toutes du couplage direct entre le domaine et JPA.</p>
             </Insight>
         </div>
     </section>
@@ -209,9 +233,11 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Score"
                 title="Décomposition du score"
-                description="Contribution de chaque dimension au score global de 13/100."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Le score global est calculé à partir de 5 dimensions, chacune pondérée selon son importance architecturale.
+                Ce tableau montre la contribution de chaque dimension au score de 13/100.
+            </SectionCopy>
 
             <div class="mt-10">
                 <KpiTable rows={kpiRows} total="15.7" />
@@ -219,9 +245,9 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>DDD Compliance</strong> à 0% : aucun pattern tactique DDD détecté</li>
-                    <li><strong>Dependencies</strong> à 0% : toutes les dépendances vont dans le mauvais sens</li>
-                    <li><strong>Hexagonal Architecture</strong> à 10% : seuls les 6 repositories Spring Data sont reconnus</li>
+                    <li><strong>DDD Compliance</strong> et <strong>Hexagonal Architecture</strong> à 0% : ces deux dimensions pèsent 50% du score à elles seules, un score nul ici signifie qu'aucun pattern structurel n'est reconnu</li>
+                    <li><strong>Dependencies</strong> à 0% : les dépendances vont du domaine vers l'infrastructure, l'inverse de ce qu'attend une architecture hexagonale</li>
+                    <li><strong>Coupling</strong> et <strong>Cohesion</strong> sont les seules dimensions qui contribuent au score, grâce à une organisation en packages qui limite partiellement le couplage</li>
                 </ul>
             </Insight>
         </div>
@@ -233,16 +259,23 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Inventaire"
                 title="Inventaire architectural"
-                description="Composants architecturaux détectés automatiquement par HexaGlue."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                L'inventaire liste les composants architecturaux détectés par HexaGlue dans le code source : agrégats, entités, value objects, ports, etc.
+                Il donne une vue d'ensemble de ce que le code contient du point de vue DDD et hexagonal.
+            </SectionCopy>
 
             <div class="mt-10">
                 <InventoryTable rows={inventoryRows} />
             </div>
 
             <Insight>
-                <p><strong>Faux positifs</strong> : les 14 value objects et l'événement domaine détectés ne le sont pas réellement. Sans patterns DDD explicites, HexaGlue classifie par heuristique.</p>
+                <p>Sans patterns DDD explicites dans le code, HexaGlue classifie par heuristique. Cela produit des faux positifs :</p>
+                <ul>
+                    <li>Les 14 <strong>value objects</strong> sont en réalité des enums, services et DTOs mal classifiés</li>
+                    <li>L'<strong>événement domaine</strong> est un <code>ApplicationEvent</code> Spring, pas un vrai domain event</li>
+                    <li>Les 6 <strong>driven ports</strong> sont les repositories Spring Data, correctement identifiés</li>
+                </ul>
             </Insight>
         </div>
     </section>
@@ -253,21 +286,24 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Violations"
                 title="Violations détectées"
-                description="Violations des contraintes d'architecture détectées par l'audit."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Chaque violation correspond à une règle architecturale enfreinte par le code.
+                Elles sont classées par sévérité : <strong>CRITICAL</strong> pour les problèmes structurels fondamentaux, <strong>MAJOR</strong> pour les écarts significatifs.
+            </SectionCopy>
 
             <div class="mt-10">
                 <ViolationsTable rows={violationRows} />
             </div>
 
             <Insight>
-                <p><strong>Cause racine</strong> : les annotations JPA dans le modèle.</p>
+                <p>Les violations ont une cause racine commune : les annotations JPA dans le modèle de domaine.</p>
                 <ul>
-                    <li><strong>ddd:entity-identity</strong> : les entités JPA ne peuvent pas avoir d'identité typée</li>
-                    <li><strong>ddd:domain-purity</strong> : le domaine dépend de javax.persistence</li>
+                    <li><strong>ddd:entity-identity</strong> : les entités JPA utilisent un <code>Long id</code> généré, pas un identifiant métier typé</li>
+                    <li><strong>ddd:domain-purity</strong> : le domaine importe <code>javax.persistence</code>, il dépend directement de l'infrastructure</li>
+                    <li><strong>hexagonal:layer-isolation</strong> : les services appellent les repositories sans passer par des ports</li>
                 </ul>
-                <p>Séparer le domaine de la persistance résoudrait les deux catégories.</p>
+                <p>Séparer le domaine de la persistance résoudrait les deux premières catégories de violations.</p>
             </Insight>
         </div>
     </section>
@@ -278,9 +314,10 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Qualité"
                 title="Métriques de qualité"
-                description="Métriques structurelles mesurées sur le code source."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Les métriques de qualité mesurent des propriétés structurelles du code : couverture du domaine, proportion de code technique, complexité et respect des frontières d'agrégats.
+            </SectionCopy>
 
             <div class="mt-10">
                 <MetricsTable rows={metricRows} />
@@ -288,9 +325,10 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>Domain coverage</strong> à 80% : trompeuse, mesure le ratio de classes dans le package model, pas la conformité DDD</li>
-                    <li><strong>Code boilerplate</strong> à 81.58% : classes sans logique métier, uniquement des getters/setters</li>
-                    <li><strong>Aggregate boundary</strong> à 0% : aucun agrégat identifié, donc aucune frontière de cohérence</li>
+                    <li><strong>Domain coverage</strong> à 80% : ce chiffre est trompeur, il mesure le ratio de classes dans le package <code>model</code>, pas la conformité DDD réelle</li>
+                    <li><strong>Code boilerplate</strong> à 81% : plus de 4 classes sur 5 ne contiennent que des getters/setters, sans logique métier</li>
+                    <li><strong>Domain purity</strong> à 58% : près de la moitié du domaine importe des dépendances d'infrastructure</li>
+                    <li><strong>Aggregate boundary</strong> à 0% : aucun agrégat identifié, donc aucune frontière de cohérence transactionnelle</li>
                 </ul>
             </Insight>
         </div>
@@ -302,9 +340,11 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Classification"
                 title="Taux de classification"
-                description="Proportion de types Java classifiés par HexaGlue dans un rôle architectural."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                HexaGlue tente d'attribuer un rôle architectural à chaque type Java du projet (entité, value object, port, service...).
+                Le taux de classification indique quelle proportion du code a pu être identifiée.
+            </SectionCopy>
 
             <div class="mt-10 p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
                 <div class="overflow-x-auto">
@@ -328,7 +368,13 @@ const remediationRows: RemediationRow[] = [
             </div>
 
             <Insight>
-                <p><strong>40% des types non classifiés</strong> : DTOs, configurations, exceptions et utilitaires. Ces types techniques seraient générés ou réorganisés dans une architecture hexagonale.</p>
+                <p>40% des types n'ont pas pu être classifiés. Ce sont principalement :</p>
+                <ul>
+                    <li>des DTOs de transfert entre couches</li>
+                    <li>des classes de configuration Spring</li>
+                    <li>des exceptions et utilitaires techniques</li>
+                </ul>
+                <p>Dans une architecture hexagonale, ces types seraient soit générés automatiquement, soit réorganisés dans des couches dédiées.</p>
             </Insight>
         </div>
     </section>
@@ -339,18 +385,20 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Remédiation"
                 title="Coût de mise en conformité"
-                description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Le tableau de remédiation estime l'effort nécessaire pour corriger chaque catégorie de violation, en distinguant le travail manuel du travail automatisable par HexaGlue.
+            </SectionCopy>
 
             <div class="mt-10">
                 <RemediationTable rows={remediationRows} />
             </div>
 
             <Insight>
+                <p>Le coût total estimé est de 44,5 jours de travail manuel. HexaGlue peut en automatiser une partie :</p>
                 <ul>
-                    <li><strong>18 jours automatisables</strong> : génération des adaptateurs pour les 6 repositories</li>
-                    <li><strong>26,5 jours manuels</strong> : restructuration du domaine (identités typées, suppression des annotations JPA)</li>
+                    <li><strong>Automatisable</strong> : génération des adaptateurs JPA pour les 6 repositories (18 jours économisés)</li>
+                    <li><strong>Manuel</strong> : restructuration du domaine, création des identifiants typés, suppression des annotations JPA (26,5 jours)</li>
                 </ul>
             </Insight>
         </div>
@@ -362,19 +410,28 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Stabilité"
                 title="Stabilité des packages"
-                description="Analyse des couplages entre packages selon les métriques de Robert C. Martin."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                L'analyse de stabilité évalue les dépendances entre packages selon les métriques de Robert C. Martin.
+                Elle identifie les packages fragiles (très sollicités mais sans abstraction) et les packages bien positionnés.
+            </SectionCopy>
 
             <div class="mt-10">
                 <PackageStabilityTable rows={packageStabilityRows} />
             </div>
 
             <Insight>
-                <p>Les packages <strong>model</strong> et <strong>dto</strong> sont en <strong>Zone of Pain</strong> (métriques de Martin) : très concrets, très sollicités, sans abstraction. Tout changement se propage à l'ensemble de l'application.</p>
+                <p>Deux packages sont en <strong>Zone of Pain</strong> :</p>
+                <ul>
+                    <li><strong>shop.model</strong> : 18 dépendants, aucune abstraction. Toute modification d'une entité se propage à l'ensemble de l'application</li>
+                    <li><strong>shop.dto</strong> : même problème à plus petite échelle, avec 5 dépendants et 0% d'abstraction</li>
+                </ul>
+                <p>Ces packages concentrent le risque : ils sont très concrets et très sollicités, ce qui rend chaque changement coûteux.</p>
             </Insight>
         </div>
     </section>
+
+    </AuditReport>
 
     <!-- Bilan -->
     <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -382,19 +439,21 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Bilan"
                 title="Ce que révèle cette étape"
-                description="Premier audit HexaGlue : une photographie quantifiée de l'état architectural du projet."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Ce premier audit établit une photographie quantifiée de l'état architectural du projet.
+                Il sert de ligne de base pour mesurer les progrès à chaque étape de la migration.
+            </SectionCopy>
 
             <Insight class="mt-10">
+                <p>Les constats principaux :</p>
                 <ul>
-                    <li>Score 15/100 (Grade F) : ligne de base quantifiée du projet legacy</li>
-                    <li>0% DDD Compliance : aucun pattern tactique DDD détecté</li>
-                    <li>9 entités sans identité typée : toutes les entités JPA manquent de champs identité</li>
-                    <li>10 violations de pureté du domaine : imports JPA dans le modèle de domaine</li>
-                    <li>81.58% de code boilerplate : getters/setters manuels dans les entités</li>
-                    <li>Remédiation estimée à 26.5 jours de travail manuel</li>
+                    <li><strong>Score 13/100 (Grade F)</strong> : l'architecture ne respecte aucun principe DDD ni hexagonal</li>
+                    <li><strong>19 violations critiques</strong> : toutes liées au couplage domaine/JPA (annotations de persistance dans le modèle)</li>
+                    <li><strong>81% de boilerplate</strong> : le code métier est noyé dans les getters/setters techniques</li>
+                    <li><strong>44,5 jours de remédiation</strong> estimés, dont 18 automatisables par HexaGlue</li>
                 </ul>
+                <p>L'étape suivante consiste à supprimer le bruit dans la classification pour affiner le diagnostic.</p>
             </Insight>
         </div>
     </section>

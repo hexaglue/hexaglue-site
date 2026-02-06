@@ -3,6 +3,7 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import StepNavigation from './_components/StepNavigation.astro';
+import AuditReport from './_components/AuditReport.astro';
 import AuditVerdict from './_components/AuditVerdict.astro';
 import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
 import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
@@ -176,9 +177,11 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Modifications"
         title="Modifications effectuées"
-        description="Activation des plugins HexaGlue et purification des services applicatifs."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Les plugins HexaGlue sont activés pour générer automatiquement toute la couche de persistance.
+        Les services applicatifs sont purifiés : les annotations Spring sont déplacées vers l'infrastructure.
+      </SectionCopy>
 
       <ModificationList class="mt-10">
         <ModificationGroup layer="application">
@@ -188,17 +191,17 @@ const remediationRows: RemediationRow[] = [
           <ModificationItem action="create" label="ApplicationServiceConfig.java" details="7 méthodes @Bean pour l'injection de dépendances" />
         </ModificationGroup>
         <ModificationGroup layer="configuration">
-          <ModificationItem action="configure" label="pom.xml" details="extensions=true, plugins jpa + living-doc + audit" />
+          <ModificationItem action="configure" label="pom.xml" details="plugins jpa + living-doc + audit" />
           <ModificationItem action="configure" label="hexaglue.yaml" details="exclude: infrastructure.**, exception.**" />
         </ModificationGroup>
       </ModificationList>
 
       <Insight>
         <ul>
-          <li><strong>Services applicatifs</strong> deviennent des POJOs purs</li>
-          <li><strong>@Service/@Transactional</strong> → configuration <strong>@Bean</strong> dans l'infrastructure</li>
+          <li><strong>Services applicatifs purifiés</strong> : les annotations <code>@Service</code> et <code>@Transactional</code> sont remplacées par des déclarations <code>@Bean</code> dans une classe de configuration Spring</li>
+          <li><strong>Plugins activés</strong> : le plugin JPA génère les entités, mappers, repositories et adaptateurs à partir du modèle domaine pur</li>
         </ul>
-        <p>Cette séparation respecte le principe d'inversion de dépendance.</p>
+        <p>Les services applicatifs deviennent des POJOs purs, sans aucune dépendance vers Spring. Le câblage est isolé dans l'infrastructure.</p>
       </Insight>
     </div>
   </section>
@@ -209,9 +212,10 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Génération"
         title="Code généré automatiquement"
-        description="Fichiers d'infrastructure générés par le plugin JPA d'HexaGlue."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Le plugin JPA d'HexaGlue analyse le modèle domaine pur et génère toute la couche de persistance à la compilation. Aucun de ces fichiers n'est écrit à la main.
+      </SectionCopy>
 
       <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-8">
         <div class="grid grid-cols-1 gap-6">
@@ -266,113 +270,9 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>29 fichiers générés</strong> : entités JPA, repositories, mappers, adaptateurs</li>
-          <li><strong>0 ligne manuelle</strong> pour la persistance : tout dérivé du domaine pur</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Verdict de l'audit -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Verdict"
-        title="Verdict de l'audit"
-        description="Résultat après activation de la génération et purification des services."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <AuditVerdict
-          score={60}
-          grade="D"
-          status="PASSED_WITH_WARNINGS"
-          violations={{ critical: 0, major: 3 }}
-          delta={{ score: 11, violations: -10 }}
-        />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>Grade D</strong> atteint : 60/100 (+11)</li>
-          <li><strong>-7 application-purity</strong> : services applicatifs purifiés</li>
-          <li><strong>-6 port-coverage</strong> : adaptateurs générés couvrent tous les ports</li>
-          <li><strong>3 violations restantes</strong> : 2 layer-isolation + 1 aggregate-boundary</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Indicateurs de qualité -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Score"
-        title="Décomposition du score"
-        description="Contribution de chaque dimension au score global de 60/100."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <KpiTable rows={kpiRows} total="60.35" />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>Hexagonal Architecture</strong> bondit à 90% (+55) : services purifiés, adaptateurs générés</li>
-          <li><strong>DDD Compliance</strong> baisse à 95% (-5) : violation aggregate-boundary</li>
-          <li><strong>Cohésion</strong> diminue (-8%) : classe de configuration Spring ajoutée</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Violations détectées -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Violations"
-        title="Violations détectées"
-        description="État des violations architecturales après purification des services."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <ViolationsTable rows={violationRows} />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>Violations éliminées</strong> : 7 application-purity + 6 port-coverage</li>
-          <li><strong>Nouvelles violations</strong> : 2 layer-isolation (dépendance à InventoryUseCases UNCLASSIFIED)</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Couverture des ports -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Ports"
-        title="Couverture des ports"
-        description="Tous les ports disposent d'un adaptateur : 6 générés automatiquement, 8 implémentés manuellement."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
-        <div class="flex items-center justify-between">
-          <span class="text-lg font-semibold">Ports couverts</span>
-          <span class="px-4 py-2 bg-green-500/20 text-green-400 rounded-full text-sm font-mono font-bold">14/14 (100%)</span>
-        </div>
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>6 repositories générés</strong> : driven ports de type REPOSITORY</li>
-          <li><strong>6 contrôleurs manuels</strong> : driving ports</li>
-          <li><strong>2 gateways manuels</strong> : services externes</li>
+          <li><strong>29 fichiers générés</strong> : entités JPA, embeddables, repositories Spring Data, mappers MapStruct et adaptateurs de ports</li>
+          <li><strong>0 ligne manuelle</strong> pour la persistance : tout est dérivé automatiquement du modèle domaine pur</li>
+          <li><strong>Synchronisation garantie</strong> : si le domaine change, la couche de persistance est régénérée à la compilation suivante</li>
         </ul>
       </Insight>
     </div>
@@ -401,8 +301,117 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>@Bean</strong> remplace @Service/@Transactional dans les services</li>
-          <li><strong>Câblage Spring</strong> isolé dans l'infrastructure</li>
+          <li><strong>ApplicationServiceConfig</strong> : chaque service applicatif est déclaré comme <code>@Bean</code>, avec ses dépendances injectées via les ports</li>
+          <li><strong>hexaglue.yaml</strong> : configure les suffixes de nommage (<code>JpaEntity</code>, <code>JpaRepository</code>, <code>RepositoryAdapter</code>) et les options de génération</li>
+          <li>Le câblage Spring est entièrement isolé dans la couche infrastructure</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <AuditReport description="Résultat après activation de la génération et purification des services.">
+
+  <!-- Verdict de l'audit -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Verdict"
+        title="Verdict de l'audit"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le score franchit la barre des 60 points et atteint le grade D. La génération automatique et la purification des services résolvent 10 violations d'un coup.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <AuditVerdict
+          score={60}
+          grade="D"
+          status="PASSED_WITH_WARNINGS"
+          violations={{ critical: 0, major: 3 }}
+          delta={{ score: 11, violations: -10 }}
+        />
+      </div>
+
+      <Insight>
+        <p>Le score progresse de 11 points grâce à deux actions combinées : la purification des services applicatifs et la génération automatique des adaptateurs. Les 3 violations MAJOR restantes relèvent de choix de conception, pas de défauts structurels : elles sont détaillées dans les sections suivantes.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Indicateurs de qualité -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Score"
+        title="Décomposition du score"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le score passe de 49 à 60/100. La dimension Hexagonal Architecture bondit grâce aux adaptateurs générés et aux services purifiés.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <KpiTable rows={kpiRows} total="60.35" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Hexagonal Architecture</strong> bondit à 90% (+55) : les adaptateurs générés couvrent tous les ports, et les services applicatifs ne portent plus d'annotations Spring</li>
+          <li><strong>DDD Compliance</strong> recule légèrement à 95% (-5) : une violation <code>aggregate-boundary</code> a été détectée</li>
+          <li><strong>Cohesion</strong> diminue à 63% (-8) : l'ajout de la classe <code>ApplicationServiceConfig</code> dans l'infrastructure modifie le ratio</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Violations détectées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Violations"
+        title="Violations détectées"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Les 13 violations MAJOR de l'étape précédente sont résolues. Trois nouvelles violations apparaissent, liées à des points de conception plus fins.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <ViolationsTable rows={violationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>application-purity</strong> (-7) et <strong>port-coverage</strong> (-6) : entièrement résolues par la purification des services et la génération des adaptateurs</li>
+          <li><strong>layer-isolation</strong> (+2) : deux services applicatifs dépendent de <code>InventoryUseCases</code>, classifié UNCLASSIFIED car HexaGlue n'a pas pu déterminer son rôle architectural. L'annoter comme <code>APPLICATION_SERVICE</code> résoudra ces violations</li>
+          <li><strong>aggregate-boundary</strong> (+1) : <code>OrderLine</code> est accessible directement depuis l'extérieur de l'agrégat <code>Order</code></li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Couverture des ports -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Ports"
+        title="Couverture des ports"
+        gradient="bg-orange-yellow-gradient"
+      >
+        La couverture des ports mesure la proportion de ports (interfaces) qui ont une implémentation concrète (adaptateur).
+        C'est un indicateur clé de la complétude de l'architecture hexagonale.
+      </SectionCopy>
+
+      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+        <div class="flex items-center justify-between">
+          <span class="text-lg font-semibold">Ports couverts</span>
+          <span class="px-4 py-2 bg-green-500/20 text-green-400 rounded-full text-sm font-mono font-bold">14/14 (100%)</span>
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>6 repositories générés</strong> par HexaGlue : les driven ports de type REPOSITORY sont couverts automatiquement</li>
+          <li><strong>6 contrôleurs REST</strong> écrits manuellement : chaque driving port est exposé via un contrôleur Spring. Un futur plugin REST de HexaGlue pourra également les générer</li>
+          <li><strong>2 gateways</strong> écrits manuellement : les adaptateurs vers les services externes (paiement, notifications)</li>
         </ul>
       </Insight>
     </div>
@@ -414,9 +423,11 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Qualité"
         title="Métriques de qualité"
-        description="Indicateurs DDD et qualité du code après génération automatique."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Les métriques de qualité mesurent l'adhérence du code aux principes DDD et hexagonaux.<br>
+        Après la génération automatique, le tableau montre l'impact sur chaque indicateur.
+      </SectionCopy>
 
       <div class="mt-10">
         <MetricsTable
@@ -462,8 +473,10 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>aggregate.boundary</strong> à 0% : OrderLine accessible directement hors de l'agrégat</li>
-          <li><strong>Boilerplate</strong> élevé : inclut le code généré automatiquement</li>
+          <li><strong><code>domain.purity</code> maintenue à 100%</strong> : le code généré ne pollue pas le domaine, il reste dans la couche infrastructure</li>
+          <li><strong><code>aggregate.boundary</code> tombe à 0%</strong> : <code>OrderLine</code> est accessible directement hors de l'agrégat <code>Order</code>, ce qui casse l'encapsulation DDD</li>
+          <li><strong><code>aggregate.repository.coverage</code> à 100%</strong> : chaque agrégat dispose désormais d'un repository généré automatiquement</li>
+          <li><strong><code>code.boilerplate.ratio</code> reste élevé</strong> (80%) : le code généré (entités JPA, mappers) est comptabilisé comme boilerplate technique</li>
         </ul>
       </Insight>
     </div>
@@ -475,22 +488,29 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Remédiation"
         title="Coût de mise en conformité"
-        description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Le plan de remédiation estime l'effort restant pour atteindre la conformité architecturale.<br>
+        Il distingue ce qui peut être automatisé par HexaGlue de ce qui nécessite une intervention manuelle.
+      </SectionCopy>
 
       <div class="mt-10">
         <RemediationTable rows={remediationRows} />
       </div>
 
       <Insight>
+        <p>Il ne reste que <strong>2 jours d'effort</strong>, contre 9 à l'étape précédente :</p>
         <ul>
-          <li><strong>2 jours restants</strong> grâce à la génération automatique</li>
-          <li><strong>Corrections</strong> : classification InventoryUseCases + encapsulation OrderLine</li>
+          <li><strong>Classification</strong> : annoter <code>InventoryUseCases</code> comme <code>APPLICATION_SERVICE</code> pour résoudre les violations <code>layer-isolation</code></li>
+          <li><strong>Encapsulation</strong> : rendre <code>OrderLine</code> accessible uniquement via l'agrégat <code>Order</code> pour restaurer <code>aggregate.boundary</code></li>
         </ul>
+        <p>Ces deux corrections sont manuelles : elles relèvent de décisions de conception, pas de génération de code.</p>
+        <p>L'infrastructure JPA (18 jours à l'étape précédente) n'apparaît plus : le code généré par HexaGlue fait désormais partie intégrante du projet et lui appartient. Il n'y a plus rien à quantifier, c'est acquis.</p>
       </Insight>
     </div>
   </section>
+
+  </AuditReport>
 
   <!-- Bilan -->
   <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -498,20 +518,21 @@ const remediationRows: RemediationRow[] = [
       <SectionCopy
         label="Bilan"
         title="Ce que révèle cette étape"
-        description="Génération automatique de l'infrastructure et purification des services applicatifs."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Cette étape marque un tournant : HexaGlue passe de l'analyse à la génération.<br>
+        Le rapport montre l'impact combiné de la purification des services et de la génération automatique.
+      </SectionCopy>
 
       <Insight class="mt-10">
+        <p>HexaGlue démontre ici sa double capacité : analyser <strong>et</strong> construire.</p>
         <ul>
-          <li>Score 60/100 (+11) : grade D atteint grâce aux services purifiés et adaptateurs générés</li>
-          <li>29 fichiers générés automatiquement : entités JPA, repositories, mappers, adaptateurs</li>
-          <li>0 ligne d'infrastructure manuelle pour la persistance</li>
-          <li>Architecture hexagonale à 90% (+55) : les annotations Spring sont externalisées</li>
-          <li>Violations application-purity éliminées (-7) et port-coverage résolues (-6)</li>
-          <li>Nouvelles violations layer-isolation (+2) dues à InventoryUseCases UNCLASSIFIED</li>
-          <li>aggregate.boundary à 0% : OrderLine exposé hors de l'agrégat Order</li>
+          <li><strong>Score 60/100 (+11)</strong> : la purification des services applicatifs et la génération de l'infrastructure font passer le grade de E à D</li>
+          <li><strong>29 fichiers générés, 0 ligne manuelle</strong> : toute la couche de persistance (entités JPA, repositories, mappers, embeddables) est produite au compile-time</li>
+          <li><strong>100% de couverture des ports</strong> : chaque port, driving ou driven, dispose d'un adaptateur fonctionnel</li>
+          <li><strong>2 corrections restantes</strong> : classifier <code>InventoryUseCases</code> et encapsuler <code>OrderLine</code> dans son agrégat</li>
         </ul>
+        <p>L'étape suivante résout ces derniers points pour atteindre la conformité complète.</p>
       </Insight>
     </div>
   </section>

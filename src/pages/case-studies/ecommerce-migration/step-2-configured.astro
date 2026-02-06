@@ -5,6 +5,7 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import StepNavigation from './_components/StepNavigation.astro';
+import AuditReport from './_components/AuditReport.astro';
 import AuditVerdict from './_components/AuditVerdict.astro';
 import KpiTable from './_components/KpiTable.astro';
 import ViolationsTable from './_components/ViolationsTable.astro';
@@ -158,7 +159,8 @@ const remediationRows: RemediationRow[] = [
 				title="Fichier hexaglue.yaml"
 				gradient="bg-orange-yellow-gradient"
 			>
-				Exclusion des packages <code>service</code> et <code>event</code> du périmètre d'analyse pour éliminer les faux positifs.
+				Le fichier <code>hexaglue.yaml</code> permet de configurer le périmètre d'analyse.
+				Ici, on exclut les packages <code>service</code> et <code>event</code> qui produisaient des faux positifs dans le rapport précédent.
 			</SectionCopy>
 
 			<div class="mt-10">
@@ -166,7 +168,12 @@ const remediationRows: RemediationRow[] = [
 			</div>
 
 			<Insight>
-				<p>Les services Spring (<strong>@Service</strong>) ne sont pas reconnus comme services applicatifs sans interface de port. L'exclusion évite les classifications erronées en attendant la création des ports.</p>
+				<p>Pourquoi exclure ces packages ?</p>
+				<ul>
+					<li>Les services Spring (<code>@Service</code>) étaient classifiés comme <strong>value objects</strong> faute de ports définis</li>
+					<li>L'événement Spring (<code>ApplicationEvent</code>) était détecté comme un domain event</li>
+					<li>L'exclusion temporaire rend le rapport exploitable en attendant la restructuration</li>
+				</ul>
 			</Insight>
 		</div>
 	</section>
@@ -179,7 +186,7 @@ const remediationRows: RemediationRow[] = [
 				title="Alternatives évaluées"
 				gradient="bg-orange-yellow-gradient"
 			>
-				Trois options pour gérer les services mal classifiés comme <code>VALUE_OBJECT</code>.
+				Avant d'exclure, trois approches ont été envisagées pour traiter les services mal classifiés comme <code>VALUE_OBJECT</code>.
 			</SectionCopy>
 
 			<div class="mt-10 overflow-x-auto">
@@ -220,15 +227,19 @@ const remediationRows: RemediationRow[] = [
 		</div>
 	</section>
 
+	<AuditReport description="Résultat après exclusion des services et events du périmètre d'analyse.">
+
 	<!-- Verdict Section -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
 		<div class="max-w-5xl mx-auto">
 			<SectionCopy
 				label="Verdict"
 				title="Verdict de l'audit"
-				description="Résultat après exclusion des services et events du périmètre d'analyse."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				Le verdict synthétise le score global après la configuration du périmètre d'analyse.
+				La comparaison avec l'étape précédente montre l'impact de l'exclusion des faux positifs.
+			</SectionCopy>
 
 			<div class="mt-10">
 				<AuditVerdict
@@ -242,8 +253,9 @@ const remediationRows: RemediationRow[] = [
 
 			<Insight>
 				<ul>
-					<li><strong>+6 points</strong> : élimination des 12 fausses violations layer-isolation</li>
-					<li><strong>Grade F maintenu</strong> : les problèmes de fond (DDD 0%, Dependencies 0%) restent non traités</li>
+					<li><strong>+8 points</strong> : l'élimination des 12 fausses violations <code>layer-isolation</code> fait progresser le score</li>
+					<li><strong>-13 violations</strong> : le rapport est nettoyé du bruit, les violations restantes sont de vrais problèmes</li>
+					<li><strong>Grade F maintenu</strong> : les problèmes de fond (DDD 0%, Dependencies 0%) ne sont pas résolus par la configuration seule</li>
 				</ul>
 			</Insight>
 		</div>
@@ -255,9 +267,10 @@ const remediationRows: RemediationRow[] = [
 			<SectionCopy
 				label="Score"
 				title="Décomposition du score"
-				description="Contribution de chaque dimension au score global de 21/100."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				Le score passe de 13 à 21/100. La colonne delta montre l'évolution de chaque dimension par rapport à l'étape précédente.
+			</SectionCopy>
 
 			<div class="mt-10">
 				<KpiTable rows={kpiRows} total="21.9" />
@@ -265,8 +278,9 @@ const remediationRows: RemediationRow[] = [
 
 			<Insight>
 				<ul>
-					<li><strong>Hexagonal Architecture</strong> +30 : fausses violations layer-isolation éliminées</li>
-					<li><strong>DDD Compliance</strong> reste à 0% : sans ports ni identifiants typés, aucun pattern tactique détecté</li>
+					<li><strong>Hexagonal Architecture</strong> passe de 0% à 40% : les fausses violations <code>layer-isolation</code> ne pénalisent plus cette dimension</li>
+					<li><strong>Coupling</strong> recule de 30% à 21% : l'exclusion des services réduit le nombre de composants analysés, ce qui modifie le ratio</li>
+					<li><strong>DDD Compliance</strong> reste à 0% : la configuration seule ne peut pas faire apparaître des patterns DDD absents du code</li>
 				</ul>
 			</Insight>
 		</div>
@@ -280,7 +294,8 @@ const remediationRows: RemediationRow[] = [
 				title="Inventaire architectural"
 				gradient="bg-orange-yellow-gradient"
 			>
-				Composants détectés après exclusion des packages <code>service</code> et <code>event</code>.
+				L'inventaire montre les composants détectés après exclusion des packages <code>service</code> et <code>event</code>.
+				La colonne delta indique l'évolution par rapport à l'étape 1.
 			</SectionCopy>
 
 			<div class="mt-10">
@@ -288,7 +303,11 @@ const remediationRows: RemediationRow[] = [
 			</div>
 
 			<Insight>
-				<p><strong>8 faux value objects</strong> et <strong>1 domain event</strong> exclus. L'inventaire reflète les vrais composants : 9 entités JPA et 6 driven ports (repositories Spring Data).</p>
+				<ul>
+					<li><strong>Value Objects</strong> : 14 &rarr; 6 (-8), les services Spring mal classifiés ont disparu</li>
+					<li><strong>Domain Events</strong> : 1 &rarr; 0, le faux <code>ApplicationEvent</code> est exclu</li>
+					<li>L'inventaire reflète maintenant les vrais composants : 9 entités JPA et 6 repositories Spring Data</li>
+				</ul>
 			</Insight>
 		</div>
 	</section>
@@ -299,19 +318,21 @@ const remediationRows: RemediationRow[] = [
 			<SectionCopy
 				label="Violations"
 				title="Violations détectées"
-				description="Évolution des contraintes architecturales après configuration."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				Le tableau des violations montre l'évolution après configuration.
+				Certaines violations disparaissent (faux positifs), d'autres apparaissent (vrais problèmes auparavant masqués).
+			</SectionCopy>
 
 			<div class="mt-10">
 				<ViolationsTable rows={violationRows} />
 			</div>
 
-			<Insight title="Constat">
+			<Insight>
 				<ul>
-					<li>layer-isolation -12 : les fausses violations liées aux services mal classifiés disparaissent</li>
-					<li>port-coverage +6 : nouveau problème exposé : les repositories n'ont pas d'adaptateur déclaré</li>
-					<li>Les violations DDD (entity-identity, domain-purity) restent intactes : le domaine est toujours couplé à JPA</li>
+					<li><strong>layer-isolation</strong> passe de 12 à 0 : les fausses violations liées aux services mal classifiés disparaissent</li>
+					<li><strong>port-coverage</strong> apparaît (+6) : un vrai problème exposé, les 6 repositories n'ont pas d'adaptateur déclaré</li>
+					<li><strong>entity-identity</strong> et <strong>domain-purity</strong> sont inchangées : le domaine reste couplé à JPA, la configuration ne peut pas corriger ce problème structurel</li>
 				</ul>
 			</Insight>
 		</div>
@@ -323,16 +344,21 @@ const remediationRows: RemediationRow[] = [
 			<SectionCopy
 				label="Qualité"
 				title="Métriques de qualité"
-				description="Indicateurs structurels mesurés sur le code source."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				Les métriques de qualité mesurent la structure du code restant dans le périmètre d'analyse après exclusion.
+			</SectionCopy>
 
 			<div class="mt-10">
 				<MetricsTable rows={metricRows} />
 			</div>
 
 			<Insight>
-				<p><strong>Code boilerplate à 100%</strong> : toutes les entités contiennent des annotations JPA. Sans purification du domaine, aucune progression DDD n'est possible.</p>
+				<ul>
+					<li><strong>Code boilerplate</strong> monte à 100% : le périmètre ne contient plus que les entités JPA, qui sont intégralement du code technique (annotations, getters/setters)</li>
+					<li><strong>Domain purity</strong> recule à 40% : la proportion de classes impures est plus visible maintenant que le bruit est filtré</li>
+					<li>Sans purification du domaine, aucune progression DDD n'est possible</li>
+				</ul>
 			</Insight>
 		</div>
 	</section>
@@ -343,9 +369,10 @@ const remediationRows: RemediationRow[] = [
 			<SectionCopy
 				label="Remédiation"
 				title="Coût de mise en conformité"
-				description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				Le tableau de remédiation est recalculé après exclusion. L'effort total diminue car les fausses violations <code>layer-isolation</code> ne sont plus comptabilisées.
+			</SectionCopy>
 
 			<div class="mt-10">
 				<RemediationTable rows={remediationRows} />
@@ -353,12 +380,15 @@ const remediationRows: RemediationRow[] = [
 
 			<Insight>
 				<ul>
-					<li><strong>18 jours automatisables</strong> : port-coverage éliminable par le plugin JPA</li>
-					<li><strong>48% d'économie potentielle</strong> : génération des adapters, entities, mappers et repositories</li>
+					<li><strong>18 jours automatisables</strong> : la contrainte <code>port-coverage</code> peut être entièrement résolue par la génération d'adaptateurs JPA</li>
+					<li><strong>19,5 jours manuels</strong> : purification du domaine (identités typées, suppression des annotations JPA)</li>
+					<li>L'estimation est plus fiable maintenant que le bruit a été éliminé</li>
 				</ul>
 			</Insight>
 		</div>
 	</section>
+
+	</AuditReport>
 
 	<!-- Bilan Section -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -366,19 +396,21 @@ const remediationRows: RemediationRow[] = [
 			<SectionCopy
 				label="Bilan"
 				title="Ce que révèle cette étape"
-				description="Configuration du périmètre d'analyse pour obtenir un rapport exploitable."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				La configuration du périmètre d'analyse transforme un rapport bruyant en diagnostic exploitable.
+				Sans modifier une seule ligne de code, le rapport expose maintenant les vrais problèmes architecturaux.
+			</SectionCopy>
 
 			<Insight class="mt-10">
+				<p>Les constats principaux :</p>
 				<ul>
-					<li>Score 21/100 (+6) : le rapport d'audit devient exploitable</li>
-					<li>Swap violations : -12 layer-isolation (faux positifs) → +6 port-coverage (vrais problèmes)</li>
-					<li>Les vrais problèmes exposés : domaine couplé à JPA, repositories sans adaptateur</li>
-					<li>DDD Compliance à 0% : sans identifiants typés, aucun pattern tactique détecté</li>
-					<li>ROI potentiel de 48% grâce à la génération automatique des adapters</li>
-					<li>Prochaine étape : restructurer l'application selon l'architecture hexagonale</li>
+					<li><strong>Score 21/100 (+8)</strong> : la progression vient uniquement du nettoyage des faux positifs</li>
+					<li><strong>Échange de violations</strong> : -12 fausses violations <code>layer-isolation</code>, +6 vraies violations <code>port-coverage</code></li>
+					<li><strong>DDD Compliance à 0%</strong> : la configuration ne peut pas compenser l'absence de patterns DDD dans le code</li>
+					<li><strong>18 jours automatisables</strong> sur 37,5 au total grâce à la génération d'adaptateurs</li>
 				</ul>
+				<p>L'étape suivante consiste à restructurer l'application en couches hexagonales.</p>
 			</Insight>
 		</div>
 	</section>

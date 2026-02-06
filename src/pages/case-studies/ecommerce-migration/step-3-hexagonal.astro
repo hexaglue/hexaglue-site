@@ -3,6 +3,7 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import StepNavigation from './_components/StepNavigation.astro';
+import AuditReport from './_components/AuditReport.astro';
 import AuditVerdict from './_components/AuditVerdict.astro';
 import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
 import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
@@ -179,9 +180,10 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Modifications"
                 title="Modifications effectuées"
-                description="Restructuration de l'application selon l'architecture hexagonale avec création de ports et services applicatifs."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                L'application est restructurée selon l'architecture hexagonale : le domaine est séparé de l'infrastructure par des ports (interfaces), et des services applicatifs orchestrent les cas d'usage.
+            </SectionCopy>
             <ModificationList class="mt-10">
                 <ModificationGroup layer="domain">
                     <ModificationItem action="move" count={13} label="classes domaine" details="vers domain/order, domain/customer, domain/product, etc." />
@@ -204,10 +206,21 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>Driving ports</strong> : exposent les cas d'usage au monde extérieur</li>
-                    <li><strong>Driven ports</strong> : abstraient les dépendances externes</li>
+                    <li><strong>Driving ports</strong> (ports entrants) : interfaces qui exposent les cas d'usage au monde extérieur (ex. <code>OrderUseCases</code>)</li>
+                    <li><strong>Driven ports</strong> (ports sortants) : interfaces qui abstraient les dépendances externes (ex. <code>OrderRepository</code>, <code>NotificationSender</code>)</li>
                 </ul>
-                <p>Cette inversion de dépendance permet de tester le domaine sans infrastructure.</p>
+                <p>Cette inversion de dépendance permet au domaine de ne dépendre que d'abstractions, pas d'implémentations concrètes.</p>
+            </Insight>
+
+            <Insight title="Pourquoi seulement les adaptateurs ?" variant="green" icon="ri/question-line">
+                <p>HexaGlue peut générer automatiquement toute la couche d'infrastructure : adaptateurs JPA, entités de persistance, mappers domaine/JPA, embeddables, repositories.<br>
+                Ici, on choisit de n'implémenter que les adaptateurs, pour trois raisons :</p>
+                <ul>
+                    <li><strong>Supprimer du bruit</strong> : résoudre les violations <code>port-coverage</code> et <code>port-direction</code> pour que le rapport se concentre sur les vrais problèmes</li>
+                    <li><strong>Progressivité</strong> : avancer étape par étape pour mesurer l'impact de chaque changement dans le rapport d'audit</li>
+                    <li><strong>Pédagogie</strong> : comprendre chaque transformation en détail avant de la confier à la génération</li>
+                </ul>
+                <p>La génération automatique par HexaGlue sera introduite à l'étape 5.</p>
             </Insight>
         </div>
     </section>
@@ -218,9 +231,10 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Structure"
                 title="Organisation des packages"
-                description="Nouvelle structure avec séparation domaine, ports, application et infrastructure."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                L'arborescence de packages reflète la séparation en couches hexagonales : domaine, ports, application et infrastructure.
+            </SectionCopy>
 
             <div class="mt-10">
                 <Code code={packageStructure} lang="text" title="Structure hexagonale" />
@@ -228,13 +242,43 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>Domaine</strong> : organisé par sous-domaine métier (order, customer, product)</li>
-                    <li><strong>Ports</strong> : définissent les contrats d'interface</li>
-                    <li><strong>Infrastructure</strong> : implémente avec les technologies concrètes (JPA, REST)</li>
+                    <li><strong>domain/</strong> : organisé par sous-domaine métier (order, customer, product...), contient les entités et la logique</li>
+                    <li><strong>ports/</strong> : contrats d'interface, séparés en <code>in/</code> (driving) et <code>out/</code> (driven)</li>
+                    <li><strong>application/</strong> : services applicatifs qui implémentent les driving ports et orchestrent le domaine</li>
+                    <li><strong>infrastructure/</strong> : implémentations concrètes (JPA, REST, adapters externes)</li>
                 </ul>
             </Insight>
         </div>
     </section>
+
+    <!-- Exemples de code -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Code"
+                title="Exemples de code"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Trois extraits illustrent les patterns clés de l'architecture hexagonale : un driving port, un service applicatif, et un repository en double interface.
+            </SectionCopy>
+
+            <div class="mt-10 space-y-6">
+                <Code code={drivingPortCode} lang="java" title="OrderUseCases.java - Driving Port" />
+                <Code code={applicationServiceCode} lang="java" title="OrderApplicationService.java" />
+                <Code code={dualInterfaceRepoCode} lang="java" title="JpaOrderRepository.java - Dual Interface" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Driving port</strong> : l'interface <code>OrderUseCases</code> définit les cas d'usage sans référence à une technologie</li>
+                    <li><strong>Service applicatif</strong> : implémente le driving port et orchestre le domaine en s'appuyant sur les driven ports</li>
+                    <li><strong>Double interface</strong> : le repository JPA implémente à la fois <code>JpaRepository</code> (Spring Data) et le port domaine <code>OrderRepository</code></li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <AuditReport description="Résultat après restructuration hexagonale avec création des ports et services applicatifs.">
 
     <!-- Verdict de l'audit -->
     <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -242,9 +286,11 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Verdict"
                 title="Verdict de l'audit"
-                description="Résultat après restructuration hexagonale avec création des ports et services applicatifs."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Le verdict montre l'impact de la restructuration hexagonale sur le score global.
+                Les violations MAJOR ont toutes été résolues, seules les violations CRITICAL liées au DDD persistent.
+            </SectionCopy>
 
             <div class="mt-10">
                 <AuditVerdict
@@ -258,8 +304,9 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>+19 points</strong> : structuration hexagonale en place</li>
-                    <li><strong>18 violations CRITICAL</strong> restantes : toutes liées au DDD (domaine couplé à JPA)</li>
+                    <li><strong>+19 points</strong> : la mise en place des ports et services applicatifs fait bondir le score</li>
+                    <li><strong>0 violation MAJOR</strong> : toutes les violations hexagonales (port-coverage, port-direction) sont résolues</li>
+                    <li><strong>18 violations CRITICAL</strong> restantes : elles concernent toutes le couplage domaine/JPA, un problème structurel que la réorganisation en couches ne suffit pas à résoudre</li>
                 </ul>
             </Insight>
         </div>
@@ -271,9 +318,10 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Score"
                 title="Décomposition du score"
-                description="Contribution de chaque dimension au score global de 40/100."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Le score passe de 21 à 40/100. La dimension Hexagonal Architecture atteint 100%, mais les dimensions DDD restent à zéro.
+            </SectionCopy>
 
             <div class="mt-10">
                 <KpiTable rows={kpiRows} total="40.2" />
@@ -281,8 +329,9 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>Hexagonal Architecture</strong> à 100% : tous les ports détectés avec leurs adaptateurs</li>
-                    <li><strong>DDD Compliance</strong> reste à 0% : entités JPA sans identifiants typés ni frontières de cohérence</li>
+                    <li><strong>Hexagonal Architecture</strong> à 100% (+60) : tous les ports sont détectés, chacun a son adaptateur, et les directions sont correctes</li>
+                    <li><strong>Coupling</strong> et <strong>Cohesion</strong> progressent : la séparation en couches améliore la structure des dépendances</li>
+                    <li><strong>DDD Compliance</strong> et <strong>Dependencies</strong> restent à 0% : les entités JPA n'ont pas d'identifiants typés et le domaine dépend toujours de l'infrastructure</li>
                 </ul>
             </Insight>
         </div>
@@ -294,9 +343,10 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Inventaire"
                 title="Inventaire architectural"
-                description="Composants détectés après restructuration hexagonale."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                L'inventaire montre l'apparition des ports, composants fondamentaux de l'architecture hexagonale qui étaient absents aux étapes précédentes.
+            </SectionCopy>
 
             <div class="mt-10">
                 <InventoryTable rows={inventoryRows} />
@@ -304,8 +354,9 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>6 driving ports</strong> et <strong>9 driven ports</strong> détectés</li>
-                    <li>Les 9 entités JPA restent classifiées <strong>ENTITY</strong> (pas AGGREGATE_ROOT) : absence d'identifiants typés</li>
+                    <li><strong>6 driving ports</strong> créés : un par cas d'usage métier (<code>OrderUseCases</code>, <code>CustomerUseCases</code>...)</li>
+                    <li><strong>9 driven ports</strong> : les 6 repositories existants plus 3 ports vers des systèmes externes</li>
+                    <li>Les 9 entités restent classifiées <strong>ENTITY</strong> et non AGGREGATE_ROOT : sans identifiants typés, HexaGlue ne peut pas les promouvoir</li>
                 </ul>
             </Insight>
         </div>
@@ -317,9 +368,11 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Violations"
                 title="Violations détectées"
-                description="Contraintes architecturales non respectées après restructuration."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                La création des ports et adaptateurs résout toutes les violations hexagonales.
+                Les violations restantes sont exclusivement liées au DDD.
+            </SectionCopy>
 
             <div class="mt-10">
                 <ViolationsTable rows={violationRows} />
@@ -327,9 +380,10 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>Violations hexagonales résolues</strong> : port-coverage, port-direction</li>
-                    <li><strong>Violations DDD persistent</strong> : annotations JPA dans le domaine (@Entity, @ManyToOne)</li>
+                    <li><strong>port-coverage</strong> et <strong>port-direction</strong> passent à 0 : chaque port a son adaptateur, et les directions sont respectées</li>
+                    <li><strong>entity-identity</strong> (9) et <strong>domain-purity</strong> (9) sont inchangées : les entités utilisent toujours un <code>Long id</code> et importent <code>javax.persistence</code></li>
                 </ul>
+                <p>La prochaine étape devra s'attaquer à ces violations DDD en purifiant le domaine.</p>
             </Insight>
         </div>
     </section>
@@ -340,9 +394,11 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Qualité"
                 title="Métriques de qualité"
-                description="Indicateurs structurels mesurés sur le code restructuré."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Les métriques de qualité montrent que la restructuration en couches n'améliore pas la pureté du domaine.
+                Le code métier reste pollué par les annotations JPA.
+            </SectionCopy>
 
             <div class="mt-10">
                 <MetricsTable
@@ -358,9 +414,9 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>Domain purity</strong> à 25% : domaine pollué par JPA</li>
-                    <li><strong>Code boilerplate</strong> à 100% : annotations JPA omniprésentes</li>
-                    <li><strong>Aggregate boundary</strong> à 0% : aucune frontière de cohérence DDD</li>
+                    <li><strong>Domain purity</strong> recule à 25% : le domaine contient maintenant proportionnellement plus de classes impures car les services (exclus) ne sont plus comptabilisés</li>
+                    <li><strong>Code boilerplate</strong> toujours à 100% : tant que les entités portent des annotations JPA, le domaine est entièrement technique</li>
+                    <li><strong>Domain coverage</strong> recule à 44% : le périmètre analysé a changé avec la nouvelle structure de packages</li>
                 </ul>
             </Insight>
         </div>
@@ -372,9 +428,10 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Remédiation"
                 title="Coût de mise en conformité"
-                description="Estimation de l'effort de remédiation avec et sans HexaGlue pour atteindre la conformité architecturale."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                Le tableau de remédiation est recalculé. Les contraintes hexagonales étant résolues, seules les contraintes DDD restent à traiter.
+            </SectionCopy>
 
             <div class="mt-10">
                 <RemediationTable rows={remediationRows} />
@@ -382,34 +439,9 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>Effort divisé par 2</strong> grâce à la structure hexagonale</li>
-                    <li><strong>18 jours restants</strong> : purification du domaine (suppression JPA, identifiants typés)</li>
-                </ul>
-            </Insight>
-        </div>
-    </section>
-
-    <!-- Exemples de code -->
-    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-        <div class="max-w-5xl mx-auto">
-            <SectionCopy
-                label="Code"
-                title="Exemples de code"
-                description="Implémentation des ports et services applicatifs."
-                gradient="bg-orange-yellow-gradient"
-            />
-
-            <div class="mt-10 space-y-6">
-                <Code code={drivingPortCode} lang="java" title="OrderUseCases.java - Driving Port" />
-                <Code code={applicationServiceCode} lang="java" title="OrderApplicationService.java" />
-                <Code code={dualInterfaceRepoCode} lang="java" title="JpaOrderRepository.java - Dual Interface" />
-            </div>
-
-            <Insight>
-                <ul>
-                    <li><strong>Driving port</strong> : définit le contrat des cas d'usage</li>
-                    <li><strong>Service applicatif</strong> : orchestre le domaine via les driven ports</li>
-                    <li><strong>Repository</strong> : double interface combinant port domaine et Spring Data</li>
+                    <li><strong>port-coverage</strong> et <strong>port-direction</strong> à 0 violation : plus aucun effort nécessaire sur la couche hexagonale</li>
+                    <li><strong>18 jours restants</strong> : concentrés sur la purification du domaine (suppression des annotations JPA, création des identifiants typés)</li>
+                    <li>L'effort total a été <strong>divisé par 2</strong> par rapport à l'étape précédente (37,5j &rarr; 18j)</li>
                 </ul>
             </Insight>
         </div>
@@ -421,9 +453,11 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Stabilité"
                 title="Stabilité des packages"
-                description="Analyse des couplages selon les métriques de Robert C. Martin."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                L'analyse de stabilité montre l'impact de la restructuration sur les dépendances entre packages.
+                Les packages de ports sont maintenant bien positionnés sur la Main Sequence.
+            </SectionCopy>
 
             <div class="mt-10">
                 <PackageStabilityTable rows={packageStabilityRows} />
@@ -431,12 +465,15 @@ const remediationRows: RemediationRow[] = [
 
             <Insight>
                 <ul>
-                    <li><strong>ports.in</strong> et <strong>ports.out</strong> sur la Main Sequence : abstraits et stables</li>
-                    <li><strong>domain.product</strong> en Zone of Pain (D=0.90) : normal pour un domaine métier central</li>
+                    <li><strong>ports.in</strong> et <strong>ports.out</strong> sur la Main Sequence : abstraits (100%) et stables, c'est exactement le rôle attendu des ports</li>
+                    <li><strong>application</strong> instable à 100% : normal, les services applicatifs dépendent de tout mais personne ne dépend d'eux directement</li>
+                    <li><strong>domain.product</strong> en Zone of Pain (D=0.90) : ce package est très sollicité mais sans abstraction, il faudra à terme introduire des interfaces</li>
                 </ul>
             </Insight>
         </div>
     </section>
+
+    </AuditReport>
 
     <!-- Bilan Section -->
     <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -444,19 +481,20 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Bilan"
                 title="Ce que révèle cette étape"
-                description="Restructuration hexagonale réussie, mais le domaine reste à purifier."
                 gradient="bg-orange-yellow-gradient"
-            />
+            >
+                La restructuration hexagonale est en place. Le code est organisé en couches avec des ports et des adaptateurs, mais le domaine lui-même n'a pas encore été touché.
+            </SectionCopy>
 
             <Insight class="mt-10">
+                <p>Les constats principaux :</p>
                 <ul>
-                    <li>Score 40/100 (+19) : gain substantiel grâce à la structure hexagonale</li>
-                    <li>Hexagonal Architecture à 100% : tous les ports ont leurs adaptateurs</li>
-                    <li>DDD Compliance toujours à 0% : le domaine est couplé à JPA</li>
-                    <li>0 violation MAJOR : seules les 18 violations CRITICAL (DDD) restent</li>
-                    <li>Remédiation divisée par 2 : 37.5j → 18j</li>
-                    <li>Prochaine étape : purifier le domaine (identifiants typés, suppression JPA)</li>
+                    <li><strong>Score 40/100 (+19)</strong> : la dimension Hexagonal Architecture atteint 100%</li>
+                    <li><strong>0 violation MAJOR</strong> : toutes les contraintes hexagonales sont satisfaites</li>
+                    <li><strong>DDD Compliance à 0%</strong> : le domaine reste couplé à JPA, sans identifiants typés ni agrégats</li>
+                    <li><strong>Remédiation divisée par 2</strong> : de 37,5 à 18 jours, concentrés sur la purification du domaine</li>
                 </ul>
+                <p>L'étape suivante consiste à purifier le domaine : créer des identifiants typés et supprimer les annotations JPA.</p>
             </Insight>
         </div>
     </section>

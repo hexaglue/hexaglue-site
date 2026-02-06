@@ -96,7 +96,7 @@ const antiPatterns = [
 
 				<ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
 					<li>Application e-commerce classique Spring Boot.</li>
-					<li>Anti-patterns typiques d'une application enterprise.</li>
+					<li>Anti-patterns typiques d'une application d'entreprise.</li>
 					<li>50 classes Java, Spring Boot 3.2.5, Spring Data JPA, H2.</li>
 				</ul>
 			</div>
@@ -109,9 +109,12 @@ const antiPatterns = [
 			<SectionCopy
 				label="Les 10 anti-patterns"
 				title="Ce qui ne va pas"
-				description="Cette application concentre les problèmes classiques du code en entreprise : couplage infrastructure/domaine, logique dispersée, absence de séparation des responsabilités."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				Cette application concentre les problèmes classiques du code d'entreprise :
+				couplage entre domaine et infrastructure, logique dispersée dans les services, absence de séparation des responsabilités.<br>
+				Le tableau ci-dessous liste les 10 anti-patterns que HexaGlue détectera à l'étape suivante.
+			</SectionCopy>
 
 			<div class="mt-10 overflow-x-auto">
 				<table class="w-full text-left border-collapse">
@@ -142,9 +145,11 @@ const antiPatterns = [
 			<SectionCopy
 				label="Structure"
 				title="Organisation des packages"
-				description="L'application suit un découpage technique classique : controller, service, model, repository."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				L'application suit un découpage technique classique : <code>controller</code>, <code>service</code>, <code>model</code>, <code>repository</code>.<br>
+				Il n'y a pas de package <code>domain</code>, <code>ports</code> ou <code>application</code> : aucune séparation entre logique métier et infrastructure.
+			</SectionCopy>
 
 			<div class="mt-10">
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
@@ -153,7 +158,12 @@ const antiPatterns = [
 			</div>
 
 			<Insight>
-				<p><strong>Code métier et code technique imbriqués</strong> dans les mêmes classes. Changer de framework ou migrer l'infrastructure implique de réécrire le domaine.</p>
+				<p><strong>Code métier et code technique imbriqués</strong> dans les mêmes classes.</p>
+				<ul>
+					<li>Les 11 classes <code>model/</code> sont à la fois des entités JPA et des objets du domaine</li>
+					<li>Les 8 classes <code>service/</code> mélangent orchestration, logique métier et accès aux données</li>
+					<li>Changer de framework ou migrer l'infrastructure implique de réécrire le domaine</li>
+				</ul>
 			</Insight>
 		</div>
 	</section>
@@ -164,9 +174,11 @@ const antiPatterns = [
 			<SectionCopy
 				label="Code legacy"
 				title="Exemple : Order.java"
-				description="La classe Order telle qu'elle existe dans l'application. 50 lignes, annotations JPA, getters/setters."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				La classe <code>Order</code> telle qu'elle existe dans l'application : annotations JPA, getters/setters, aucun comportement métier.<br>
+				C'est typiquement ce que HexaGlue va analyser et signaler dans son rapport d'audit.
+			</SectionCopy>
 
 			<div class="mt-10">
 				<Code code={orderEntityCode} lang="java" title="Order.java" />
@@ -190,9 +202,10 @@ const antiPatterns = [
 			<SectionCopy
 				label="Vérification"
 				title="Est-ce que le projet compile ?"
-				description="Vérifions que l'application fonctionne avant de commencer la migration."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				Avant de commencer la migration, on vérifie que l'application compile et que le point de départ est stable.
+			</SectionCopy>
 
 			<div class="mt-10">
 				<Code code={verificationCommand} lang="bash" />
@@ -210,19 +223,21 @@ const antiPatterns = [
 			<SectionCopy
 				label="Bilan"
 				title="Ce que révèle cette étape"
-				description="L'application compile et fonctionne, mais l'architecture pose des problèmes de fond."
 				gradient="bg-orange-yellow-gradient"
-			/>
+			>
+				L'application compile et fonctionne, mais l'architecture pose des problèmes de fond.<br>
+				L'étape suivante va brancher HexaGlue sur ce projet pour obtenir un premier diagnostic chiffré.
+			</SectionCopy>
 
 			<Insight class="mt-10">
+				<p>Ce monolithe Spring Boot est représentatif de nombreuses applications d'entreprise :</p>
 				<ul>
-					<li><strong>Domaine enfoui</strong> sous l'infrastructure Spring et JPA</li>
-					<li><strong>Logique métier indistincte</strong> du code technique</li>
-					<li><strong>Classes domaine</strong> = data holders sans comportement</li>
-					<li><strong>Services</strong> contiennent toute la logique</li>
-					<li><strong>Références entre agrégats</strong> violent les principes DDD</li>
-					<li><strong>Code difficile</strong> à tester, maintenir et faire évoluer</li>
+					<li><strong>Domaine enfoui</strong> : les concepts métier (Order, Customer, Product) sont noyés sous les annotations JPA et Spring</li>
+					<li><strong>Logique dispersée</strong> : le comportement métier vit dans les <code>@Service</code>, les entités ne sont que des conteneurs de données</li>
+					<li><strong>Couplage fort</strong> : les services appellent directement Spring Data, les agrégats se référencent mutuellement par entité au lieu d'identifiant</li>
+					<li><strong>Impossible à tester isolément</strong> : chaque test unitaire nécessite le contexte Spring complet</li>
 				</ul>
+				<p>HexaGlue va quantifier précisément ces problèmes à l'étape suivante.</p>
 			</Insight>
 		</div>
 	</section>

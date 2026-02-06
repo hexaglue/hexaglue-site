@@ -3,6 +3,7 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import StepNavigation from './_components/StepNavigation.astro';
+import AuditReport from './_components/AuditReport.astro';
 import AuditVerdict from './_components/AuditVerdict.astro';
 import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
 import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
@@ -68,9 +69,11 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Modifications"
         title="Modifications effectuées"
-        description="Corrections apportées pour rendre l'application fonctionnelle de bout en bout."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Cette dernière étape résout les points identifiés par HexaGlue pour rendre l'application fonctionnelle de bout en bout :
+        migration des identifiants, convention de reconstruction des agrégats, et refactoring du dernier composant UNCLASSIFIED.
+      </SectionCopy>
 
       <ModificationList class="mt-10">
         <ModificationGroup layer="domain">
@@ -90,14 +93,12 @@ const violationRows: ViolationRow[] = [
       </ModificationList>
 
       <Insight>
-        <p><strong>6 corrections ciblées</strong>, chacune découlant d'un constat HexaGlue :</p>
+        <p><strong>6 corrections ciblées</strong>, chacune découlant d'un constat du rapport d'audit :</p>
         <ul>
-          <li>Migration Long → UUID</li>
-          <li>Convention reconstitute()</li>
-          <li>DTOs REST</li>
-          <li>Endpoint inventaire</li>
-          <li>Refactoring InventoryUseCases</li>
-          <li>Orchestration via driven ports</li>
+          <li><strong>Domaine</strong> : migration <code>Long</code> &rarr; <code>UUID</code> avec méthode <code>generate()</code>, et ajout de la convention <code>reconstitute()</code> pour la restauration des agrégats depuis la base</li>
+          <li><strong>Ports</strong> : <code>InventoryUseCases</code> refactoré de 5 à 2 méthodes, classifié DRIVING_PORT au lieu de CONFLICTING</li>
+          <li><strong>Application</strong> : <code>OrderApplicationService</code> utilise directement les driven ports au lieu de passer par des use cases intermédiaires</li>
+          <li><strong>Adaptateurs</strong> : DTOs de réponse REST pour éviter la sérialisation imbriquée, et endpoint d'initialisation du stock</li>
         </ul>
       </Insight>
     </div>
@@ -109,9 +110,12 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Validation"
         title="Test bout en bout"
-        description="Scénario complet : création client, produit, commande, paiement et livraison."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Ce scénario exerce le parcours complet d'une commande : création du client et du produit, initialisation du stock,
+        passage de commande, paiement, et livraison.<br>
+        Chaque appel REST traverse la stack entière : contrôleur &rarr; service applicatif &rarr; domaine &rarr; infrastructure générée.
+      </SectionCopy>
 
       <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
@@ -190,116 +194,11 @@ const violationRows: ViolationRow[] = [
       </div>
 
       <Insight>
-        <p><strong>Parcours complet fonctionnel</strong> : de la création client jusqu'à la livraison. L'infrastructure générée assure la persistance sans code manuel.</p>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Audit Verdict -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Verdict"
-        title="Verdict de l'audit"
-        description="Résultat final après corrections et validation fonctionnelle."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <AuditVerdict
-          score={63}
-          grade="D"
-          status="PASSED_WITH_WARNINGS"
-          violations={{ critical: 0, major: 1 }}
-          delta={{ score: 3, violations: -2 }}
-        />
-      </div>
-
-      <Insight>
+        <p><strong>12 appels REST, 0 échec</strong> : le parcours complet fonctionne de bout en bout.</p>
         <ul>
-          <li><strong>63/100</strong>, grade D maintenu</li>
-          <li><strong>1 seule violation</strong> restante</li>
-          <li><strong>Hexagonal Architecture</strong> à 100% grâce au refactoring InventoryUseCases</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- KPI Table -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Score"
-        title="Décomposition du score"
-        description="Contribution de chaque dimension au score global de 63/100."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <KpiTable rows={kpiRows} total="63.0" />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>Hexagonal Architecture</strong> à 100% : services applicatifs = POJOs purs</li>
-          <li><strong>Dépendance InventoryUseCases</strong> résolue</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Violations Table -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Violations"
-        title="Violations détectées"
-        description="État des violations après refactoring d'InventoryUseCases."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <ViolationsTable rows={violationRows} />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>layer-isolation</strong> résolues (-2)</li>
-          <li><strong>1 aggregate-boundary</strong> subsiste : OrderLine sans identifiant explicite</li>
-        </ul>
-      </Insight>
-    </div>
-  </section>
-
-  <!-- Metrics Table -->
-  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <div class="max-w-5xl mx-auto">
-      <SectionCopy
-        label="Qualité"
-        title="Métriques de qualité"
-        description="Indicateurs DDD et qualité du code final."
-        gradient="bg-orange-yellow-gradient"
-      />
-
-      <div class="mt-10">
-        <MetricsTable
-          rows={[
-            { metric: 'domain.purity', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
-            { metric: 'aggregate.boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
-            { metric: 'aggregate.repository.coverage', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
-            { metric: 'code.complexity', value: '1.11', threshold: 'max 10', status: 'OK', delta: '=' },
-            { metric: 'aggregate.avgSize', value: '15.33', threshold: 'max 20', status: 'OK', delta: '+1.00' },
-            { metric: 'code.boilerplate', value: '81.48%', threshold: 'max 50%', status: 'CRITICAL', delta: '+1.28' },
-          ]}
-        />
-      </div>
-
-      <Insight>
-        <ul>
-          <li><strong>Domaine</strong> 100% pur</li>
-          <li><strong>Complexité</strong> maîtrisée (1.11)</li>
-          <li><strong>Agrégats</strong> de taille raisonnable (15.33)</li>
-          <li><strong>Boilerplate</strong> élevé (81%) : inclut le code généré</li>
+          <li><strong>Persistance générée</strong> : chaque entité est sauvegardée via les repositories et mappers produits par HexaGlue au compile-time</li>
+          <li><strong>Stock décrémenté</strong> : la commande de 2 unités fait passer le stock disponible de 100 à 98, preuve que la logique métier traverse toutes les couches</li>
+          <li><strong>Cycle complet</strong> : la commande passe par les états PLACED &rarr; PAID &rarr; DELIVERED, orchestrés par les services applicatifs via les driven ports</li>
         </ul>
       </Insight>
     </div>
@@ -311,9 +210,10 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Build"
         title="Vérification du build"
-        description="Compilation, audit et démarrage de l'application."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Avant le test fonctionnel, les trois étapes du build Maven confirment que le projet compile, passe l'audit, et démarre correctement.
+      </SectionCopy>
 
       <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-8">
         <div class="space-y-4">
@@ -351,13 +251,132 @@ const violationRows: ViolationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>99 fichiers</strong> compilés : 68 manuels + 28 générés + 3 MapStruct</li>
-          <li><strong>Audit</strong> : PASSED avec 1 avertissement</li>
-          <li><strong>Application</strong> démarre et fonctionne</li>
+          <li><strong><code>mvn clean compile</code></strong> : 99 fichiers compilés (68 manuels + 28 générés par HexaGlue + 3 MapStruct). La génération s'exécute automatiquement pendant la phase <code>compile</code></li>
+          <li><strong><code>mvn clean verify</code></strong> : l'audit passe avec un seul avertissement (<code>aggregate-boundary</code>). Le build n'échoue pas car le seuil est configuré sur CRITICAL</li>
+          <li><strong><code>mvn spring-boot:run</code></strong> : l'application démarre sur le port 8080, prête pour le test de bout en bout</li>
         </ul>
       </Insight>
     </div>
   </section>
+
+  <AuditReport description="Résultat final après corrections et validation fonctionnelle.">
+
+  <!-- Audit Verdict -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Verdict"
+        title="Verdict de l'audit"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le dernier rapport d'audit confirme la progression : 63/100, grade D, et une seule violation MAJOR résiduelle.
+        L'architecture hexagonale atteint 100% de conformité.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <AuditVerdict
+          score={63}
+          grade="D"
+          status="PASSED_WITH_WARNINGS"
+          violations={{ critical: 0, major: 1 }}
+          delta={{ score: 3, violations: -2 }}
+        />
+      </div>
+
+      <Insight>
+        <p>Le score progresse de 3 points grâce au refactoring de <code>InventoryUseCases</code> qui résout les 2 violations <code>layer-isolation</code>. La seule violation restante (<code>aggregate-boundary</code>) relève d'une limitation du classificateur, pas d'un défaut d'architecture.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- KPI Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Score"
+        title="Décomposition du score"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le score final de 63/100 reflète l'état de chaque dimension architecturale.<br>
+        Deux dimensions plafonnent le score : Dependencies (0%) et Coupling (31%), qui ne relèvent pas de l'architecture hexagonale.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <KpiTable rows={kpiRows} total="63.0" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Hexagonal Architecture passe à 100%</strong> (+10) : le refactoring de <code>InventoryUseCases</code> élimine la dernière dépendance non classifiée. Tous les services applicatifs sont des POJOs purs</li>
+          <li><strong>Dependencies (0%) et Coupling (31%)</strong> restent inchangés : ces dimensions mesurent les dépendances Maven et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
+          <li><strong>Cohesion monte à 64%</strong> (+1) : légère amélioration due à la simplification de <code>InventoryUseCases</code></li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Violations Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Violations"
+        title="Violations détectées"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le refactoring de <code>InventoryUseCases</code> résout les 2 violations <code>layer-isolation</code>.<br>
+        Une seule violation subsiste, liée à une limitation du classificateur.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <ViolationsTable rows={violationRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong><code>layer-isolation</code> résolues (-2)</strong> : <code>InventoryUseCases</code> est passé de CONFLICTING à DRIVING_PORT, les services applicatifs qui en dépendaient ne violent plus l'isolation des couches</li>
+          <li><strong><code>aggregate-boundary</code> subsiste (1)</strong> : <code>OrderLine</code> n'a pas d'identifiant explicite, donc le classificateur ne le reconnaît pas comme ENTITY membre de l'agrégat <code>Order</code>. C'est une limitation connue, pas un défaut d'architecture</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Metrics Table -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Qualité"
+        title="Métriques de qualité"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Les métriques de qualité montrent l'état final du code après toutes les corrections.<br>
+        La pureté du domaine et la couverture des repositories sont à 100%, confirmant la séparation nette entre domaine et infrastructure.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <MetricsTable
+          rows={[
+            { metric: 'domain.purity', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
+            { metric: 'aggregate.boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
+            { metric: 'aggregate.repository.coverage', value: '100%', threshold: 'min 100%', status: 'OK', delta: '=' },
+            { metric: 'code.complexity', value: '1.11', threshold: 'max 10', status: 'OK', delta: '=' },
+            { metric: 'aggregate.avgSize', value: '15.33', threshold: 'max 20', status: 'OK', delta: '+1.00' },
+            { metric: 'code.boilerplate', value: '81.48%', threshold: 'max 50%', status: 'CRITICAL', delta: '+1.28' },
+          ]}
+        />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong><code>domain.purity</code> à 100%</strong> : le domaine ne contient aucune dépendance technique. Les annotations JPA, Spring et MapStruct sont toutes dans la couche infrastructure</li>
+          <li><strong><code>aggregate.boundary</code> à 0%</strong> : inchangé, lié à la limitation du classificateur sur <code>OrderLine</code></li>
+          <li><strong><code>code.complexity</code> à 1.11</strong> : la complexité cyclomatique reste très basse, signe d'un code métier lisible</li>
+          <li><strong><code>code.boilerplate</code> à 81%</strong> : le ratio élevé reflète le volume de code généré (entités JPA, mappers, repositories), qui est technique par nature</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  </AuditReport>
 
   <!-- Final Summary -->
   <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -416,9 +435,11 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Bilan"
         title="Ce que révèle cette étape"
-        description="Enseignements clés de la migration vers une architecture hexagonale avec HexaGlue."
         gradient="bg-orange-yellow-gradient"
-      />
+      >
+        Cette dernière étape valide le résultat complet de la migration.<br>
+        Chaque carte ci-dessous résume un enseignement clé, issu directement des rapports HexaGlue.
+      </SectionCopy>
 
       <div class="mt-10 grid gap-6 md:grid-cols-2">
         <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
@@ -495,13 +516,12 @@ const violationRows: ViolationRow[] = [
       </div>
 
       <Insight class="mt-10">
+        <p>En 6 étapes, le score est passé de <strong>13 à 63/100</strong> (+50 points) et l'application est fonctionnelle de bout en bout.</p>
         <ul>
-          <li>Score final 63/100 (+50 depuis l'étape 0) : architecture hexagonale validée</li>
-          <li>Architecture hexagonale 100% : services applicatifs purifiés, ports/adaptateurs respectés</li>
-          <li>29 fichiers générés automatiquement : 0 ligne d'infrastructure manuelle pour la persistance</li>
-          <li>Convention reconstitute() : factory method essentielle pour restaurer les agrégats</li>
-          <li>Identifiants UUID avec generate() : stratégie ASSIGNED requise par HexaGlue</li>
-          <li>1 violation résiduelle : limitation classificateur sur OrderLine (pas d'identifiant explicite)</li>
+          <li><strong>Architecture hexagonale à 100%</strong> : services applicatifs purifiés, chaque port dispose d'un adaptateur, les couches sont isolées</li>
+          <li><strong>29 fichiers générés, 0 infrastructure manuelle</strong> : toute la persistance est produite au compile-time par HexaGlue</li>
+          <li><strong>Conventions requises</strong> : <code>reconstitute()</code> pour restaurer les agrégats, <code>generate()</code> pour les identifiants UUID avec stratégie ASSIGNED</li>
+          <li><strong>1 violation résiduelle</strong> : <code>OrderLine</code> sans identifiant explicite, limitation connue du classificateur</li>
         </ul>
       </Insight>
     </div>

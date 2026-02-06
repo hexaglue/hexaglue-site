@@ -4,6 +4,23 @@ import plugin from 'tailwindcss/plugin';
 
 export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+	safelist: [
+		// Dynamic colors used in case-studies/ecommerce-migration steps (bg-${color}/10, border-${color}/30, text-${color}, bg-${color})
+		...[
+			'red-500',
+			'red-400',
+			'orange-400',
+			'amber-400',
+			'yellow-400',
+			'emerald-400',
+			'green-400',
+		].flatMap((color) => [
+			`bg-${color}/10`,
+			`bg-${color}`,
+			`border-${color}/30`,
+			`text-${color}`,
+		]),
+	],
 	theme: {
 		fontFamily: {},
 		extend: {
