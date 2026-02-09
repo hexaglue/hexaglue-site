@@ -3,6 +3,7 @@
 import mdx from '@astrojs/mdx';
 import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
+import compress from '@playform/compress';
 import { defineConfig } from 'astro/config';
 import astroExpressiveCode from 'astro-expressive-code';
 import icon from 'astro-icon';
@@ -90,6 +91,16 @@ export default defineConfig({
 
 				return item;
 			},
+		}),
+		// Compress doit rester en dernier : il post-traite le build final.
+		// CSS/JS déjà minifiés par Vite, images par astro:assets, SVG par astro-icon.
+		compress({
+			CSS: false,
+			HTML: true,
+			Image: false,
+			JavaScript: false,
+			SVG: false,
+			Logger: 1,
 		}),
 	],
 	image: {
