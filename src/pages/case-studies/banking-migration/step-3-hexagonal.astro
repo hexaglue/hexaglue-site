@@ -1,0 +1,451 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+import ModificationList from '../_components/ModificationList.astro';
+import ModificationGroup from '../_components/ModificationGroup.astro';
+import ModificationItem from '../_components/ModificationItem.astro';
+
+const drivingPortCode = `public interface AccountUseCases {
+    AccountId openAccount(CustomerId customerId, AccountType type, String currency);
+    void deposit(AccountId accountId, BigDecimal amount);
+    void withdraw(AccountId accountId, BigDecimal amount);
+    Account getAccount(AccountId accountId);
+    List<Account> getAccountsByCustomer(CustomerId customerId);
+    void closeAccount(AccountId accountId);
+}`;
+
+const drivenPortCode = `public interface AccountRepository {
+    void save(Account account);
+    Optional<Account> findById(AccountId id);
+    List<Account> findByCustomerId(CustomerId customerId);
+}`;
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '16%', weight: '25%', contribution: '4.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Hexagonal Architecture', value: '40%', weight: '25%', contribution: '10.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Coupling', value: '16%', weight: '15%', contribution: '2.4', threshold: '≥ 70%', status: 'CRITICAL', delta: '+8' },
+    { dimension: 'Cohesion', value: '38%', weight: '15%', contribution: '5.7', threshold: '≥ 80%', status: 'CRITICAL', delta: '-2' },
+];
+
+const inventoryRows: InventoryRow[] = [
+    { component: 'Aggregate Roots', count: 0, delta: '=', observation: '' },
+    { component: 'Entities', count: 6, delta: '=', observation: 'Account, Beneficiary, Card, Customer, Transaction, Transfer' },
+    { component: 'Value Objects', count: 4, delta: '=', observation: '4 enums domaine' },
+    { component: 'Identifiers', count: 0, delta: '=', observation: '' },
+    { component: 'Domain Events', count: 0, delta: '=', observation: '' },
+    { component: 'Driving Ports', count: 7, delta: '+7', observation: '5 use cases + FraudDetection + NotificationSender' },
+    { component: 'Driven Ports', count: 11, delta: '+5', observation: '6 domain ports + 5 Spring Data (doublons)' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'ddd:domain-purity', count: 6, severity: 'CRITICAL', delta: '=', observation: '6 modèles avec imports JPA' },
+    { constraint: 'ddd:entity-identity', count: 6, severity: 'CRITICAL', delta: '=', observation: '6 entités sans identifiant typé' },
+    { constraint: 'hexagonal:port-direction', count: 6, severity: 'MAJOR', delta: '=', observation: '6 JPA repositories non utilisés par un service applicatif' },
+    { constraint: 'hexagonal:port-coverage', count: 6, severity: 'MAJOR', delta: '=', observation: '6 JPA repositories sans adaptateur' },
+];
+
+const metricsRows: MetricRow[] = [
+    { metric: 'Domain coverage', value: '35.71%', threshold: 'min 30%', status: 'OK', delta: '-26.79' },
+    { metric: 'Code boilerplate', value: '100.00%', threshold: 'max 50%', status: 'CRITICAL', delta: '=' },
+    { metric: 'Domain purity', value: '40.00%', threshold: 'min 100%', status: 'CRITICAL', delta: '=' },
+    { metric: 'Aggregate boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
+    { metric: 'Code complexity', value: '1.00', threshold: 'max 10', status: 'OK', delta: '=' },
+];
+
+const packageStabilityRows: PackageStabilityRow[] = [
+    { package: 'core.model', ca: 34, ce: 0, instability: 0.00, abstractness: 0.09, distance: 0.91, zone: 'Zone of Pain' },
+    { package: 'core.port.in', ca: 10, ce: 7, instability: 0.41, abstractness: 1.00, distance: 0.41, zone: 'Main Sequence' },
+    { package: 'core.port.out', ca: 13, ce: 8, instability: 0.38, abstractness: 1.00, distance: 0.38, zone: 'Main Sequence' },
+    { package: 'service.application', ca: 0, ce: 17, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
+    { package: 'persistence.repository', ca: 0, ce: 14, instability: 1.00, abstractness: 1.00, distance: 1.00, zone: 'Main Sequence' },
+];
+
+const remediationRows: RemediationRow[] = [
+    {
+        constraint: 'ddd:entity-identity',
+        violations: 6,
+        severity: 'CRITICAL',
+        manualEffort: 6.0,
+        hexaglueEffort: 6.0,
+        description: 'Entités sans identifiant typé',
+    },
+    {
+        constraint: 'ddd:domain-purity',
+        violations: 6,
+        severity: 'CRITICAL',
+        manualEffort: 6.0,
+        hexaglueEffort: 6.0,
+        description: 'Annotations JPA dans le domaine',
+    },
+    {
+        constraint: 'hexagonal:port-coverage',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 18.0,
+        hexaglueEffort: 0,
+        description: 'JPA repositories sans adaptateur',
+    },
+    {
+        constraint: 'hexagonal:port-direction',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 1.5,
+        hexaglueEffort: 1.5,
+        description: 'JPA repositories non utilisés par un service applicatif',
+    },
+];
+---
+
+<MainLayout
+    title="Étape 3 - Restructuration hexagonale | Migration Banking"
+    description="Restructuration hexagonale : création de driving et driven ports, refactoring des services applicatifs, renommage des repositories. Score 22/100, 24 violations."
+>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <AmberStardust height="h-64 md:h-80" />
+        <div class="max-w-5xl mx-auto">
+            <div class="mt-8 max-w-3xl">
+                <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+                    Étape 3
+                </span>
+                <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+                    Restructuration hexagonale
+                </h1>
+                <a
+                  href="https://github.com/hexaglue/case-study-banking/tree/step/3-hexagonal"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+                >
+                  <Icon name="logos/github" class="size-5" aria-hidden="true" />
+                  <code class="text-sm text-amber-400">step/3-hexagonal</code>
+                </a>
+                <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+                    <li>Création des driving ports (use cases) et driven ports.</li>
+                    <li>Refactoring des services en application services.</li>
+                    <li>Renommage des repositories en JPA adapters.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modifications effectuées -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Modifications"
+                title="Modifications effectuées"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'application est restructurée selon l'architecture hexagonale : des ports (interfaces) sont créés pour séparer le domaine de l'infrastructure, et les services sont refactorisés en services applicatifs qui orchestrent les cas d'usage.
+            </SectionCopy>
+            <ModificationList class="mt-10">
+                <ModificationGroup layer="ports">
+                    <ModificationItem action="define" count={5} label="driving ports" details="AccountUseCases, CardUseCases, CustomerUseCases, TransactionUseCases, TransferUseCases dans banking-core/port/in/" />
+                    <ModificationItem action="define" count={8} label="driven ports" details="AccountRepository, BeneficiaryRepository, CardRepository, CustomerRepository, TransactionRepository, TransferRepository, FraudDetection, NotificationSender dans banking-core/port/out/" />
+                </ModificationGroup>
+                <ModificationGroup layer="application">
+                    <ModificationItem action="create" count={5} label="services applicatifs" details="XxxService refactorisé en XxxApplicationService dans banking-service/application/" />
+                </ModificationGroup>
+                <ModificationGroup layer="adapters">
+                    <ModificationItem action="implement" count={6} label="JPA adapters" details="XxxRepository renommé en JpaXxxRepository" />
+                    <ModificationItem action="implement" count={2} label="adapters infrastructure" details="FraudDetectionClient renommé en FraudDetectionAdapter, NotificationService renommé en NotificationAdapter" />
+                </ModificationGroup>
+            </ModificationList>
+
+            <Insight>
+                <ul>
+                    <li><strong>Driving ports</strong> (ports entrants) : interfaces qui exposent les cas d'usage au monde extérieur (ex. <code>AccountUseCases</code>)</li>
+                    <li><strong>Driven ports</strong> (ports sortants) : interfaces qui abstraient les dépendances externes (ex. <code>AccountRepository</code>, <code>FraudDetection</code>)</li>
+                </ul>
+                <p>Cette inversion de dépendance permet au domaine de ne dépendre que d'abstractions, pas d'implémentations concrètes.</p>
+            </Insight>
+
+            <Insight title="Pourquoi les doublons de repositories ?" variant="green" icon="ri/question-line">
+                <p>Les 6 driven ports domaine (<code>AccountRepository</code>, etc.) coexistent avec les 5 JPA repositories Spring Data (<code>JpaAccountRepository</code>, etc.).<br>
+                Cela crée des doublons : les JPA repositories ne sont pas encore reliés aux ports domaine par un adaptateur.</p>
+                <ul>
+                    <li><strong>Résultat</strong> : 6 violations <code>port-coverage</code> (ports sans adaptateur) et 6 violations <code>port-direction</code> (repositories non utilisés)</li>
+                    <li><strong>Objectif</strong> : à terme, les JPA repositories implémenteront les ports domaine ou seront remplacés par des adaptateurs générés</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Exemples de code -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Code"
+                title="Exemples de code"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Deux extraits illustrent les patterns clés de l'architecture hexagonale : un driving port (cas d'usage) et un driven port (abstraction de persistance).
+            </SectionCopy>
+
+            <div class="mt-10 space-y-6">
+                <Code code={drivingPortCode} lang="java" title="AccountUseCases.java - Driving Port" />
+                <Code code={drivenPortCode} lang="java" title="AccountRepository.java - Driven Port" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Driving port</strong> : l'interface <code>AccountUseCases</code> définit les cas d'usage métier sans référence à une technologie</li>
+                    <li><strong>Driven port</strong> : l'interface <code>AccountRepository</code> abstrait la persistance, le domaine ne sait pas comment les données sont stockées</li>
+                    <li>Les deux types de ports sont détectés par HexaGlue et apparaissent dans l'inventaire architectural</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <AuditReport description="Résultat après restructuration hexagonale avec création des ports et services applicatifs.">
+
+    <!-- Verdict de l'audit -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Verdict"
+                title="Verdict de l'audit"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le verdict montre l'impact de la restructuration hexagonale sur le score global.
+                Les ports existent mais le domaine reste pollué par JPA, ce qui limite fortement la progression.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <AuditVerdict
+                    score={22}
+                    grade="F"
+                    status="FAILED"
+                    violations={{ critical: 12, major: 12 }}
+                    delta={{ score: 1, violations: 0 }}
+                />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>+1 point seulement</strong> (21 vers 22) : la création des ports apporte peu tant que le domaine reste couplé à JPA</li>
+                    <li><strong>12 violations Critical</strong> : 6 entités avec imports JPA et 6 sans identifiant typé</li>
+                    <li><strong>12 violations Major</strong> : les JPA repositories existants ne sont pas reliés aux ports domaine par des adaptateurs</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Indicateurs clés -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Score"
+                title="Décomposition du score"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le score passe de 21 à 22/100. La dimension Hexagonal Architecture progresse à 40%, mais les autres dimensions restent bloquées par la pollution JPA du domaine.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <KpiTable rows={kpiRows} total="22.1" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Hexagonal Architecture</strong> à 40% : les ports sont détectés mais les doublons JPA repositories/ports domaine créent des incohérences</li>
+                    <li><strong>Coupling</strong> progresse à 16% (+8) : la séparation en couches améliore légèrement les dépendances</li>
+                    <li><strong>DDD Compliance</strong> à 16% et <strong>Dependencies</strong> à 0% : les entités JPA n'ont pas d'identifiants typés et le domaine dépend toujours de l'infrastructure</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Inventaire architectural -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Inventaire"
+                title="Inventaire architectural"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'inventaire montre l'apparition des ports, composants fondamentaux de l'architecture hexagonale qui étaient absents aux étapes précédentes.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <InventoryTable rows={inventoryRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>7 driving ports</strong> créés : 5 use cases métier plus les ports <code>FraudDetection</code> et <code>NotificationSender</code></li>
+                    <li><strong>11 driven ports</strong> : les 6 ports domaine coexistent avec 5 JPA repositories Spring Data, créant des doublons</li>
+                    <li>Les 6 entités restent classifiées <strong>Entity</strong> et non Aggregate Root : sans identifiants typés, HexaGlue ne peut pas les promouvoir</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Violations détectées -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Violations"
+                title="Violations détectées"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les violations restent stables à 24. Les ports ont été créés mais les doublons JPA repositories/ports domaine génèrent des violations hexagonales, tandis que les violations DDD persistent.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <ViolationsTable rows={violationRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>domain-purity</strong> (6) et <strong>entity-identity</strong> (6) inchangées : les entités utilisent toujours un <code>Long id</code> et importent <code>jakarta.persistence</code></li>
+                    <li><strong>port-direction</strong> (6) : les JPA repositories ne sont pas utilisés par un service applicatif via un port</li>
+                    <li><strong>port-coverage</strong> (6) : les ports domaine n'ont pas encore d'adaptateur qui les implémente</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Métriques techniques -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Qualité"
+                title="Métriques de qualité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les métriques de qualité montrent que la restructuration en couches n'améliore pas la pureté du domaine.
+                Le code métier reste pollué par les annotations JPA.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <MetricsTable rows={metricsRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Domain purity</strong> à 40% : le domaine contient toujours des imports d'infrastructure JPA</li>
+                    <li><strong>Code boilerplate</strong> à 100% : tant que les entités portent des annotations JPA, le domaine est entièrement technique</li>
+                    <li><strong>Domain coverage</strong> recule à 35,71% : le périmètre analysé a changé avec la nouvelle structure de packages</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Coût de remédiation -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Remédiation"
+                title="Coût de mise en conformité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le tableau de remédiation récapitule l'effort nécessaire pour résoudre chaque type de violation. Les contraintes DDD et hexagonales nécessitent toutes un travail significatif.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <RemediationTable rows={remediationRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>entity-identity</strong> (6j) et <strong>domain-purity</strong> (6j) : la purification du domaine est la priorité, c'est l'objet de l'étape suivante</li>
+                    <li><strong>port-coverage</strong> (18j manuels, 0j HexaGlue) : les adaptateurs JPA peuvent être entièrement générés par HexaGlue</li>
+                    <li><strong>port-direction</strong> (1,5j) : les JPA repositories doivent être reliés aux ports domaine</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Stabilité des packages -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Stabilité"
+                title="Stabilité des packages"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'analyse de stabilité montre l'impact de la restructuration sur les dépendances entre packages.
+                Les packages de ports sont maintenant bien positionnés sur la Main Sequence.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <PackageStabilityTable rows={packageStabilityRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>core.port.in</strong> et <strong>core.port.out</strong> sur la Main Sequence : abstraits (100%) et stables, c'est exactement le rôle attendu des ports</li>
+                    <li><strong>service.application</strong> instable à 100% : normal, les services applicatifs dépendent de tout mais personne ne dépend d'eux directement</li>
+                    <li><strong>core.model</strong> en Zone of Pain (D=0.91) : ce package est très sollicité (34 dépendants) mais sans abstraction, il faudra à terme introduire des identifiants typés et des interfaces</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    </AuditReport>
+
+    <!-- Bilan Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Bilan"
+                title="Ce que révèle cette étape"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les ports existent mais le domaine reste pollué par JPA. Le score ne progresse que d'un point car les violations DDD bloquent toute amélioration significative.
+            </SectionCopy>
+
+            <Insight class="mt-10">
+                <p>Les constats principaux :</p>
+                <ul>
+                    <li><strong>Score 22/100 (+1)</strong> : la création des ports apporte peu tant que le domaine est couplé à JPA</li>
+                    <li><strong>12 violations Critical</strong> : 6 entités avec imports JPA et 6 sans identifiant typé</li>
+                    <li><strong>12 violations Major</strong> : les JPA repositories ne sont pas reliés aux ports domaine</li>
+                    <li><strong>Ports en place</strong> : les driving et driven ports forment la structure hexagonale, mais le contenu du domaine doit être purifié</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Transition -->
+    <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+                <p class="text-lg text-astro-gray-200">
+                    L'étape suivante purifie le domaine : suppression des annotations JPA, création des identifiants typés et des value objects.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step Navigation -->
+    <section class="py-16 relative">
+        <div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+            <div class="max-w-5xl mx-auto">
+                <StepNavigation
+                    prev={{ href: '/case-studies/banking-migration/step-2-configured/', label: 'Étape 2 - Suppression du bruit' }}
+                    next={{ href: '/case-studies/banking-migration/step-4-pure-domain/', label: 'Étape 4 - Purification du domaine' }}
+                />
+            </div>
+        </div>
+        <div
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+        ></div>
+    </section>
+</MainLayout>

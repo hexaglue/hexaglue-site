@@ -1,0 +1,515 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+import ModificationList from '../_components/ModificationList.astro';
+import ModificationGroup from '../_components/ModificationGroup.astro';
+import ModificationItem from '../_components/ModificationItem.astro';
+
+const identifierCode = `public record AccountId(Long value) {
+    public AccountId {
+        Objects.requireNonNull(value, "AccountId value must not be null");
+    }
+}`;
+
+const valueObjectCode = `public record Money(BigDecimal amount, String currency) {
+    public Money {
+        Objects.requireNonNull(amount, "amount must not be null");
+        Objects.requireNonNull(currency, "currency must not be null");
+        if (amount.scale() > 2) {
+            throw new IllegalArgumentException("amount scale must be <= 2");
+        }
+    }
+
+    public Money add(Money other) {
+        requireSameCurrency(other);
+        return new Money(amount.add(other.amount), currency);
+    }
+
+    public Money subtract(Money other) {
+        requireSameCurrency(other);
+        return new Money(amount.subtract(other.amount), currency);
+    }
+
+    private void requireSameCurrency(Money other) {
+        if (!currency.equals(other.currency)) {
+            throw new IllegalArgumentException("Currency mismatch");
+        }
+    }
+}`;
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '16%', weight: '25%', contribution: '4.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Hexagonal Architecture', value: '15%', weight: '25%', contribution: '3.8', threshold: '≥ 90%', status: 'CRITICAL', delta: '-25' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Coupling', value: '38%', weight: '15%', contribution: '5.7', threshold: '≥ 70%', status: 'CRITICAL', delta: '+22' },
+    { dimension: 'Cohesion', value: '66%', weight: '15%', contribution: '9.9', threshold: '≥ 80%', status: 'WARNING', delta: '+28' },
+];
+
+const inventoryRows: InventoryRow[] = [
+    { component: 'Aggregate Roots', count: 6, delta: '+6', observation: 'Account, Beneficiary, Card, Customer, Transaction, Transfer' },
+    { component: 'Entities', count: 6, delta: '=', observation: '6 entités JPA dans banking-persistence' },
+    { component: 'Value Objects', count: 8, delta: '+4', observation: '4 enums + Money, Iban, Email, Address' },
+    { component: 'Identifiers', count: 6, delta: '+6', observation: 'AccountId, BeneficiaryId, CardId, CustomerId, TransactionId, TransferId' },
+    { component: 'Domain Events', count: 0, delta: '=', observation: '' },
+    { component: 'Application Services', count: 11, delta: '+11', observation: '5 use case impls + 6 repository adapters' },
+    { component: 'Driving Ports', count: 8, delta: '+1', observation: '5 use cases + FraudDetection + NotificationSender + BeneficiaryRepository' },
+    { component: 'Driven Ports', count: 11, delta: '=', observation: '6 domain ports + 5 JPA repositories' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'ddd:domain-purity', count: 6, severity: 'CRITICAL', delta: '=', observation: '6 entités JPA dans persistence importent JPA' },
+    { constraint: 'ddd:entity-identity', count: 6, severity: 'CRITICAL', delta: '=', observation: '6 entités JPA sans identifiant typé' },
+    { constraint: 'hexagonal:port-direction', count: 6, severity: 'MAJOR', delta: '=', observation: '6 JPA repositories non utilisés par un service applicatif' },
+    { constraint: 'hexagonal:port-coverage', count: 5, severity: 'MAJOR', delta: '-1', observation: '5 JPA repositories sans adaptateur' },
+    { constraint: 'hexagonal:adapter-purity', count: 6, severity: 'MAJOR', delta: '+6', observation: '6 repository adapters avec dépendances d\'infrastructure' },
+];
+
+const metricsRows: MetricRow[] = [
+    { metric: 'Domain coverage', value: '35.71%', threshold: 'min 30%', status: 'OK', delta: '=' },
+    { metric: 'Code boilerplate', value: '100.00%', threshold: 'max 50%', status: 'CRITICAL', delta: '=' },
+    { metric: 'Domain purity', value: '40.00%', threshold: 'min 100%', status: 'CRITICAL', delta: '=' },
+    { metric: 'Aggregate boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
+    { metric: 'Code complexity', value: '1.00', threshold: 'max 10', status: 'OK', delta: '=' },
+];
+
+const packageStabilityRows: PackageStabilityRow[] = [
+    { package: 'core.model', ca: 34, ce: 0, instability: 0.00, abstractness: 0.09, distance: 0.91, zone: 'Zone of Pain' },
+    { package: 'core.port.in', ca: 10, ce: 7, instability: 0.41, abstractness: 1.00, distance: 0.41, zone: 'Main Sequence' },
+    { package: 'core.port.out', ca: 13, ce: 8, instability: 0.38, abstractness: 1.00, distance: 0.38, zone: 'Main Sequence' },
+    { package: 'service.application', ca: 0, ce: 17, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
+    { package: 'persistence.repository', ca: 0, ce: 14, instability: 1.00, abstractness: 1.00, distance: 1.00, zone: 'Main Sequence' },
+];
+
+const remediationRows: RemediationRow[] = [
+    {
+        constraint: 'ddd:entity-identity',
+        violations: 6,
+        severity: 'CRITICAL',
+        manualEffort: 6.0,
+        hexaglueEffort: 6.0,
+        description: 'Entités JPA sans identifiant typé',
+    },
+    {
+        constraint: 'ddd:domain-purity',
+        violations: 6,
+        severity: 'CRITICAL',
+        manualEffort: 6.0,
+        hexaglueEffort: 6.0,
+        description: 'Entités JPA avec imports infrastructure',
+    },
+    {
+        constraint: 'hexagonal:port-coverage',
+        violations: 5,
+        severity: 'MAJOR',
+        manualEffort: 15.0,
+        hexaglueEffort: 0,
+        description: 'JPA repositories sans adaptateur',
+    },
+    {
+        constraint: 'hexagonal:port-direction',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 1.5,
+        hexaglueEffort: 1.5,
+        description: 'JPA repositories non utilisés',
+    },
+    {
+        constraint: 'hexagonal:adapter-purity',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 3.0,
+        hexaglueEffort: 0,
+        description: 'Repository adapters manuels avec dépendances infra',
+    },
+];
+---
+
+<MainLayout
+    title="Étape 4 - Purification du domaine | Migration Banking"
+    description="Purification du domaine : suppression des annotations JPA, création de 6 identifiants typés et 4 value objects. Score 23/100, 29 violations."
+>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <AmberStardust height="h-64 md:h-80" />
+        <div class="max-w-5xl mx-auto">
+            <div class="mt-8 max-w-3xl">
+                <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+                    Étape 4
+                </span>
+                <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+                    Purification du domaine
+                </h1>
+                <a
+                  href="https://github.com/hexaglue/case-study-banking/tree/step/4-pure-domain"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+                >
+                  <Icon name="logos/github" class="size-5" aria-hidden="true" />
+                  <code class="text-sm text-amber-400">step/4-pure-domain</code>
+                </a>
+                <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+                    <li>Suppression des annotations JPA du domaine.</li>
+                    <li>Création d'identifiants typés (records).</li>
+                    <li>Value Objects : Money, Iban, Email, Address.</li>
+                    <li>Entités JPA séparées dans banking-persistence.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modifications effectuées -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Modifications"
+                title="Modifications effectuées"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le domaine est purifié : toutes les annotations JPA sont supprimées et remplacées par des patterns tactiques DDD (identifiants typés, value objects, logique métier dans les entités).
+                Les entités JPA sont extraites dans un module de persistance séparé.
+            </SectionCopy>
+
+            <ModificationList class="mt-10">
+                <ModificationGroup layer="domain">
+                    <ModificationItem action="create" count={6} label="identifiants typés" details="AccountId, BeneficiaryId, CardId, CustomerId, TransactionId, TransferId" />
+                    <ModificationItem action="create" count={4} label="value objects" details="Money, Iban, Email, Address" />
+                    <ModificationItem action="purify" count={6} label="entités domaine" details="suppression @Entity, ajout logique métier (Account.deposit(), Account.withdraw())" />
+                    <ModificationItem action="remove" count={2} label="classes utilitaires" details="IbanUtils et MoneyUtils remplacés par les Value Objects" />
+                </ModificationGroup>
+                <ModificationGroup layer="adapters">
+                    <ModificationItem action="create" count={6} label="entités JPA" details="JpaAccount, JpaBeneficiary, JpaCard, JpaCustomer, JpaTransaction, JpaTransfer dans banking-persistence/entity/" />
+                    <ModificationItem action="create" count={6} label="repository adapters" details="AccountRepositoryAdapter, BeneficiaryRepositoryAdapter, etc." />
+                </ModificationGroup>
+            </ModificationList>
+
+            <Insight>
+                <p>C'est la transformation fondamentale du DDD : séparer le modèle métier de l'infrastructure.</p>
+                <ul>
+                    <li><strong>Identifiants typés</strong> (records) : remplacent les <code>Long</code> génériques, chaque agrégat a son propre type d'identifiant</li>
+                    <li><strong>Value objects</strong> : encapsulent les règles de validation et le comportement (ex. <code>Money</code> sait additionner et soustraire)</li>
+                    <li><strong>Entités domaine purifiées</strong> : protègent leurs invariants via des méthodes métier (<code>deposit()</code>, <code>withdraw()</code>...)</li>
+                    <li><strong>Classes utilitaires supprimées</strong> : <code>IbanUtils</code> et <code>MoneyUtils</code> sont remplacés par les value objects <code>Iban</code> et <code>Money</code></li>
+                </ul>
+            </Insight>
+
+            <Insight title="Pourquoi les violations augmentent ?" variant="green" icon="ri/question-line">
+                <p>Le nombre de violations passe de 24 à 29, ce qui peut sembler contre-intuitif après une purification du domaine.<br>
+                L'explication : les 6 repository adapters manuels introduisent une nouvelle catégorie de violations.</p>
+                <ul>
+                    <li><strong>adapter-purity</strong> (+6) : les adaptateurs manuels importent directement les dépendances JPA au lieu de passer par une abstraction</li>
+                    <li><strong>port-coverage</strong> (-1) : un adaptateur de plus couvre un port supplémentaire</li>
+                </ul>
+                <p>Ces violations disparaîtront à l'étape 5, quand HexaGlue générera automatiquement les adaptateurs.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Exemples de code : Identifiants -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Code"
+                title="Identifiants typés"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les identifiants <code>Long</code> génériques sont remplacés par des <code>record</code> immuables avec validation.
+                Chaque agrégat a son propre type d'identifiant, ce qui empêche les confusions entre entités.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <Code code={identifierCode} lang="java" title="AccountId.java - Identifiant typé" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li>Le <strong>record</strong> remplace le <code>Long</code> générique : on ne peut plus confondre un <code>AccountId</code> avec un <code>CustomerId</code></li>
+                    <li>La <strong>validation</strong> au constructeur garantit qu'aucun identifiant nul ne circule dans le domaine</li>
+                    <li>HexaGlue détecte automatiquement ce pattern et classifie le type comme <strong>IDENTIFIER</strong></li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Exemples de code : Value Object -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Code"
+                title="Value Objects"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les value objects encapsulent des concepts métier avec leur propre validation et comportement.
+                Ils remplacent les classes utilitaires (<code>IbanUtils</code>, <code>MoneyUtils</code>) par des objets riches.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <Code code={valueObjectCode} lang="java" title="Money.java - Value Object" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Validation au constructeur</strong> : montant non nul, devise non nulle, précision limitée à 2 décimales</li>
+                    <li><strong>Comportement métier</strong> : <code>add()</code> et <code>subtract()</code> avec vérification de devise identique</li>
+                    <li><strong>Immutabilité</strong> : chaque opération retourne une nouvelle instance, pas de mutation</li>
+                </ul>
+                <p>HexaGlue détecte automatiquement ce pattern et classifie le type comme <strong>VALUE_OBJECT</strong>.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <AuditReport description="Résultat après purification du domaine et création des patterns tactiques DDD.">
+
+    <!-- Verdict de l'audit -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Verdict"
+                title="Verdict de l'audit"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le verdict montre un paradoxe : le domaine est purifié mais le score ne progresse que d'un point, et les violations augmentent.
+                Les entités JPA manuelles dans banking-persistence génèrent de nouvelles violations.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <AuditVerdict
+                    score={23}
+                    grade="F"
+                    status="FAILED"
+                    violations={{ critical: 12, major: 17 }}
+                    delta={{ score: 1, violations: 5 }}
+                />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>+1 point</strong> (22 vers 23) : le domaine est pur mais les entités JPA manuelles plombent le score</li>
+                    <li><strong>12 violations Critical</strong> : les 6 entités JPA dans banking-persistence importent JPA et n'ont pas d'identifiant typé</li>
+                    <li><strong>17 violations Major</strong> (+5) : les 6 repository adapters manuels introduisent des violations <code>adapter-purity</code></li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Indicateurs clés -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Score"
+                title="Décomposition du score"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le score passe de 22 à 23/100. La dimension Hexagonal Architecture recule temporairement, mais Coupling et Cohesion progressent significativement.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <KpiTable rows={kpiRows} total="23.4" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Hexagonal Architecture</strong> chute à 15% (-25) : les repository adapters manuels introduisent des violations <code>adapter-purity</code></li>
+                    <li><strong>Coupling</strong> progresse à 38% (+22) : la séparation domaine/infrastructure améliore les dépendances</li>
+                    <li><strong>Cohesion</strong> progresse à 66% (+28) : les agrégats regroupent des concepts cohérents avec leur logique métier</li>
+                    <li><strong>DDD Compliance</strong> reste à 16% : les entités JPA sont toujours analysées et n'ont pas d'identifiant typé</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Inventaire architectural -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Inventaire"
+                title="Inventaire architectural"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'inventaire est transformé : les patterns tactiques DDD apparaissent (aggregate roots, identifiants, value objects) et les services applicatifs sont détectés.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <InventoryTable rows={inventoryRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>6 aggregate roots</strong> détectés : grâce aux identifiants typés, HexaGlue promeut les entités domaine en agrégats</li>
+                    <li><strong>6 identifiants typés</strong> : chaque agrégat a son propre record d'identifiant (<code>AccountId</code>, <code>CustomerId</code>...)</li>
+                    <li><strong>8 value objects</strong> : les 4 enums existants plus <code>Money</code>, <code>Iban</code>, <code>Email</code> et <code>Address</code></li>
+                    <li><strong>11 application services</strong> : les 5 implémentations de use cases plus les 6 repository adapters</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Violations détectées -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Violations"
+                title="Violations détectées"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les violations DDD persistent sur les entités JPA de banking-persistence. De nouvelles violations hexagonales apparaissent avec les repository adapters manuels.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <ViolationsTable rows={violationRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>domain-purity</strong> (6) : les entités JPA dans banking-persistence importent toujours <code>jakarta.persistence</code></li>
+                    <li><strong>entity-identity</strong> (6) : ces mêmes entités JPA n'ont pas d'identifiant typé</li>
+                    <li><strong>adapter-purity</strong> (+6) : les repository adapters manuels mélangent logique de mapping et dépendances d'infrastructure</li>
+                    <li><strong>port-coverage</strong> (-1) : un adaptateur supplémentaire couvre un port de plus</li>
+                </ul>
+                <p>Les violations Critical concernent uniquement les entités JPA de persistance, pas le domaine qui est désormais pur.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Métriques techniques -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Qualité"
+                title="Métriques de qualité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les métriques de qualité montrent que le domaine est purifié mais les entités JPA manuelles maintiennent les indicateurs dans le rouge.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <MetricsTable rows={metricsRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Domain purity</strong> à 40% : le domaine lui-même est pur, mais les entités JPA de banking-persistence sont comptabilisées dans le périmètre</li>
+                    <li><strong>Code boilerplate</strong> à 100% : les entités JPA manuelles sont entièrement techniques (getters, setters, annotations)</li>
+                    <li><strong>Aggregate boundary</strong> à 0% : les entités JPA n'ont pas de frontières d'agrégat définies</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Coût de remédiation -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Remédiation"
+                title="Coût de mise en conformité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le tableau de remédiation montre que l'essentiel de l'effort restant peut être automatisé par HexaGlue.
+                Les entités JPA et les repository adapters sont des candidats idéaux pour la génération automatique.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <RemediationTable rows={remediationRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>entity-identity</strong> (6j) et <strong>domain-purity</strong> (6j) : concernent les entités JPA de persistance, pas le domaine</li>
+                    <li><strong>port-coverage</strong> (15j manuels, 0j HexaGlue) : les adaptateurs JPA peuvent être entièrement générés</li>
+                    <li><strong>adapter-purity</strong> (3j manuels, 0j HexaGlue) : les repository adapters générés par HexaGlue sont purs par construction</li>
+                </ul>
+                <p>La génération automatique par HexaGlue éliminera les violations liées aux entités JPA et aux repository adapters manuels.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Stabilité des packages -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Stabilité"
+                title="Stabilité des packages"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'analyse de stabilité montre comment la purification du domaine a modifié les dépendances entre packages.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <PackageStabilityTable rows={packageStabilityRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>core.model</strong> en Zone of Pain (D=0.91) : ce package est très sollicité (34 dépendants) et concret, ce qui est attendu pour un core domain riche en logique métier</li>
+                    <li><strong>core.port.in</strong> et <strong>core.port.out</strong> sur la Main Sequence : les ports restent abstraits et stables</li>
+                    <li><strong>service.application</strong> sur la Main Sequence : parfaitement instable (I=1.00), les services applicatifs dépendent de tout mais personne ne dépend d'eux</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    </AuditReport>
+
+    <!-- Bilan Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Bilan"
+                title="Ce que révèle cette étape"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le domaine est pur mais les violations ont augmenté à 29. Les entités JPA manuelles et les repository adapters génèrent de nouvelles violations que la génération automatique pourra éliminer.
+            </SectionCopy>
+
+            <Insight class="mt-10">
+                <p>Les constats principaux :</p>
+                <ul>
+                    <li><strong>Score 23/100 (+1)</strong> : le domaine est pur mais les entités JPA manuelles plombent le score</li>
+                    <li><strong>29 violations (+5)</strong> : les 6 repository adapters manuels introduisent des violations <code>adapter-purity</code></li>
+                    <li><strong>6 aggregate roots + 6 identifiants + 4 value objects</strong> : les patterns tactiques DDD sont en place dans le domaine</li>
+                    <li><strong>Coupling +22, Cohesion +28</strong> : la séparation domaine/infrastructure améliore significativement la structure</li>
+                    <li><strong>Génération automatique</strong> : l'essentiel des violations restantes sera éliminé par HexaGlue à l'étape suivante</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Transition -->
+    <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+                <p class="text-lg text-astro-gray-200">
+                    L'étape suivante active la génération automatique de l'infrastructure JPA par HexaGlue, en routant le code généré vers banking-persistence.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Step Navigation -->
+    <section class="py-16 relative">
+        <div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+            <div class="max-w-5xl mx-auto">
+                <StepNavigation
+                    prev={{ href: '/case-studies/banking-migration/step-3-hexagonal/', label: 'Étape 3 - Restructuration hexagonale' }}
+                    next={{ href: '/case-studies/banking-migration/step-5-generated/', label: 'Étape 5 - Génération automatique de l\'infrastructure' }}
+                />
+            </div>
+        </div>
+        <div
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+        ></div>
+    </section>
+</MainLayout>

@@ -1,0 +1,251 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import Link from '../../_components/Link.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import { steps } from './_data/steps';
+
+const lessons = [
+	{ icon: 'ri/brain-line', title: 'Inférence automatique', desc: 'Aucune classification explicite nécessaire si le code est bien structuré. Les exclusions dans hexaglue.yaml sont minimales après restructuration.' },
+	{ icon: 'ri/stack-line', title: 'Multi-module = visibilité globale', desc: 'Le mode reactor analyse tous les modules d\'un coup. Les ports définis dans banking-core sont naturellement vus par les plugins.' },
+	{ icon: 'ri/sparkling-2-line', title: 'Le domaine doit être pur', desc: 'La suppression des annotations JPA du domaine est le point d\'inflexion. Les records pour les identifiants et value objects permettent l\'inférence DDD complète.' },
+	{ icon: 'ri/code-box-line', title: 'Routage par module', desc: 'targetModule: banking-persistence route le code généré vers le bon module. L\'infrastructure ne pollue pas le domaine.' },
+	{ icon: 'ri/settings-3-line', title: 'Rôles de modules', desc: 'DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY : chaque module a un rôle architectural clair dans hexaglue.yaml.' },
+	{ icon: 'ri/git-branch-line', title: 'Migration incrémentale', desc: 'Chaque étape compile et les observations guident la suivante. Pas de Big Bang.' },
+	{ icon: 'ri/magic-line', title: 'Architecture générée', desc: '~32 fichiers générés remplacent ~20 fichiers manuels. Le coût de l\'architecture hexagonale est éliminé par la génération automatique.' },
+	{ icon: 'ri/organization-chart', title: 'Orchestration par agrégats', desc: 'Chaque service applicatif coordonne ses propres agrégats via les repositories, sans passer par d\'autres services.' },
+	{ icon: 'ri/bar-chart-box-line', title: 'Le score est un indicateur', desc: '66/100 avec 0 violations montre une architecture hexagonale bien structurée, malgré des métriques de couplage et dépendances encore perfectibles.' },
+];
+---
+
+<MainLayout
+	title="Migration Bancaire Multi-Modules - Étude de cas"
+	description="Étude de cas : migration d'une application bancaire Spring Boot multi-modules vers une architecture hexagonale avec HexaGlue. 7 étapes, de 14/100 à 66/100. Code source inclus."
+>
+	<!-- Hero -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="max-w-4xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Étude de cas
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Migration d'une application bancaire multi-modules.<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">D'un legacy à une architecture hexagonale.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl text-balance">
+				Application Spring Boot de 45 classes, 5 modules Maven, 10 anti-patterns, migrée en 7 étapes vers une architecture hexagonale complète, avec génération automatique de l'infrastructure routée par module.
+			</p>
+
+			<div class="mt-8 flex flex-wrap gap-4">
+				<a
+					href="https://github.com/hexaglue/case-study-banking"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+				>
+					<Icon name="logos/github" class="size-5" aria-hidden="true" />
+					<span>Code source</span>
+				</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- Context -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Point de départ"
+				title="L'application legacy"
+				description="Une application bancaire multi-modules Spring Boot, avec les anti-patterns typiques d'un découpage par couche technique."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+						<Icon name="ri/file-code-line" class="size-5 text-red-400" aria-hidden="true" />
+						Structure initiale
+					</h3>
+					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
+						<li><span class="text-red-400">45</span> classes Java</li>
+						<li><span class="text-red-400">5</span> modules Maven</li>
+						<li><span class="text-red-400">0</span> ports d'architecture</li>
+						<li><span class="text-red-400">0</span> value objects</li>
+						<li><span class="text-red-400">0</span> identifiants typés</li>
+					</ul>
+				</div>
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+						<Icon name="ri/bug-line" class="size-5 text-red-400" aria-hidden="true" />
+						Anti-patterns présents
+					</h3>
+					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
+						<li>Annotations JPA mélangées dans le code métier</li>
+						<li>Découpage multi-modules par couche technique</li>
+						<li>Aucune frontière entre domaine et infrastructure</li>
+						<li>Types primitifs partout au lieu de value objects</li>
+						<li>Modèle anémique dans les services</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Timeline -->
+	<section id="etapes" class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-96" />
+
+		<SectionCopy
+			label="Le parcours"
+			title="7 étapes de migration"
+			description="Chaque étape correspond à une branche Git dans le dépôt."
+			gradient="bg-orange-yellow-gradient"
+		/>
+
+		<div class="mt-12 space-y-4 max-w-4xl mx-auto">
+			{steps.map((step, i) => (
+				<a
+					href={`/case-studies/banking-migration/${step.slug}/`}
+					class="step-link group flex items-center gap-4 md:gap-6 p-4 md:p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300"
+				>
+					<div class={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-${step.color}/10 border border-${step.color}/30 flex items-center justify-center shrink-0`}>
+						<span class={`text-lg md:text-xl font-bold text-${step.color}`}>{step.number}</span>
+					</div>
+
+					<div class="flex-1 min-w-0">
+						<div class="flex items-center gap-2 mb-0.5">
+							<Icon name={step.icon} class={`size-4 text-${step.color}`} aria-hidden="true" />
+							<h3 class="text-base md:text-lg font-semibold text-white truncate">{step.title}</h3>
+						</div>
+						<div class="flex items-center gap-3 text-xs text-astro-gray-400">
+							<code class="px-1.5 py-0.5 rounded bg-astro-dark-800/60">{step.branch}</code>
+							{step.score !== null && (
+								<span class={`font-medium text-${step.color}`}>{step.score}/100</span>
+							)}
+							{step.violations !== null && (
+								<span>{step.violations} violation{step.violations > 1 ? 's' : ''}</span>
+							)}
+						</div>
+					</div>
+
+					{step.score !== null && (
+						<div class="hidden md:flex items-center gap-3">
+							<div class="w-24 h-2 bg-astro-dark-800/60 rounded-full overflow-hidden">
+								<div class={`h-full rounded-full bg-${step.color}`} style={`width: ${step.score}%`} />
+							</div>
+							<span class={`text-sm font-medium text-${step.color} w-8`}>{step.score}</span>
+						</div>
+					)}
+
+					<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0" aria-hidden="true" />
+				</a>
+			))}
+		</div>
+	</section>
+
+	<!-- Before/After -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64" />
+
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Bilan"
+				title="Avant vs Après"
+				description="Comparaison entre l'application legacy (étape 0) et l'architecture hexagonale finale (étape 6)."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<div class="mt-8 overflow-x-auto">
+				<table class="w-full text-sm">
+					<thead>
+						<tr class="border-b border-astro-dark-100/15 text-astro-gray-400 text-left">
+							<th class="py-3 pr-4 font-medium">Critère</th>
+							<th class="py-3 px-3 font-medium text-center text-red-400">Legacy</th>
+							<th class="py-3 pl-3 font-medium text-center text-astro-green">Hexagonal</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Classes manuelles</td><td class="py-2.5 px-3 text-center">45</td><td class="py-2.5 pl-3 text-center">38</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Infrastructure générée</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">~32</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">JPA dans le domaine</td><td class="py-2.5 px-3 text-center text-red-400">6 classes</td><td class="py-2.5 pl-3 text-center text-astro-green">0</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Spring dans les services</td><td class="py-2.5 px-3 text-center text-red-400">7 classes</td><td class="py-2.5 pl-3 text-center text-astro-green">0 (POJOs)</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Value objects</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">8</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Identifiants typés</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">6 (Long)</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Domain events</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center">0</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Driving ports</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">5</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Driven ports</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">8</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Application services</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">5</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Setters dans le domaine</td><td class="py-2.5 px-3 text-center text-red-400">Partout</td><td class="py-2.5 pl-3 text-center text-astro-green">0</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Logique métier</td><td class="py-2.5 px-3 text-center text-red-400">Services</td><td class="py-2.5 pl-3 text-center text-astro-green">Agrégats</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Infrastructure de persistence</td><td class="py-2.5 px-3 text-center text-red-400">~20 classes manuelles</td><td class="py-2.5 pl-3 text-center text-astro-green">Générée par HexaGlue</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">DDD Compliance</td><td class="py-2.5 px-3 text-center text-astro-gray-400">N/A</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">100%</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Hexagonal Architecture</td><td class="py-2.5 px-3 text-center text-astro-gray-400">N/A</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">100%</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white font-bold">Score architectural</td><td class="py-2.5 px-3 text-center text-red-400 font-bold">14/100</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">66/100</td></tr>
+						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Violations critiques <span class="text-xs text-astro-gray-400 font-normal">(identité, immutabilité, pureté)</span></td><td class="py-2.5 px-3 text-center text-red-400 font-bold">13</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">0</td></tr>
+						<tr class="border-b border-astro-dark-100/15"><td class="py-2.5 pr-4 text-white">Violations majeures <span class="text-xs text-astro-gray-400 font-normal">(isolation, frontières, couverture)</span></td><td class="py-2.5 px-3 text-center text-red-400">23</td><td class="py-2.5 pl-3 text-center text-astro-green">0</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Lessons Learned -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64" />
+
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Retours"
+				title="Leçons apprises"
+				description="Les enseignements clés tirés de cette migration."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				{lessons.map((lesson) => (
+					<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+						<div class="p-2 w-fit rounded-lg bg-amber-400/10 mb-3">
+							<Icon name={lesson.icon} class="size-5 text-amber-400" aria-hidden="true" />
+						</div>
+						<h3 class="text-base font-semibold text-white mb-1.5">{lesson.title}</h3>
+						<p class="text-sm text-astro-gray-200 font-light leading-relaxed">{lesson.desc}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Résorbez votre dette technique.</span><br/>
+				Migrez avec HexaGlue.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light">
+				Suivez la migration pas-à-pas ou lancez HexaGlue sur votre propre projet.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/" class="primary">
+					<span class="bg-clip-text text-transparent bg-orange-yellow-gradient group-hover:text-[#92400e] transition-all ease-in-out duration-500">
+						Toutes les études de cas
+					</span>
+				</Link>
+				<Link href="/contact/" class="secondary">
+					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<span>Parlons de votre projet</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>

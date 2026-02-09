@@ -1,0 +1,420 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+
+const configCode = `# hexaglue.yaml
+classification:
+  exclude:
+    - "com.acme.banking.core.exception.*"
+    - "com.acme.banking.api.dto.*"
+    - "com.acme.banking.api.controller.*"
+    - "com.acme.banking.api.exception.*"
+    - "com.acme.banking.service.service.*"
+    - "com.acme.banking.service.event.*"
+
+modules:
+  banking-core:
+    role: DOMAIN
+  banking-persistence:
+    role: INFRASTRUCTURE
+  banking-service:
+    role: APPLICATION
+  banking-api:
+    role: API
+  banking-app:
+    role: ASSEMBLY`;
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '16%', weight: '25%', contribution: '4.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '+7' },
+    { dimension: 'Hexagonal Architecture', value: '40%', weight: '25%', contribution: '10.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '+40' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Coupling', value: '8%', weight: '15%', contribution: '1.2', threshold: '≥ 70%', status: 'CRITICAL', delta: '-32' },
+    { dimension: 'Cohesion', value: '40%', weight: '15%', contribution: '6.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+];
+
+const inventoryRows: InventoryRow[] = [
+    { component: 'Aggregate Roots', count: 0, delta: '=', observation: '' },
+    { component: 'Entities', count: 6, delta: '=', observation: 'Account, Beneficiary, Card, Customer, Transaction, Transfer' },
+    { component: 'Value Objects', count: 4, delta: '-8', observation: '4 enums domaine (AccountType, CardStatus, TransactionType, TransferStatus)' },
+    { component: 'Identifiers', count: 0, delta: '=', observation: '' },
+    { component: 'Domain Events', count: 0, delta: '-1', observation: 'Spring ApplicationEvent exclu' },
+    { component: 'Driving Ports', count: 0, delta: '=', observation: '' },
+    { component: 'Driven Ports', count: 6, delta: '=', observation: 'Les 6 repositories Spring Data' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'ddd:entity-identity', count: 6, severity: 'CRITICAL', delta: '=', observation: '6 entités sans identifiant typé' },
+    { constraint: 'ddd:domain-purity', count: 6, severity: 'CRITICAL', delta: '-1', observation: '6 modèles avec imports JPA (TransferService exclu)' },
+    { constraint: 'hexagonal:port-direction', count: 6, severity: 'MAJOR', delta: '=', observation: '6 driven ports non utilisés par un service applicatif' },
+    { constraint: 'hexagonal:port-coverage', count: 6, severity: 'MAJOR', delta: '=', observation: '6 driven ports sans adaptateur' },
+];
+
+const metricRows: MetricRow[] = [
+    { metric: 'Domain coverage', value: '62.50%', threshold: 'min 30%', status: 'OK', delta: '-13.5' },
+    { metric: 'Code boilerplate', value: '100.00%', threshold: 'max 50%', status: 'CRITICAL', delta: '+23.3' },
+    { metric: 'Domain purity', value: '40.00%', threshold: 'min 100%', status: 'CRITICAL', delta: '-23.16' },
+    { metric: 'Aggregate boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '=' },
+    { metric: 'Code complexity', value: '1.00', threshold: 'max 10', status: 'OK', delta: '-0.03' },
+];
+
+const packageStabilityRows: PackageStabilityRow[] = [
+    { package: 'core.model', ca: 21, ce: 0, instability: 0.00, abstractness: 0.09, distance: 0.91, zone: 'Zone of Pain' },
+    { package: 'persistence.repository', ca: 5, ce: 8, instability: 0.62, abstractness: 1.00, distance: 0.62, zone: 'Main Sequence' },
+];
+
+const remediationRows: RemediationRow[] = [
+    {
+        constraint: 'ddd:entity-identity',
+        violations: 6,
+        severity: 'CRITICAL',
+        manualEffort: 6.0,
+        hexaglueEffort: 6.0,
+        description: 'Entités sans identifiant typé',
+    },
+    {
+        constraint: 'ddd:domain-purity',
+        violations: 6,
+        severity: 'CRITICAL',
+        manualEffort: 6.0,
+        hexaglueEffort: 6.0,
+        description: 'Annotations JPA dans le domaine',
+    },
+    {
+        constraint: 'hexagonal:port-coverage',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 18.0,
+        hexaglueEffort: 0,
+        description: 'Ports sans adaptateur',
+    },
+    {
+        constraint: 'hexagonal:port-direction',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 1.5,
+        hexaglueEffort: 1.5,
+        description: 'Ports appelés dans la mauvaise direction',
+    },
+];
+---
+
+<MainLayout
+    title="Étape 2 - Exclusions centralisées | Migration Banking"
+    description="Configuration des exclusions dans hexaglue.yaml pour filtrer le bruit d'analyse. Score 21/100, 24 violations. Diagnostic affiné sans modification de code."
+>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <AmberStardust height="h-64 md:h-80" />
+        <div class="max-w-5xl mx-auto">
+            <div class="mt-8 max-w-3xl">
+                <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+                    Étape 2
+                </span>
+                <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+                    Exclusions centralisées
+                </h1>
+                <a
+                  href="https://github.com/hexaglue/case-study-banking/tree/step/2-configured"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+                >
+                  <Icon name="logos/github" class="size-5" aria-hidden="true" />
+                  <code class="text-sm text-amber-400">step/2-configured</code>
+                </a>
+                <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+                    <li>Configuration des exclusions dans hexaglue.yaml.</li>
+                    <li>Réduction du bruit d'analyse.</li>
+                    <li>Pas de modification du code Java.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Configuration"
+                title="Exclusions dans hexaglue.yaml"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le fichier <code>hexaglue.yaml</code> permet de configurer le périmètre d'analyse.
+                En multi-module, les exclusions sont centralisées à la racine du projet et s'appliquent à tous les modules.<br>
+                Ici, on exclut les packages qui produisaient des faux positifs dans le rapport précédent.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <Code code={configCode} lang="yaml" title="hexaglue.yaml" />
+            </div>
+
+            <Insight>
+                <p>Chaque exclusion cible un type de bruit spécifique :</p>
+                <ul>
+                    <li><code>core.exception.*</code> : exceptions métier, hors périmètre de la classification architecturale</li>
+                    <li><code>api.dto.*</code> et <code>api.controller.*</code> : DTOs et contrôleurs REST, ce sont des driving adapters qui seront traités plus tard</li>
+                    <li><code>api.exception.*</code> : gestionnaires d'exceptions HTTP, purement technique</li>
+                    <li><code>service.service.*</code> : services Spring classifiés à tort comme value objects faute de ports définis</li>
+                    <li><code>service.event.*</code> : <code>ApplicationEvent</code> Spring, pas un domain event DDD pur</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <AuditReport description="Résultat après exclusion des types hors périmètre. Le rapport est nettoyé du bruit, seuls les vrais problèmes architecturaux restent visibles.">
+
+    <!-- Verdict Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Verdict"
+                title="Verdict de l'audit"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le verdict synthétise le score global après la configuration du périmètre d'analyse.
+                La comparaison avec l'étape précédente montre l'impact de l'exclusion des faux positifs.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <AuditVerdict
+                    score={21}
+                    grade="F"
+                    status="FAILED"
+                    violations={{ critical: 12, major: 12 }}
+                    delta={{ score: 7, violations: -12 }}
+                />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>+7 points</strong> : l'élimination des fausses violations fait progresser le score de 14 à 21</li>
+                    <li><strong>-12 violations</strong> : le rapport est nettoyé du bruit, les violations restantes sont de vrais problèmes</li>
+                    <li><strong>Grade F maintenu</strong> : les problèmes de fond (DDD 16%, Dependencies 0%) ne sont pas résolus par la configuration seule</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Score Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Score"
+                title="Décomposition du score"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le score passe de 14 à 21/100. La colonne delta montre l'évolution de chaque dimension par rapport à l'étape précédente.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <KpiTable rows={kpiRows} total="21.2" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Hexagonal Architecture</strong> passe de 0% à 40% : les fausses violations <code>layer-isolation</code> ne pénalisent plus cette dimension</li>
+                    <li><strong>Coupling</strong> recule de 40% à 8% : l'exclusion des services et contrôleurs réduit le nombre de composants analysés, ce qui modifie le ratio de couplage</li>
+                    <li><strong>DDD Compliance</strong> progresse de 9% à 16% : les 4 enums domaine correctement classifiées pèsent davantage dans un périmètre réduit</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Inventaire Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Inventaire"
+                title="Inventaire architectural"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'inventaire montre les composants détectés après exclusion des packages hors périmètre.
+                La colonne delta indique l'évolution par rapport à l'étape 1.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <InventoryTable rows={inventoryRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Value Objects</strong> : 12 &rarr; 4 (-8), les services et DTOs mal classifiés ont disparu, seules les 4 enums domaine restent</li>
+                    <li><strong>Domain Events</strong> : 1 &rarr; 0, le faux <code>ApplicationEvent</code> Spring est exclu</li>
+                    <li>L'inventaire reflète maintenant les vrais composants : 6 entités JPA, 4 enums domaine et 6 repositories Spring Data</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Violations Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Violations"
+                title="Violations détectées"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le tableau des violations montre l'évolution après configuration.
+                Certaines violations disparaissent (faux positifs), les vrais problèmes restent inchangés.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <ViolationsTable rows={violationRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>layer-isolation</strong> disparaît entièrement (-11) : les fausses violations liées aux services mal classifiés sont éliminées</li>
+                    <li><strong>domain-purity</strong> passe de 7 à 6 (-1) : le <code>TransferService</code> est exclu, seules les 6 entités JPA restent</li>
+                    <li><strong>entity-identity</strong>, <strong>port-direction</strong> et <strong>port-coverage</strong> sont inchangées : la configuration ne peut pas corriger ces problèmes structurels</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Métriques Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Qualité"
+                title="Métriques de qualité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les métriques de qualité mesurent la structure du code restant dans le périmètre d'analyse après exclusion.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <MetricsTable rows={metricRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Code boilerplate</strong> monte à 100% : le périmètre ne contient plus que les entités JPA et les enums, qui sont intégralement du code technique (annotations, getters/setters)</li>
+                    <li><strong>Domain purity</strong> recule à 40% : la proportion de classes impures est plus visible maintenant que le bruit est filtré</li>
+                    <li><strong>Domain coverage</strong> baisse à 62,5% : les exclusions réduisent le volume de code dans le périmètre d'analyse</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Remediation Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Remédiation"
+                title="Coût de mise en conformité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le tableau de remédiation est recalculé après exclusion. L'effort total diminue car les fausses violations <code>layer-isolation</code> ne sont plus comptabilisées.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <RemediationTable rows={remediationRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>18 jours automatisables</strong> : la contrainte <code>port-coverage</code> peut être entièrement résolue par la génération d'adaptateurs JPA</li>
+                    <li><strong>13,5 jours manuels</strong> : purification du domaine (identités typées, suppression des annotations JPA)</li>
+                    <li>L'estimation est plus fiable maintenant que le bruit a été éliminé</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Stabilité des Packages -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Stabilité"
+                title="Stabilité des packages"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Après exclusion, seuls deux packages restent dans le périmètre d'analyse. L'analyse de stabilité reflète la structure réelle du domaine et de la persistance.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <PackageStabilityTable rows={packageStabilityRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>core.model</strong> reste en <strong>Zone of Pain</strong> : 21 dépendants et quasi aucune abstraction, ce problème structurel persiste</li>
+                    <li><strong>persistence.repository</strong> sur la <strong>Main Sequence</strong> : position acceptable grâce à ses interfaces abstraites</li>
+                    <li>Les packages <code>service</code>, <code>controller</code> et <code>dto</code> exclus ne figurent plus dans l'analyse</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    </AuditReport>
+
+    <!-- Bilan Section -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Bilan"
+                title="Ce que révèle cette étape"
+                gradient="bg-orange-yellow-gradient"
+            >
+                La configuration des exclusions transforme un rapport bruyant en diagnostic exploitable.
+                Sans modifier une seule ligne de code Java, le rapport expose maintenant les vrais problèmes architecturaux.
+            </SectionCopy>
+
+            <Insight class="mt-10">
+                <p>Les constats principaux :</p>
+                <ul>
+                    <li><strong>Score +7 points (14 &rarr; 21)</strong> : la progression vient uniquement du nettoyage des faux positifs</li>
+                    <li><strong>12 violations éliminées</strong> : principalement les fausses <code>layer-isolation</code> et les classifications erronées</li>
+                    <li><strong>Les problèmes de fond restent</strong> : 12 violations critiques (pureté du domaine, identités) et 12 violations majeures (ports)</li>
+                    <li><strong>18 jours automatisables</strong> sur 31,5 au total grâce à la génération d'adaptateurs</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Transition -->
+    <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+                <p class="text-lg text-astro-gray-200">
+                    L'étape suivante restructure le code en couches hexagonales avec des ports driving et driven.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <section class="py-16 relative">
+        <div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+            <div class="max-w-5xl mx-auto">
+                <StepNavigation
+                    prev={{
+                        href: '/case-studies/banking-migration/step-1-discovery/',
+                        label: 'Étape 1 - Premier diagnostic avec HexaGlue'
+                    }}
+                    next={{
+                        href: '/case-studies/banking-migration/step-3-hexagonal/',
+                        label: 'Étape 3 - Réorganisation en couches hexagonales'
+                    }}
+                />
+            </div>
+        </div>
+        <div
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+        ></div>
+    </section>
+</MainLayout>

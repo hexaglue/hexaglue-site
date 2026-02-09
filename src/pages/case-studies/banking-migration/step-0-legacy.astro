@@ -1,0 +1,276 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import StepNavigation from '../_components/StepNavigation.astro';
+import Insight from '~/components/Insight.astro';
+
+const accountEntityCode = `@Entity
+@Table(name = "accounts")
+public class Account extends BaseEntity {
+
+    @Column(nullable = false, unique = true)
+    private String iban;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Transaction> transactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Card> cards = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountType type;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal balance;
+
+    private String currency;
+
+    // getters, setters...
+}`;
+
+const packageStructure = `banking/
+├── banking-core/          (14 classes)
+│   ├── model/             (10 classes: 6 entities, 3 enums, BaseEntity)
+│   ├── exception/         (3 classes)
+│   └── util/              (2 classes)
+├── banking-persistence/   (8 classes)
+│   ├── repository/        (6 interfaces)
+│   └── config/            (2 classes)
+├── banking-service/       (8 classes)
+│   ├── service/           (7 classes)
+│   └── event/             (1 classe)
+├── banking-api/           (14 classes)
+│   ├── controller/        (5 classes)
+│   ├── dto/               (7 records + 1 response)
+│   └── exception/         (1 classe)
+└── banking-app/           (2 classes)
+    └── BankingApplication + AppConfig`;
+
+const verificationCommand = `./mvnw clean install`;
+
+const antiPatterns = [
+	{ num: 1, pattern: '@Entity sur classes domaine', example: 'Account, Customer, etc. héritent de BaseEntity (@MappedSuperclass)' },
+	{ num: 2, pattern: '@Service partout', example: 'Services applicatifs ET "domaine" marqués @Service, sans distinction de rôle' },
+	{ num: 3, pattern: 'Pas de ports', example: 'Les services dépendent directement des repositories Spring Data' },
+	{ num: 4, pattern: 'Modèle anémique', example: 'Toute la logique métier vit dans les services, les entités ne sont que des conteneurs' },
+	{ num: 5, pattern: 'Primitives au lieu de VOs', example: 'BigDecimal pour montants, String pour IBAN/BIC/email : aucun value object' },
+	{ num: 6, pattern: 'Références directes entre agrégats', example: 'Account.customer = Customer (entité JPA) au lieu d\'un identifiant typé' },
+	{ num: 7, pattern: 'BaseEntity technique', example: '@MappedSuperclass avec Long id, createdAt, updatedAt imposé à toutes les entités' },
+	{ num: 8, pattern: 'Events Spring', example: 'TransferCompletedEvent extends ApplicationEvent : concept métier lié à Spring' },
+	{ num: 9, pattern: 'Logique métier dans controllers', example: 'La validation est dans les controllers au lieu du domaine' },
+	{ num: 10, pattern: 'Multi-module par couche technique', example: 'Découpage horizontal (core, persistence, service, api) au lieu de vertical par domaine' },
+];
+---
+
+<MainLayout
+	title="Étape 0 - Application bancaire multi-modules d'origine | Migration Banking"
+	description="Point de départ : application bancaire Spring Boot multi-modules avec 10 anti-patterns typiques. Découpage par couche technique, domaine couplé à JPA, logique dans les services."
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="max-w-5xl mx-auto">
+			<div class="mt-8 max-w-3xl">
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+					Étape 0
+				</span>
+
+				<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+					Application bancaire multi-modules d'origine
+				</h1>
+
+				<a
+				  href="https://github.com/hexaglue/case-study-banking/tree/step/0-legacy"
+				  target="_blank"
+				  rel="noopener noreferrer"
+				  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+				>
+				  <Icon name="logos/github" class="size-5" aria-hidden="true" />
+				  <code class="text-sm text-amber-400">step/0-legacy</code>
+				</a>
+
+				<ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+					<li>~45 classes Java réparties en 5 modules Maven.</li>
+					<li>Anti-patterns typiques d'une application bancaire d'entreprise.</li>
+					<li>Spring Boot 3.5.10, Spring Data JPA, H2.</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- Anti-patterns Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Les 10 anti-patterns"
+				title="Ce qui ne va pas"
+				gradient="bg-orange-yellow-gradient"
+			>
+				Cette application bancaire concentre les problèmes classiques du code d'entreprise :
+				couplage entre domaine et infrastructure, logique dispersée dans les services, découpage multi-module par couche technique au lieu d'un découpage par domaine.<br>
+				Le tableau ci-dessous liste les 10 anti-patterns que HexaGlue détectera à l'étape suivante.
+			</SectionCopy>
+
+			<div class="mt-10 overflow-x-auto">
+				<table class="w-full text-left border-collapse">
+					<thead>
+						<tr class="border-b border-astro-dark-100/15">
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300 w-16">#</th>
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300">Anti-pattern</th>
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300">Exemple</th>
+						</tr>
+					</thead>
+					<tbody>
+						{antiPatterns.map((item) => (
+							<tr class="border-b border-astro-dark-100/10 hover:bg-astro-dark-800/20 transition-colors">
+								<td class="py-4 px-4 text-sm text-astro-gray-300 font-mono">{item.num}</td>
+								<td class="py-4 px-4 text-sm text-white font-medium">{item.pattern}</td>
+								<td class="py-4 px-4 text-sm text-astro-gray-300 font-light">{item.example}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Package Structure Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Structure"
+				title="Organisation des modules"
+				gradient="bg-orange-yellow-gradient"
+			>
+				L'application est découpée en 5 modules Maven : <code>banking-core</code>, <code>banking-persistence</code>, <code>banking-service</code>, <code>banking-api</code> et <code>banking-app</code>.<br>
+				Ce découpage suit une logique purement technique (couches horizontales) et non une logique métier (domaines verticaux).
+			</SectionCopy>
+
+			<div class="mt-10">
+				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+					<Code code={packageStructure} lang="text" />
+				</div>
+			</div>
+
+			<Insight>
+				<p><strong>Découpage par couche technique au lieu d'un découpage par domaine métier.</strong></p>
+				<ul>
+					<li>Les 5 modules suivent un empilement horizontal : <code>core</code> (modèle), <code>persistence</code> (accès aux données), <code>service</code> (logique), <code>api</code> (exposition), <code>app</code> (démarrage)</li>
+					<li>Les 10 classes de <code>banking-core/model/</code> sont à la fois des entités JPA et des objets du domaine : le module "core" dépend de JPA</li>
+					<li>Les 7 services de <code>banking-service/</code> mélangent orchestration, logique métier et accès aux données</li>
+					<li>Un découpage vertical (par agrégat : Account, Customer, Transfer) permettrait d'isoler chaque domaine et de le faire évoluer indépendamment</li>
+				</ul>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Code Example Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Code legacy"
+				title="Exemple : Account.java"
+				gradient="bg-orange-yellow-gradient"
+			>
+				La classe <code>Account</code> telle qu'elle existe dans l'application : annotations JPA, héritage de <code>BaseEntity</code>, primitives pour les montants et devises, référence directe à <code>Customer</code>.<br>
+				C'est typiquement ce que HexaGlue va analyser et signaler dans son rapport d'audit.
+			</SectionCopy>
+
+			<div class="mt-10">
+				<Code code={accountEntityCode} lang="java" title="Account.java" />
+			</div>
+
+			<Insight>
+				<ul>
+					<li><strong>Domaine invisible</strong> sous les annotations JPA (<code>@Entity</code>, <code>@Table</code>, <code>@ManyToOne</code>)</li>
+					<li><strong>Couplage fort</strong> : Account référence l'entité Customer au lieu d'un identifiant typé <code>CustomerId</code></li>
+					<li><strong>Absence de typage métier</strong> : <code>BigDecimal</code> pour le solde, <code>String</code> pour l'IBAN et la devise</li>
+					<li><strong>Héritage technique</strong> imposé par <code>BaseEntity</code> (<code>@MappedSuperclass</code>)</li>
+					<li><strong>Aucun comportement métier</strong> : uniquement des getters/setters, la logique vit dans les services</li>
+				</ul>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Verification Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Vérification"
+				title="Est-ce que le projet compile ?"
+				gradient="bg-orange-yellow-gradient"
+			>
+				Avant de commencer la migration, on vérifie que l'application compile et que le point de départ est stable.
+			</SectionCopy>
+
+			<div class="mt-10">
+				<Code code={verificationCommand} lang="bash" />
+			</div>
+
+			<div class="mt-4 p-3 bg-astro-green/10 border border-astro-green/20 rounded-lg">
+				<p class="text-sm text-astro-green font-mono">BUILD SUCCESS - ~45 source files</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Bilan Section -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<SectionCopy
+				label="Bilan"
+				title="Ce que révèle cette étape"
+				gradient="bg-orange-yellow-gradient"
+			>
+				L'application compile et fonctionne, mais l'architecture pose des problèmes de fond malgré le découpage en modules.
+			</SectionCopy>
+
+			<Insight class="mt-10">
+				<p>Cette application bancaire multi-modules est représentative de nombreuses applications d'entreprise :</p>
+				<ul>
+					<li><strong>Multi-module trompeur</strong> : les 5 modules suivent un découpage par couche technique, pas par domaine métier. La structure donne une illusion de séparation</li>
+					<li><strong>Domaine enfoui</strong> : les concepts métier (Account, Customer, Transaction) sont noyés sous les annotations JPA et Spring</li>
+					<li><strong>Logique dispersée</strong> : le comportement métier vit dans les <code>@Service</code>, les entités ne sont que des conteneurs de données</li>
+					<li><strong>Couplage fort</strong> : les services appellent directement Spring Data, les agrégats se référencent mutuellement par entité au lieu d'identifiant</li>
+					<li><strong>Impossible à tester isolément</strong> : chaque test unitaire nécessite le contexte Spring complet</li>
+				</ul>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Transition -->
+	<section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-5xl mx-auto">
+			<div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+				<p class="text-lg text-astro-gray-200">
+					L'étape suivante va brancher HexaGlue sur ce projet multi-modules pour obtenir un premier diagnostic chiffré.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Navigation -->
+	<section class="py-16 relative">
+		<div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+			<div class="max-w-5xl mx-auto">
+				<StepNavigation
+					next={{
+						href: '/case-studies/banking-migration/step-1-discovery/',
+						label: 'Étape 1 - Premier diagnostic avec HexaGlue'
+					}}
+				/>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>

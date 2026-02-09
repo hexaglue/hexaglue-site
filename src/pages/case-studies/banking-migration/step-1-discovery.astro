@@ -1,0 +1,524 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+
+const pomXmlConfig = `<plugin>
+    <groupId>io.hexaglue</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>5.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.banking</basePackage>
+        <failOnError>false</failOnError>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>io.hexaglue.plugins</groupId>
+            <artifactId>hexaglue-plugin-audit</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const hexaglueYamlConfig = `# hexaglue.yaml (racine du projet multi-module)
+modules:
+  banking-core:
+    role: DOMAIN
+  banking-persistence:
+    role: INFRASTRUCTURE
+  banking-service:
+    role: APPLICATION
+  banking-api:
+    role: API
+  banking-app:
+    role: ASSEMBLY`;
+
+const moduleTopologyRows = [
+    { module: 'banking-core', role: 'DOMAIN', types: 16 },
+    { module: 'banking-persistence', role: 'INFRASTRUCTURE', types: 8 },
+    { module: 'banking-service', role: 'APPLICATION', types: 8 },
+    { module: 'banking-api', role: 'API', types: 14 },
+    { module: 'banking-app', role: 'ASSEMBLY', types: 2 },
+];
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '9%', weight: '25%', contribution: '2.3', threshold: '≥ 90%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Hexagonal Architecture', value: '0%', weight: '25%', contribution: '0.0', threshold: '≥ 90%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Coupling', value: '40%', weight: '15%', contribution: '6.0', threshold: '≥ 70%', status: 'CRITICAL', delta: '-' },
+    { dimension: 'Cohesion', value: '40%', weight: '15%', contribution: '6.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '-' },
+];
+
+const inventoryRows: InventoryRow[] = [
+    { component: 'Aggregate Roots', count: 0, delta: '-', observation: 'Aucun détecté' },
+    { component: 'Entities', count: 6, delta: '-', observation: 'Account, Beneficiary, Card, Customer, Transaction, Transfer' },
+    { component: 'Value Objects', count: 12, delta: '-', observation: '4 enums + 4 services + 3 DTOs + 1 event (faux positifs)' },
+    { component: 'Identifiers', count: 0, delta: '-', observation: '' },
+    { component: 'Domain Events', count: 1, delta: '-', observation: 'Spring ApplicationEvent (faux positif)' },
+    { component: 'Driving Ports', count: 0, delta: '-', observation: '' },
+    { component: 'Driven Ports', count: 6, delta: '-', observation: 'Les 6 repositories Spring Data' },
+];
+
+const violationRows: ViolationRow[] = [
+    { constraint: 'ddd:entity-identity', count: 6, severity: 'CRITICAL', delta: '-', observation: '6 entités sans identifiant typé' },
+    { constraint: 'ddd:domain-purity', count: 7, severity: 'CRITICAL', delta: '-', observation: '6 modèles + TransferService avec imports JPA/Spring' },
+    { constraint: 'hexagonal:layer-isolation', count: 11, severity: 'MAJOR', delta: '-', observation: '5 services dépendent de repositories' },
+    { constraint: 'hexagonal:port-direction', count: 6, severity: 'MAJOR', delta: '-', observation: '6 driven ports non utilisés par un service applicatif' },
+    { constraint: 'hexagonal:port-coverage', count: 6, severity: 'MAJOR', delta: '-', observation: '6 driven ports sans adaptateur' },
+];
+
+const metricRows: MetricRow[] = [
+    { metric: 'Domain coverage', value: '76.00%', threshold: 'min 30%', status: 'OK', delta: '-' },
+    { metric: 'Code boilerplate', value: '76.70%', threshold: 'max 50%', status: 'CRITICAL', delta: '-' },
+    { metric: 'Domain purity', value: '63.16%', threshold: 'min 100%', status: 'CRITICAL', delta: '-' },
+    { metric: 'Aggregate boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL', delta: '-' },
+    { metric: 'Code complexity', value: '1.03', threshold: 'max 10', status: 'OK', delta: '-' },
+];
+
+const packageStabilityRows: PackageStabilityRow[] = [
+    { package: 'core.model', ca: 21, ce: 0, instability: 0.00, abstractness: 0.09, distance: 0.91, zone: 'Zone of Pain' },
+    { package: 'persistence.repository', ca: 5, ce: 8, instability: 0.62, abstractness: 1.00, distance: 0.62, zone: 'Main Sequence' },
+    { package: 'service.service', ca: 5, ce: 12, instability: 0.71, abstractness: 0.00, distance: 0.29, zone: 'Stable Core' },
+    { package: 'api.controller', ca: 0, ce: 14, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
+    { package: 'api.dto', ca: 5, ce: 9, instability: 0.64, abstractness: 0.00, distance: 0.36, zone: 'Stable Core' },
+];
+
+const remediationRows: RemediationRow[] = [
+    {
+        constraint: 'ddd:entity-identity',
+        violations: 6,
+        severity: 'CRITICAL',
+        manualEffort: 6.0,
+        hexaglueEffort: 6.0,
+        description: 'Entités sans identifiant typé',
+    },
+    {
+        constraint: 'ddd:domain-purity',
+        violations: 7,
+        severity: 'CRITICAL',
+        manualEffort: 7.0,
+        hexaglueEffort: 7.0,
+        description: 'Annotations JPA dans le domaine',
+    },
+    {
+        constraint: 'hexagonal:port-coverage',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 18.0,
+        hexaglueEffort: 0,
+        description: 'Ports sans adaptateur',
+    },
+    {
+        constraint: 'hexagonal:layer-isolation',
+        violations: 11,
+        severity: 'MAJOR',
+        manualEffort: 5.5,
+        hexaglueEffort: 5.5,
+        description: 'Services dépendant des repositories',
+    },
+    {
+        constraint: 'hexagonal:port-direction',
+        violations: 6,
+        severity: 'MAJOR',
+        manualEffort: 1.5,
+        hexaglueEffort: 1.5,
+        description: 'Ports appelés dans la mauvaise direction',
+    },
+];
+---
+
+<MainLayout
+    title="Étape 1 - Premier diagnostic avec HexaGlue | Migration Banking"
+    description="Premier audit HexaGlue en mode reactor sur une application bancaire multi-module. Score 14/100, 36 violations détectées dont 13 critiques. Diagnostic cross-module complet."
+>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <AmberStardust height="h-64 md:h-80" />
+        <div class="max-w-5xl mx-auto">
+            <div class="mt-8 max-w-3xl">
+                <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+                    Étape 1
+                </span>
+                <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+                    Premier diagnostic avec HexaGlue
+                </h1>
+                <a
+                  href="https://github.com/hexaglue/case-study-banking/tree/step/1-discovery"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+                >
+                  <Icon name="logos/github" class="size-5" aria-hidden="true" />
+                  <code class="text-sm text-amber-400">step/1-discovery</code>
+                </a>
+                <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+                    <li>Intégration d'HexaGlue en mode reactor (multi-module).</li>
+                    <li>Activation du plugin d'audit pour mesurer la conformité.</li>
+                    <li>Premier rapport d'audit cross-module.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Initiale -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Configuration"
+                title="Configuration initiale"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le plugin Maven HexaGlue analyse le code source à la compilation pour en extraire un modèle architectural.
+                En mode multi-module, il s'exécute une seule fois au niveau du POM parent et produit un modèle unifié couvrant tous les modules.<br>
+                Le fichier <code>hexaglue.yaml</code> à la racine déclare le rôle architectural de chaque module, ce qui permet une analyse cross-module.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <Code code={pomXmlConfig} lang="xml" title="pom.xml (parent)" />
+            </div>
+
+            <div class="mt-10">
+                <Code code={hexaglueYamlConfig} lang="yaml" title="hexaglue.yaml" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><code>extensions=true</code> : permet à HexaGlue de détecter automatiquement la structure multi-module et d'injecter les goals <code>reactor-generate</code> et <code>reactor-audit</code></li>
+                    <li><code>basePackage</code> : le package racine à analyser, toutes les classes sous <code>com.acme.banking</code> seront classifiées</li>
+                    <li><code>failOnError=false</code> : le build ne sera pas bloqué par les violations, utile pour un premier diagnostic</li>
+                    <li><code>hexaglue.yaml</code> : chaque module reçoit un rôle (DOMAIN, INFRASTRUCTURE, etc.) qui permet à HexaGlue de valider les dépendances entre couches</li>
+                </ul>
+            </Insight>
+
+        </div>
+    </section>
+
+    <!-- Module Topology -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Topologie"
+                title="Topologie des modules"
+                gradient="bg-orange-yellow-gradient"
+            >
+                En mode reactor, HexaGlue construit une carte des modules du projet. Chaque module est associé à un rôle architectural et au nombre de types Java qu'il contient.<br>
+                Cette vue d'ensemble permet de comprendre la répartition du code avant même de regarder le détail des violations.
+            </SectionCopy>
+
+            <div class="mt-10 p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-astro-dark-100/15 text-astro-gray-300 text-left">
+                                <th class="py-3 pr-4 font-medium">Module</th>
+                                <th class="py-3 px-3 font-medium">Rôle</th>
+                                <th class="py-3 pl-3 font-medium text-right">Types</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {moduleTopologyRows.map((row) => (
+                                <tr class="border-b border-astro-dark-100/10">
+                                    <td class="py-3 pr-4 text-white font-medium"><code class="text-amber-400 text-xs">{row.module}</code></td>
+                                    <td class="py-3 px-3 text-astro-gray-200">{row.role}</td>
+                                    <td class="py-3 pl-3 text-white text-right">{row.types}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <Insight>
+                <p>HexaGlue détecte les 5 modules et leurs rôles déclarés dans <code>hexaglue.yaml</code>.</p>
+                <ul>
+                    <li>Le module DOMAIN (<code>banking-core</code>) contient 16 types : c'est le plus dense, mais aucun n'est structuré comme un agrégat DDD</li>
+                    <li>Le module INFRASTRUCTURE (<code>banking-persistence</code>) contient 8 types : les repositories Spring Data et leurs entités JPA</li>
+                    <li>Le module ASSEMBLY (<code>banking-app</code>) ne contient que 2 types : la classe principale et la configuration Spring Boot</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Exécution de l'audit -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Exécution"
+                title="Lancement de l'audit"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Grâce à <code>extensions=true</code>, HexaGlue détecte le POM parent multi-module et injecte automatiquement les goals reactor :<br>
+                <ul>
+                    <li><code>reactor-generate</code> analyse toutes les sources en une seule passe pendant la phase <code>compile</code>,</li>
+                    <li><code>reactor-audit</code> évalue le modèle unifié et génère un rapport cross-module pendant la phase <code>verify</code>.</li>
+                </ul>
+            </SectionCopy>
+
+            <div class="mt-10">
+                <Code code="mvn verify" lang="shell" title="Shell" />
+            </div>
+        </div>
+    </section>
+
+    <AuditReport description="Résultat de la première exécution de l'audit HexaGlue en mode reactor sur les 5 modules du projet bancaire.">
+
+    <!-- Verdict de l'Audit -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Verdict"
+                title="Verdict de l'audit"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le verdict synthétise le score global, la note et le nombre de violations. C'est la première chose que le développeur voit en ouvrant le rapport.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <AuditVerdict
+                    score={14}
+                    grade="F"
+                    status="FAILED"
+                    violations={{ critical: 13, major: 23 }}
+                />
+            </div>
+
+            <Insight>
+                <p>Le grade F indique une architecture non conforme aux principes DDD et hexagonaux. L'application n'a ni agrégats, ni identifiants typés, ni séparation domaine/infrastructure. Les 13 violations critiques proviennent du couplage direct entre le domaine et JPA/Spring. Les sections suivantes détaillent chaque catégorie de violation.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Décomposition du Score -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Score"
+                title="Décomposition du score"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le score global est calculé à partir de 5 dimensions, chacune pondérée selon son importance architecturale.
+                Ce tableau montre la contribution de chaque dimension au score de 14/100.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <KpiTable rows={kpiRows} total="14.3" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>DDD Compliance</strong> à 9% : seule la détection de quelques enums comme value objects contribue, aucun agrégat ni identifiant typé n'existe</li>
+                    <li><strong>Hexagonal Architecture</strong> et <strong>Dependencies</strong> à 0% : ces trois dimensions pèsent 70% du score, un score nul ici signifie qu'aucune structure hexagonale n'est reconnue</li>
+                    <li><strong>Coupling</strong> et <strong>Cohesion</strong> à 40% : la séparation en modules Maven apporte un minimum de découplage, ce qui explique les seules contributions positives</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Inventaire Architectural -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Inventaire"
+                title="Inventaire architectural"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'inventaire liste les composants architecturaux détectés par HexaGlue dans le code source : agrégats, entités, value objects, ports, etc.
+                Il donne une vue d'ensemble de ce que le code contient du point de vue DDD et hexagonal.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <InventoryTable rows={inventoryRows} />
+            </div>
+
+            <Insight>
+                <p>Sans patterns DDD explicites dans le code, HexaGlue classifie par heuristique. Cela produit des faux positifs :</p>
+                <ul>
+                    <li>Les 12 <strong>value objects</strong> incluent 4 services et 3 DTOs mal classifiés, seules les 4 enums sont correctes</li>
+                    <li>L'<strong>événement domaine</strong> est un <code>ApplicationEvent</code> Spring, pas un vrai domain event DDD</li>
+                    <li>Les 6 <strong>driven ports</strong> sont les repositories Spring Data, correctement identifiés comme interfaces vers l'infrastructure</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Principales Violations -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Violations"
+                title="Violations détectées"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Chaque violation correspond à une règle architecturale enfreinte par le code.
+                Elles sont classées par sévérité : <strong>Critical</strong> pour les problèmes structurels fondamentaux, <strong>Major</strong> pour les écarts significatifs.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <ViolationsTable rows={violationRows} />
+            </div>
+
+            <Insight>
+                <p>Les 13 violations <strong>Critical</strong> ont une cause racine commune : le domaine dépend de l'infrastructure.</p>
+                <ul>
+                    <li><strong>ddd:entity-identity</strong> : les 6 entités utilisent un <code>Long id</code> auto-généré par JPA, pas un identifiant métier typé</li>
+                    <li><strong>ddd:domain-purity</strong> : le domaine importe <code>jakarta.persistence</code> et des annotations Spring, il dépend directement de l'infrastructure</li>
+                </ul>
+                <p>Les 23 violations <strong>Major</strong> signalent l'absence de structure hexagonale :</p>
+                <ul>
+                    <li><strong>hexagonal:layer-isolation</strong> : les services appellent les repositories sans passer par des ports</li>
+                    <li><strong>hexagonal:port-direction</strong> : les driven ports ne sont consommés par aucun service applicatif</li>
+                    <li><strong>hexagonal:port-coverage</strong> : les 6 repositories n'ont pas d'adaptateur d'infrastructure déclaré</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Métriques de Qualité -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Qualité"
+                title="Métriques de qualité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Les métriques de qualité mesurent des propriétés structurelles du code : couverture du domaine, proportion de code technique, complexité et respect des frontières d'agrégats.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <MetricsTable rows={metricRows} />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li><strong>Domain coverage</strong> à 76% : ce chiffre reflète le ratio de classes dans les packages domaine, pas la conformité DDD réelle</li>
+                    <li><strong>Code boilerplate</strong> à 76,7% : plus de 3 classes sur 4 ne contiennent que des getters/setters et des annotations, sans logique métier</li>
+                    <li><strong>Domain purity</strong> à 63% : plus d'un tiers du domaine importe des dépendances d'infrastructure (JPA, Spring)</li>
+                    <li><strong>Aggregate boundary</strong> à 0% : aucun agrégat identifié, donc aucune frontière de cohérence transactionnelle</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Estimation de Remédiation -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Remédiation"
+                title="Coût de mise en conformité"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Le tableau de remédiation estime l'effort nécessaire pour corriger chaque catégorie de violation, en distinguant le travail manuel du travail automatisable par HexaGlue.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <RemediationTable rows={remediationRows} />
+            </div>
+
+            <Insight>
+                <p>Le coût total estimé est de 38 jours de travail manuel. HexaGlue peut en automatiser une partie :</p>
+                <ul>
+                    <li><strong>Automatisable</strong> : génération des adaptateurs JPA pour les 6 repositories (18 jours économisés)</li>
+                    <li><strong>Manuel</strong> : restructuration du domaine, création des identifiants typés, suppression des annotations JPA (20 jours)</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Stabilité des Packages -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Stabilité"
+                title="Stabilité des packages"
+                gradient="bg-orange-yellow-gradient"
+            >
+                L'analyse de stabilité évalue les dépendances entre packages selon les métriques de Robert C. Martin.
+                Elle identifie les packages fragiles (très sollicités mais sans abstraction) et les packages bien positionnés.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <PackageStabilityTable rows={packageStabilityRows} />
+            </div>
+
+            <Insight>
+                <p>Le package <code>core.model</code> est en <strong>Zone of Pain</strong> :</p>
+                <ul>
+                    <li><strong>core.model</strong> : 21 dépendants, quasi aucune abstraction (0,09). Toute modification d'une entité se propage à l'ensemble de l'application</li>
+                    <li><strong>persistence.repository</strong> et <strong>api.controller</strong> sont sur la <strong>Main Sequence</strong> : leur position est acceptable</li>
+                    <li><strong>service.service</strong> et <strong>api.dto</strong> en <strong>Stable Core</strong> : des packages concrets avec un couplage modéré</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    </AuditReport>
+
+    <!-- Bilan -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <SectionCopy
+                label="Bilan"
+                title="Ce que révèle cette étape"
+                gradient="bg-orange-yellow-gradient"
+            >
+                Ce premier audit établit une photographie quantifiée de l'état architectural du projet bancaire multi-module.
+                Il sert de ligne de base pour mesurer les progrès à chaque étape de la migration.
+            </SectionCopy>
+
+            <Insight class="mt-10">
+                <p>Les constats principaux :</p>
+                <ul>
+                    <li><strong>Score 14/100 (Grade F)</strong> : l'architecture ne respecte aucun principe DDD ni hexagonal</li>
+                    <li><strong>13 violations critiques</strong> : toutes liées au couplage domaine/JPA et à l'absence d'identifiants typés</li>
+                    <li><strong>76,7% de boilerplate</strong> : le code métier est noyé dans les getters/setters et annotations techniques</li>
+                    <li><strong>38 jours de remédiation</strong> estimés, dont 18 automatisables par HexaGlue</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Transition -->
+    <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+                <p class="text-lg text-astro-gray-200">
+                    L'étape suivante consiste à exclure les types hors périmètre pour affiner le diagnostic.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <section class="py-16 relative">
+        <div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+            <div class="max-w-5xl mx-auto">
+                <StepNavigation
+                    prev={{
+                        href: '/case-studies/banking-migration/step-0-legacy/',
+                        label: 'Étape 0 - Le monolithe Spring Boot d\'origine'
+                    }}
+                    next={{
+                        href: '/case-studies/banking-migration/step-2-configured/',
+                        label: 'Étape 2 - Exclusions centralisées'
+                    }}
+                />
+            </div>
+        </div>
+        <div
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+        ></div>
+    </section>
+</MainLayout>

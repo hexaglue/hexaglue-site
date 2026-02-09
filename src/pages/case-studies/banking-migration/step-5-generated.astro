@@ -1,0 +1,454 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import Insight from '~/components/Insight.astro';
+import ModificationList from '../_components/ModificationList.astro';
+import ModificationGroup from '../_components/ModificationGroup.astro';
+import ModificationItem from '../_components/ModificationItem.astro';
+
+const hexaglueConfig = `# hexaglue.yaml
+classification:
+  exclude:
+    - "com.acme.banking.core.exception.*"
+    - "com.acme.banking.api.dto.*"
+    - "com.acme.banking.api.controller.*"
+    - "com.acme.banking.api.exception.*"
+
+plugins:
+  jpa:
+    entitySuffix: JpaEntity
+    repositorySuffix: JpaRepository
+    adapterSuffix: RepositoryAdapter
+    targetModule: banking-persistence
+  audit:
+    aggregateReport: true
+  living-doc:
+    outputFormat: markdown
+    includeMetrics: true
+
+modules:
+  banking-core:
+    role: DOMAIN
+  banking-persistence:
+    role: INFRASTRUCTURE
+  banking-service:
+    role: APPLICATION
+  banking-api:
+    role: API
+  banking-app:
+    role: ASSEMBLY`;
+
+const kpiRows: KpiRow[] = [
+    { dimension: 'DDD Compliance', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK', delta: '+84' },
+    { dimension: 'Hexagonal Architecture', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK', delta: '+85' },
+    { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL', delta: '=' },
+    { dimension: 'Coupling', value: '44%', weight: '15%', contribution: '6.6', threshold: '≥ 70%', status: 'CRITICAL', delta: '+6' },
+    { dimension: 'Cohesion', value: '64%', weight: '15%', contribution: '9.6', threshold: '≥ 80%', status: 'WARNING', delta: '-2' },
+];
+
+const inventoryRows: InventoryRow[] = [
+    { component: 'Aggregate Roots', count: 6, delta: '=', observation: 'Account, Beneficiary, Card, Customer, Transaction, Transfer' },
+    { component: 'Entities', count: 0, delta: '-6', observation: 'Toutes promues en Aggregate Roots' },
+    { component: 'Value Objects', count: 8, delta: '=', observation: '4 enums + Money, Iban, Email, Address' },
+    { component: 'Identifiers', count: 6, delta: '=', observation: 'AccountId, BeneficiaryId, CardId, CustomerId, TransactionId, TransferId' },
+    { component: 'Domain Events', count: 0, delta: '=' },
+    { component: 'Application Services', count: 5, delta: '-6', observation: '5 use case implementations' },
+    { component: 'Driving Ports', count: 7, delta: '-1', observation: '5 use cases + FraudDetection + NotificationSender' },
+    { component: 'Driven Ports', count: 6, delta: '-5', observation: '6 domain repository ports (JPA doublons supprimés)' },
+];
+---
+
+<MainLayout
+  title="Étape 5 - Génération automatique de l'infrastructure | Migration Banking"
+  description="Génération automatique de l'infrastructure avec HexaGlue : plugin JPA avec routage multi-module vers banking-persistence. Score 66/100, 0 violation."
+>
+  <!-- Hero -->
+  <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <AmberStardust height="h-64 md:h-80" />
+    <div class="max-w-5xl mx-auto">
+      <div class="mt-8 max-w-3xl">
+        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+          Étape 5
+        </span>
+        <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+          Génération automatique de l'infrastructure
+        </h1>
+        <a
+          href="https://github.com/hexaglue/case-study-banking/tree/step/5-generated"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+        >
+          <Icon name="logos/github" class="size-5" aria-hidden="true" />
+          <code class="text-sm text-amber-400">step/5-generated</code>
+        </a>
+        <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+          <li>Activation du plugin JPA avec routage vers banking-persistence.</li>
+          <li>Suppression de tout le code JPA manuel.</li>
+          <li>~32 fichiers générés automatiquement.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modifications effectuées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Modifications"
+        title="Modifications effectuées"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Les plugins HexaGlue sont activés pour générer automatiquement toute la couche de persistance.
+        Le code JPA manuel est supprimé : entités, repositories, adapters et la <code>JpaBaseEntity</code>.
+        Les annotations <code>@Service</code> sont retirées au profit d'une injection explicite via <code>ApplicationServiceConfig</code>.
+      </SectionCopy>
+
+      <ModificationList class="mt-10">
+        <ModificationGroup layer="configuration">
+          <ModificationItem action="configure" label="hexaglue.yaml" details="plugin JPA avec targetModule=banking-persistence, audit, living-doc" />
+        </ModificationGroup>
+        <ModificationGroup layer="adapters">
+          <ModificationItem action="remove" count={6} label="entités JPA manuelles" details="AccountJpaEntity, BeneficiaryJpaEntity, etc." />
+          <ModificationItem action="remove" label="JpaBaseEntity" details="@MappedSuperclass technique supprimée" />
+          <ModificationItem action="remove" count={6} label="repositories Spring Data manuels" details="AccountJpaRepository, etc." />
+          <ModificationItem action="remove" count={6} label="repository adapters manuels" details="AccountRepositoryAdapter, etc." />
+          <ModificationItem action="remove" label="TransferCompletedEvent" details="événement Spring supprimé" />
+          <ModificationItem action="create" label="ApplicationServiceConfig.java" details="5 méthodes @Bean pour l'injection de dépendances" />
+        </ModificationGroup>
+        <ModificationGroup layer="application">
+          <ModificationItem action="purify" count={5} label="services applicatifs" details="suppression @Service → POJOs purs" />
+        </ModificationGroup>
+      </ModificationList>
+
+      <Insight>
+        <ul>
+          <li><strong>19 fichiers manuels supprimés</strong> : 6 entités JPA, 1 JpaBaseEntity, 6 repositories Spring Data, 6 repository adapters</li>
+          <li><strong>Services applicatifs purifiés</strong> : les annotations <code>@Service</code> sont remplacées par des déclarations <code>@Bean</code> dans <code>ApplicationServiceConfig</code></li>
+          <li><strong>Plugins activés</strong> : le plugin JPA génère les entités, mappers, repositories et adaptateurs à partir du modèle domaine pur</li>
+        </ul>
+        <p>Le câblage Spring est entièrement isolé dans le module <code>banking-app</code>. Les services applicatifs deviennent des POJOs purs, sans aucune dépendance vers Spring.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Configuration -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Configuration"
+        title="Configuration multi-module"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le fichier <code>hexaglue.yaml</code> à la racine du projet configure le plugin JPA avec le routage multi-module et les rôles architecturaux de chaque module Maven.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <Code code={hexaglueConfig} lang="yaml" title="hexaglue.yaml" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong><code>targetModule: banking-persistence</code></strong> : tout le code JPA généré est routé vers le module <code>banking-persistence</code>, dans <code>banking-persistence/src/main/java/com/acme/banking/infrastructure/persistence/</code></li>
+          <li><strong>~32 fichiers générés</strong> : entités, repositories, mappers, adapters et embeddables, sans écrire une seule ligne à la main</li>
+          <li><strong>Exclusions simplifiées</strong> : les exclusions pour <code>service.service</code> et <code>service.event</code> ne sont plus nécessaires car les services ont été correctement restructurés</li>
+          <li><strong>Rôles des modules</strong> : chaque module Maven déclare son rôle architectural (DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY)</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Code généré automatiquement -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Génération"
+        title="Code généré automatiquement"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le plugin JPA d'HexaGlue analyse le modèle domaine pur et génère toute la couche de persistance à la compilation. Aucun de ces fichiers n'est écrit à la main : ils sont produits dans <code>banking-persistence</code>.
+      </SectionCopy>
+
+      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-8">
+        <div class="grid grid-cols-1 gap-6">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Entités JPA</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">AccountJpaEntity, BeneficiaryJpaEntity, CardJpaEntity, CustomerJpaEntity, TransactionJpaEntity, TransferJpaEntity</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Embeddables</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">2 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">AddressEmbeddable, MoneyEmbeddable</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Spring Data Repositories</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">AccountJpaRepository, BeneficiaryJpaRepository, CardJpaRepository, CustomerJpaRepository, TransactionJpaRepository, TransferJpaRepository</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Mappers</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">AccountMapper, BeneficiaryMapper, CardMapper, CustomerMapper, TransactionMapper, TransferMapper</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Repository Adapters</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">AccountRepositoryAdapter, BeneficiaryRepositoryAdapter, CardRepositoryAdapter, CustomerRepositoryAdapter, TransactionRepositoryAdapter, TransferRepositoryAdapter</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-astro-brand-purple">Enum Converters</h3>
+              <span class="px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+            </div>
+            <p class="text-sm text-astro-gray-300 mb-2">Convertisseurs JPA pour les 4 enums domaine + types supplémentaires</p>
+          </div>
+
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <div class="flex items-center justify-between">
+              <span class="text-xl font-bold text-astro-brand-teal">Total</span>
+              <span class="px-4 py-2 bg-astro-brand-teal/20 text-astro-brand-teal rounded-full text-lg font-mono font-bold">~32 fichiers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>~32 fichiers générés</strong> remplacent ~20 fichiers de code JPA manuel : entités JPA, embeddables, repositories Spring Data, mappers et repository adapters</li>
+          <li><strong>Plus complet que le code manuel</strong> : le code généré inclut les mappers et les embeddables pour les value objects (Money, Address), absents du code d'origine</li>
+          <li><strong>Synchronisation garantie</strong> : si le domaine change, la couche de persistance est régénérée automatiquement à la compilation suivante</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <AuditReport description="Résultat après activation de la génération JPA et suppression du code manuel.">
+
+  <!-- Verdict de l'audit -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Verdict"
+        title="Verdict de l'audit"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le score bondit de 43 points en une seule étape. La génération JPA routée vers <code>banking-persistence</code> et la purification des services font passer le grade de F à D, avec 0 violation.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <AuditVerdict
+          score={66}
+          grade="D"
+          status="PASSED"
+          violations={{ critical: 0, major: 0 }}
+          delta={{ score: 43, violations: -13 }}
+        />
+      </div>
+
+      <Insight>
+        <p>Le score progresse de 43 points grâce à la combinaison de la génération automatique et de la suppression du code JPA manuel. Les dimensions DDD Compliance et Hexagonal Architecture atteignent toutes deux 100%. Zéro violation : les détails sont dans les sections suivantes.</p>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Décomposition du score -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Score"
+        title="Décomposition du score"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Le score passe de 23 à 66/100. Les dimensions DDD et Hexagonal atteignent le maximum, portées par la génération automatique et la purification des services.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <KpiTable rows={kpiRows} total="66.2" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>DDD Compliance bondit à 100%</strong> (+84) : tous les agrégats, value objects et identifiants sont correctement classifiés et respectent les conventions DDD</li>
+          <li><strong>Hexagonal Architecture atteint 100%</strong> (+85) : les services applicatifs sont des POJOs purs, chaque port dispose d'un adaptateur généré, les couches sont isolées</li>
+          <li><strong>Coupling progresse à 44%</strong> (+6) : la suppression des dépendances JPA manuelles réduit le couplage entre packages</li>
+          <li><strong>Dependencies (0%) et Coupling (44%)</strong> restent les points faibles : ces dimensions mesurent les dépendances Maven et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Inventaire architectural -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Inventaire"
+        title="Inventaire architectural"
+        gradient="bg-orange-yellow-gradient"
+      >
+        L'inventaire recense les composants du modèle domaine classifiés par HexaGlue.<br>
+        Après la suppression du code JPA manuel et la purification, les compteurs se stabilisent.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <InventoryTable rows={inventoryRows} />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>Application Services : 5</strong> (-6) : les services applicatifs sont désormais des use case implementations pures, sans doublons</li>
+          <li><strong>Driven Ports : 6</strong> (-5) : les doublons JPA (interfaces Spring Data) ont été supprimés au profit des ports domaine purs</li>
+          <li><strong>Driving Ports : 7</strong> (-1) : les 5 use cases plus <code>FraudDetection</code> et <code>NotificationSender</code>, toujours classifiés comme driving ports à ce stade</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Violations détectées -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Violations"
+        title="Violations détectées"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Les 13 violations des étapes précédentes sont entièrement résolues.<br>
+        La génération automatique et la purification des services éliminent toutes les violations d'un coup.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <div class="bg-astro-dark-800/40 border border-green-500/20 rounded-2xl p-8 text-center">
+          <div class="flex items-center justify-center gap-3 mb-4">
+            <Icon name="ri/checkbox-circle-line" class="w-8 h-8 text-green-400" />
+            <span class="text-2xl font-bold text-green-400">0 violation</span>
+          </div>
+          <p class="text-astro-gray-200">Aucune violation détectée. Toutes les contraintes DDD et hexagonales sont respectées.</p>
+        </div>
+      </div>
+
+      <Insight>
+        <p>Les 13 violations des étapes précédentes ont été résolues par deux actions combinées :</p>
+        <ul>
+          <li><strong>Génération automatique</strong> : les adaptateurs générés couvrent correctement tous les driven ports, éliminant les violations <code>port-coverage</code> et <code>layer-isolation</code></li>
+          <li><strong>Purification des services</strong> : la suppression des annotations <code>@Service</code> élimine les violations <code>application-purity</code></li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Métriques de qualité -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Qualité"
+        title="Métriques de qualité"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Les métriques de qualité mesurent l'adhérence du code aux principes DDD et hexagonaux.<br>
+        Après la génération automatique, la pureté du domaine atteint 100% et le boilerplate chute considérablement.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <MetricsTable
+          rows={[
+            { metric: 'Domain coverage', value: '52.63%', threshold: 'min 30%', status: 'OK', delta: '+16.92' },
+            { metric: 'Code boilerplate', value: '43.42%', threshold: 'max 50%', status: 'OK', delta: '-56.58' },
+            { metric: 'Domain purity', value: '100.00%', threshold: 'min 100%', status: 'OK', delta: '+60.00' },
+            { metric: 'Aggregate boundary', value: '100.00%', threshold: 'min 80%', status: 'OK', delta: '+100.00' },
+            { metric: 'Code complexity', value: '1.29', threshold: 'max 10', status: 'OK', delta: '+0.29' },
+            { metric: 'Aggregate repository coverage', value: '100.00%', threshold: '', status: 'OK', delta: '=' },
+            { metric: 'Aggregate coupling efferent', value: '0.29', threshold: 'max 0.7', status: 'OK', delta: '-0.17' },
+          ]}
+        />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong><code>domain.purity</code> atteint 100%</strong> (+60) : le domaine ne contient plus aucune dépendance technique. Toutes les annotations JPA et Spring sont dans la couche infrastructure générée</li>
+          <li><strong><code>code.boilerplate</code> chute à 43%</strong> (-57) : la suppression du code JPA manuel réduit considérablement le ratio de boilerplate technique</li>
+          <li><strong><code>aggregate.boundary</code> à 100%</strong> : tous les agrégats respectent leurs frontières, les entités internes ne sont pas exposées directement</li>
+          <li><strong><code>aggregate.repository.coverage</code> à 100%</strong> : chaque agrégat dispose d'un repository généré automatiquement</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  </AuditReport>
+
+  <!-- Bilan -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Bilan"
+        title="Ce que révèle cette étape"
+        gradient="bg-orange-yellow-gradient"
+      >
+        Cette étape marque un tournant : HexaGlue passe de l'analyse à la génération.<br>
+        Le rapport montre l'impact de la génération JPA avec routage multi-module.
+      </SectionCopy>
+
+      <Insight class="mt-10">
+        <p>HexaGlue démontre ici sa double capacité : analyser <strong>et</strong> construire.</p>
+        <ul>
+          <li><strong>Score 66/100 (+43)</strong> : la plus forte progression de toute la migration, portée par la génération automatique et la purification des services</li>
+          <li><strong>DDD et Hexagonal à 100%</strong> : les deux dimensions fondamentales atteignent le score maximal pour la première fois</li>
+          <li><strong>~32 fichiers générés, 0 infrastructure manuelle</strong> : toute la couche de persistance est produite au compile-time et routée vers <code>banking-persistence</code></li>
+          <li><strong>0 violation</strong> : toutes les contraintes architecturales sont respectées, le statut passe à PASSED</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Transition -->
+  <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+        <p class="text-lg text-astro-gray-200">
+          L'étape suivante ajoute les méthodes reconstitute() et câble les driven ports restants pour une application fonctionnelle end-to-end.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <section class="py-16 relative">
+    <div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <StepNavigation
+          prev={{ href: '/case-studies/banking-migration/step-4-pure-domain/', label: 'Étape 4 - Purification du domaine' }}
+          next={{ href: '/case-studies/banking-migration/step-6-functional/', label: 'Étape 6 - Application fonctionnelle complète' }}
+        />
+      </div>
+    </div>
+    <div
+      class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+    ></div>
+  </section>
+</MainLayout>
