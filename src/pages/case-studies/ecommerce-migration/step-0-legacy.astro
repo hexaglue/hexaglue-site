@@ -4,7 +4,7 @@ import { Code } from 'astro-expressive-code/components';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
-import StepNavigation from './_components/StepNavigation.astro';
+import StepNavigation from '../_components/StepNavigation.astro';
 import Insight from '~/components/Insight.astro';
 
 const orderEntityCode = `@Entity
@@ -252,15 +252,20 @@ const antiPatterns = [
 	</section>
 
 	<!-- Navigation -->
-	<section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<div class="max-w-5xl mx-auto">
-			<StepNavigation
-				next={{
-					href: '/case-studies/ecommerce-migration/step-1-discovery/',
-					label: 'Étape 1 - Premier diagnostic avec HexaGlue'
-				}}
-			/>
+	<section class="py-16 relative">
+		<div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+			<div class="max-w-5xl mx-auto">
+				<StepNavigation
+					next={{
+						href: '/case-studies/ecommerce-migration/step-1-discovery/',
+						label: 'Étape 1 - Premier diagnostic avec HexaGlue'
+					}}
+				/>
+			</div>
 		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
 	</section>
 </MainLayout>
 

@@ -2,15 +2,15 @@
 import MainLayout from '~/layouts/MainLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
-import StepNavigation from './_components/StepNavigation.astro';
-import AuditReport from './_components/AuditReport.astro';
-import AuditVerdict from './_components/AuditVerdict.astro';
-import KpiTable, { type KpiRow } from './_components/KpiTable.astro';
-import ViolationsTable, { type ViolationRow } from './_components/ViolationsTable.astro';
-import MetricsTable, { type MetricRow } from './_components/MetricsTable.astro';
-import InventoryTable, { type InventoryRow } from './_components/InventoryTable.astro';
-import PackageStabilityTable, { type PackageStabilityRow } from './_components/PackageStabilityTable.astro';
-import RemediationTable, { type RemediationRow } from './_components/RemediationTable.astro';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
+import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
+import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
+import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import Insight from '~/components/Insight.astro';
@@ -474,18 +474,23 @@ const remediationRows: RemediationRow[] = [
     </section>
 
     <!-- Navigation -->
-    <section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-        <div class="max-w-5xl mx-auto">
-            <StepNavigation
-                prev={{
-                    href: '/case-studies/ecommerce-migration/step-0-legacy/',
-                    label: 'Étape 0 - Le monolithe Spring Boot d\'origine'
-                }}
-                next={{
-                    href: '/case-studies/ecommerce-migration/step-2-configured/',
-                    label: 'Étape 2 - Suppression du bruit'
-                }}
-            />
+    <section class="py-16 relative">
+        <div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+            <div class="max-w-5xl mx-auto">
+                <StepNavigation
+                    prev={{
+                        href: '/case-studies/ecommerce-migration/step-0-legacy/',
+                        label: 'Étape 0 - Le monolithe Spring Boot d\'origine'
+                    }}
+                    next={{
+                        href: '/case-studies/ecommerce-migration/step-2-configured/',
+                        label: 'Étape 2 - Suppression du bruit'
+                    }}
+                />
+            </div>
         </div>
+        <div
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+        ></div>
     </section>
 </MainLayout>

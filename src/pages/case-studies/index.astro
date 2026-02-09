@@ -60,6 +60,36 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 		</div>
 	</section>
 
+	<!-- Featured Case Study - Banking -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64" />
+
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Mise en avant"
+				title="Migration d'une application bancaire multi-modules"
+				description="Suivez la migration pas-à-pas d'une application Spring Boot multi-modules vers une architecture hexagonale avec routage inter-modules HexaGlue."
+				gradient="bg-orange-yellow-gradient"
+			/>
+
+			<a href="/case-studies/banking-migration/" class="featured-card group mt-8 block p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+				<div class="flex flex-col md:flex-row md:items-center gap-6">
+					<div class="p-4 w-fit rounded-xl bg-astro-green/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri/bank-line" class="size-8 text-astro-green" aria-hidden="true" />
+					</div>
+					<div class="flex-1">
+						<h3 class="text-xl md:text-2xl font-semibold text-white mb-2">D'un legacy multi-modules à une architecture hexagonale</h3>
+						<p class="text-astro-gray-200 font-light mb-4">
+							45 classes, 5 modules Maven, 10 anti-patterns.<br>
+							Migration progressive avec routage inter-modules et génération automatique de l'infrastructure ciblée.
+						</p>
+					</div>
+					<Icon name="ri/arrow-right-line" class="size-6 text-astro-gray-400 group-hover:text-amber-400 transition-colors hidden md:block" aria-hidden="true" />
+				</div>
+			</a>
+		</div>
+	</section>
+
 	<!-- Upcoming Case Studies -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<div class="max-w-4xl mx-auto">
@@ -139,7 +169,7 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 			</div>
 		</div>
 		<div
-			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
 		></div>
 	</section>
 </MainLayout>
