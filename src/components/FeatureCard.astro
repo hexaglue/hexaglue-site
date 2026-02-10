@@ -63,7 +63,7 @@ const tintStyles = {
 		<slot name="illustration" />
 
 		{href && (
-			<a href={href} class:list={['mt-4 inline-flex items-center gap-1 text-sm hover:text-white transition-colors', tintStyles[tint].link]}>
+			<a href={href} title={`En savoir plus sur ${title}`} class:list={['mt-4 inline-flex items-center gap-1 text-sm hover:text-white transition-colors', tintStyles[tint].link]}>
 				<span>En savoir plus</span>
 				<svg class="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
 					<path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />

@@ -374,32 +374,32 @@ public record OrderPlaced(
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium text-white">Aggregate Root</td>
 						<td class="py-3 pr-4">Classe avec un champ d'identité typé</td>
-						<td class="py-3"><a href="/features/jpa-generation/" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
+						<td class="py-3"><a href="/features/jpa-generation/" title="Génération JPA" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium text-white">Entity</td>
 						<td class="py-3 pr-4">Classe membre d'un agrégat</td>
-						<td class="py-3"><a href="/features/jpa-generation/" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
+						<td class="py-3"><a href="/features/jpa-generation/" title="Génération JPA" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium text-white">Value Object</td>
 						<td class="py-3 pr-4">Record immuable, sans identité</td>
-						<td class="py-3"><a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
+						<td class="py-3"><a href="/features/classification/" title="Classification automatique" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium text-white">Identifier</td>
 						<td class="py-3 pr-4">Record wrappant un type primitif</td>
-						<td class="py-3"><a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
+						<td class="py-3"><a href="/features/classification/" title="Classification automatique" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium text-white">Domain Event</td>
 						<td class="py-3 pr-4">Record avec suffixe <code>Event</code></td>
-						<td class="py-3"><a href="/features/living-documentation/" class="text-[#FF7D54] hover:text-white transition-colors">Living Doc</a></td>
+						<td class="py-3"><a href="/features/living-documentation/" title="Living Documentation" class="text-[#FF7D54] hover:text-white transition-colors">Living Doc</a></td>
 					</tr>
 					<tr>
 						<td class="py-3 pr-4 font-medium text-white">Domain Service</td>
 						<td class="py-3 pr-4">Classe stateless dans le domaine</td>
-						<td class="py-3"><a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors">Audit</a></td>
+						<td class="py-3"><a href="/features/audit/" title="Audit d'architecture" class="text-[#FF7D54] hover:text-white transition-colors">Audit</a></td>
 					</tr>
 				</tbody>
 			</table>
@@ -408,14 +408,14 @@ public record OrderPlaced(
 
 		<div class="max-w-4xl mx-auto">
 			<Insight variant="green" title="Classification automatique et traçable">
-				<p>HexaGlue <a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors underline">classifie automatiquement</a> chaque building block DDD à partir de la structure de votre code. Chaque décision est traçable : le <a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors underline">rapport d'audit</a> indique la règle qui a déclenché la classification et le niveau de confiance associé.</p>
+				<p>HexaGlue <a href="/features/classification/" title="Classification automatique" class="text-[#FF7D54] hover:text-white transition-colors underline">classifie automatiquement</a> chaque building block DDD à partir de la structure de votre code. Chaque décision est traçable : le <a href="/features/audit/" title="Rapport d'audit" class="text-[#FF7D54] hover:text-white transition-colors underline">rapport d'audit</a> indique la règle qui a déclenché la classification et le niveau de confiance associé.</p>
 			</Insight>
 		</div>
 
 		<div class="mt-6 max-w-4xl mx-auto">
 			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
-				Le DDD s'applique naturellement dans une <a href="/guides/hexagonal-architecture/" class="text-[#FF7D54] hover:text-white transition-colors underline">architecture hexagonale</a> : le domaine est au centre, protégé des détails d'infrastructure par les ports et les adapters. HexaGlue détecte les deux : les building blocks DDD et la structure hexagonale.
-				Vous pouvez voir ces principes appliqués à un projet réel dans l'<a href="/case-studies/ecommerce-migration/" class="text-[#FF7D54] hover:text-white transition-colors underline">étude de cas e-commerce</a>.
+				Le DDD s'applique naturellement dans une <a href="/guides/hexagonal-architecture/" title="Guide de l'architecture hexagonale" class="text-[#FF7D54] hover:text-white transition-colors underline">architecture hexagonale</a> : le domaine est au centre, protégé des détails d'infrastructure par les ports et les adapters. HexaGlue détecte les deux : les building blocks DDD et la structure hexagonale.
+				Vous pouvez voir ces principes appliqués à un projet réel dans l'<a href="/case-studies/ecommerce-migration/" title="Étude de cas e-commerce" class="text-[#FF7D54] hover:text-white transition-colors underline">étude de cas e-commerce</a>.
 			</p>
 		</div>
 	</section>

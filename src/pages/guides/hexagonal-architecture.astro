@@ -389,22 +389,22 @@ public class JpaOrderRepository implements OrderRepository {
 						<tr class="border-b border-astro-dark-100/10">
 							<td class="py-3 pr-4 font-medium text-white">Détecte les Driving et Driven Ports</td>
 							<td class="py-3 pr-4">Classification automatique</td>
-							<td class="py-3"><a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
+							<td class="py-3"><a href="/features/classification/" title="Classification automatique" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
 						</tr>
 						<tr class="border-b border-astro-dark-100/10">
 							<td class="py-3 pr-4 font-medium text-white">Génère les Driven Adapters JPA</td>
 							<td class="py-3 pr-4">Génération de code</td>
-							<td class="py-3"><a href="/features/jpa-generation/" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
+							<td class="py-3"><a href="/features/jpa-generation/" title="Génération JPA" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
 						</tr>
 						<tr class="border-b border-astro-dark-100/10">
 							<td class="py-3 pr-4 font-medium text-white">Vérifie les dépendances entre couches</td>
 							<td class="py-3 pr-4">Audit d'architecture</td>
-							<td class="py-3"><a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors">Audit</a></td>
+							<td class="py-3"><a href="/features/audit/" title="Audit d'architecture" class="text-[#FF7D54] hover:text-white transition-colors">Audit</a></td>
 						</tr>
 						<tr>
 							<td class="py-3 pr-4 font-medium text-white">Documente la topologie</td>
 							<td class="py-3 pr-4">Living Documentation</td>
-							<td class="py-3"><a href="/features/living-documentation/" class="text-[#FF7D54] hover:text-white transition-colors">Living Doc</a></td>
+							<td class="py-3"><a href="/features/living-documentation/" title="Living Documentation" class="text-[#FF7D54] hover:text-white transition-colors">Living Doc</a></td>
 						</tr>
 					</tbody>
 				</table>
@@ -413,14 +413,14 @@ public class JpaOrderRepository implements OrderRepository {
 
 		<div class="max-w-4xl mx-auto">
 			<Insight variant="green" title="Détection, génération, audit">
-				<p>HexaGlue détecte automatiquement les ports (Driving et Driven), génère les adapters JPA à partir du modèle de domaine, et audite la conformité de l'architecture hexagonale à chaque build. Les violations sont signalées dans le <a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors underline">rapport d'audit</a> avec leur sévérité et des pistes de remédiation.</p>
+				<p>HexaGlue détecte automatiquement les ports (Driving et Driven), génère les adapters JPA à partir du modèle de domaine, et audite la conformité de l'architecture hexagonale à chaque build. Les violations sont signalées dans le <a href="/features/audit/" title="Rapport d'audit" class="text-[#FF7D54] hover:text-white transition-colors underline">rapport d'audit</a> avec leur sévérité et des pistes de remédiation.</p>
 			</Insight>
 		</div>
 
 		<div class="mt-6 max-w-4xl mx-auto">
 			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
-				L'architecture hexagonale protège le modèle <a href="/guides/ddd-principles/" class="text-[#FF7D54] hover:text-white transition-colors underline">DDD</a> des détails d'infrastructure. HexaGlue automatise la partie technique : vous écrivez le domaine, il génère l'infrastructure et vérifie que les frontières architecturales sont respectées.
-				Vous pouvez voir ces principes appliqués à un projet réel dans l'<a href="/case-studies/ecommerce-migration/" class="text-[#FF7D54] hover:text-white transition-colors underline">étude de cas e-commerce</a>.
+				L'architecture hexagonale protège le modèle <a href="/guides/ddd-principles/" title="Principes du Domain-Driven Design" class="text-[#FF7D54] hover:text-white transition-colors underline">DDD</a> des détails d'infrastructure. HexaGlue automatise la partie technique : vous écrivez le domaine, il génère l'infrastructure et vérifie que les frontières architecturales sont respectées.
+				Vous pouvez voir ces principes appliqués à un projet réel dans l'<a href="/case-studies/ecommerce-migration/" title="Étude de cas e-commerce" class="text-[#FF7D54] hover:text-white transition-colors underline">étude de cas e-commerce</a>.
 			</p>
 		</div>
 	</section>

@@ -16,6 +16,7 @@ const { links } = Astro.props;
 			return (
 				<a
 					href={link.href}
+					title={link.text}
 					target={isExternal ? '_blank' : undefined}
 					rel={isExternal ? 'me noopener noreferrer' : 'me'}
 					class="link flex items-center gap-2 p-3 text-white"

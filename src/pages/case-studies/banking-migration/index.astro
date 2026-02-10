@@ -43,7 +43,7 @@ const lessons = [
 
 			<div class="mt-8 flex flex-wrap gap-4">
 				<a
-					href="https://github.com/hexaglue/case-study-banking"
+					href="https://github.com/hexaglue/case-study-banking" title="Voir le code source sur GitHub"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
@@ -111,6 +111,7 @@ const lessons = [
 			{steps.map((step, i) => (
 				<a
 					href={`/case-studies/banking-migration/${step.slug}/`}
+					title={step.title}
 					class="step-link group flex items-center gap-4 md:gap-6 p-4 md:p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300"
 				>
 					<div class={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-${step.color}/10 border border-${step.color}/30 flex items-center justify-center shrink-0`}>

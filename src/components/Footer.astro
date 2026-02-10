@@ -103,6 +103,7 @@ const socialLinks = siteInfo.socialLinks;
 										<li>
 											<a
 												href={href}
+												title={label}
 												target={isExternal ? '_blank' : undefined}
 												rel={isExternal ? 'noopener noreferrer' : undefined}
 												class="link flex gap-2 items-center"
@@ -126,8 +127,8 @@ const socialLinks = siteInfo.socialLinks;
 		>
 			<div class="flex flex-col md:flex-row items-center gap-2 md:gap-6 text-base text-astro-gray-300">
 				<span>© {new Date().getFullYear()} Scalastic</span>
-				<span>Publié sous licence <a href="https://github.com/hexaglue/hexaglue/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="link">MPL-2.0</a></span>
-				<span>Propulsé par <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="link">Astro</a></span>
+				<span>Publié sous licence <a href="https://github.com/hexaglue/hexaglue/blob/main/LICENSE" title="Licence MPL-2.0 sur GitHub" target="_blank" rel="noopener noreferrer" class="link">MPL-2.0</a></span>
+				<span>Propulsé par <a href="https://astro.build" title="Site officiel Astro" target="_blank" rel="noopener noreferrer" class="link">Astro</a></span>
 			</div>
 			<SocialLinks links={socialLinks} />
 		</nav>

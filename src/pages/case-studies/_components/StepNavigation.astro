@@ -18,6 +18,7 @@ const hasOnlyNext = !prev && next;
 	{prev ? (
 		<a
 			href={prev.href}
+			title={prev.label}
 			class:list={[
 				'group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl',
 				'bg-astro-dark-800/40 border border-astro-dark-100/15',
@@ -43,6 +44,7 @@ const hasOnlyNext = !prev && next;
 	{next ? (
 		<a
 			href={next.href}
+			title={next.label}
 			class:list={[
 				'group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl',
 				'bg-astro-dark-800/40 border border-astro-dark-100/15',
