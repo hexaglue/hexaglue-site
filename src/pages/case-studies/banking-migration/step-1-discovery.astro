@@ -12,7 +12,7 @@ import InventoryTable, { type InventoryRow } from '../_components/InventoryTable
 import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
 import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
-import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
 import Insight from '~/components/Insight.astro';
 
 const pomXmlConfig = `<plugin>
@@ -146,10 +146,10 @@ const remediationRows: RemediationRow[] = [
 >
     <!-- Hero Section -->
     <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-        <AmberStardust height="h-64 md:h-80" />
+        <PurpleStardust height="h-64 md:h-80" />
         <div class="max-w-5xl mx-auto">
             <div class="mt-8 max-w-3xl">
-                <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+                <span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
                     Étape 1
                 </span>
                 <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
@@ -162,7 +162,7 @@ const remediationRows: RemediationRow[] = [
                   class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
                 >
                   <Icon name="logos/github" class="size-5" aria-hidden="true" />
-                  <code class="text-sm text-amber-400">step/1-discovery</code>
+                  <code class="text-sm text-purple-400">step/1-discovery</code>
                 </a>
                 <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
                     <li>Intégration d'HexaGlue en mode reactor (multi-module).</li>
@@ -179,7 +179,7 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Configuration"
                 title="Configuration initiale"
-                gradient="bg-orange-yellow-gradient"
+                gradient="bg-blue-purple-gradient"
             >
                 Le plugin Maven HexaGlue analyse le code source à la compilation pour en extraire un modèle architectural.
                 En mode multi-module, il s'exécute une seule fois au niveau du POM parent et produit un modèle unifié couvrant tous les modules.<br>
@@ -212,7 +212,7 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Topologie"
                 title="Topologie des modules"
-                gradient="bg-orange-yellow-gradient"
+                gradient="bg-blue-purple-gradient"
             >
                 En mode reactor, HexaGlue construit une carte des modules du projet. Chaque module est associé à un rôle architectural et au nombre de types Java qu'il contient.<br>
                 Cette vue d'ensemble permet de comprendre la répartition du code avant même de regarder le détail des violations.
@@ -258,7 +258,7 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Exécution"
                 title="Lancement de l'audit"
-                gradient="bg-orange-yellow-gradient"
+                gradient="bg-blue-purple-gradient"
             >
                 Grâce à <code>extensions=true</code>, HexaGlue détecte le POM parent multi-module et injecte automatiquement les goals reactor :<br>
                 <ul>
@@ -472,7 +472,7 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Bilan"
                 title="Ce que révèle cette étape"
-                gradient="bg-orange-yellow-gradient"
+                gradient="bg-blue-purple-gradient"
             >
                 Ce premier audit établit une photographie quantifiée de l'état architectural du projet bancaire multi-module.
                 Il sert de ligne de base pour mesurer les progrès à chaque étape de la migration.
@@ -493,7 +493,7 @@ const remediationRows: RemediationRow[] = [
     <!-- Transition -->
     <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
         <div class="max-w-5xl mx-auto">
-            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+            <div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-6">
                 <p class="text-lg text-astro-gray-200">
                     L'étape suivante consiste à exclure les types hors périmètre pour affiner le diagnostic.
                 </p>
@@ -518,7 +518,7 @@ const remediationRows: RemediationRow[] = [
             </div>
         </div>
         <div
-            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
         ></div>
     </section>
 </MainLayout>

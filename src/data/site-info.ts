@@ -26,12 +26,12 @@ type SiteInfo = {
 
 const siteInfo: SiteInfo = {
 	name: 'HexaGlue',
-	title: 'Audit et migration d\'architecture Java',
+	title: 'DDD et Architecture Hexagonale pour Java',
 	description:
-		'Outil de migration Java : classification automatique, audit d\'architecture, living documentation et génération de code. Sans vendor lock-in.',
+		'Rendez votre architecture DDD et hexagonale visible et gouvernable depuis votre code Java. Audit, documentation vivante et génération d\'infrastructure à la compilation.',
 	image: {
 		src: '/og/hexaglue.jpg',
-		alt: 'HexaGlue - Audit et migration d\'architecture hexagonale Java',
+		alt: 'HexaGlue - DDD et Architecture Hexagonale pour Java',
 	},
 	socialLinks: [
 		{

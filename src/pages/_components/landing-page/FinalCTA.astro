@@ -1,116 +1,52 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { Image } from 'astro:assets';
-import CodeBlock from '~/components/CodeBlock.astro';
 import Link from '../Link.astro';
-import GreenishStardust from './GreenishStardust.astro';
-import ctaBackground from './_assets/CTABackground.svg';
-
-const commands = [
-	"mvn compile",
-	"mvn clean compile",
-	"mvn test",
-	"mvn package",
-	"mvn verify",
-	"mvn install",
-	"mvn deploy",
-	"mvn clean install",
-	"mvn clean verify"
-];
+import FeatureCard from '~/components/FeatureCard.astro';
 ---
 
-<section
-	class="mt-20 md:mt-24 lg:mt-28 xl:mt-36 mb-20 py-12 md:py-16 lg:py-20 relative overflow-hidden w-full max-w-screen-xl mx-auto rounded-2xl md:rounded-3xl border border-astro-dark-100/20"
->
-	<!-- Background image -->
-	<div class="cta-bg-container">
-		<Image
-			src={ctaBackground}
-			alt="Arrière-plan décoratif"
-			class="cta-bg-image"
-			loading="lazy"
-			decoding="async"
+<div class="mt-20 md:mt-24 lg:mt-28 xl:mt-36 mb-20 w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+	<h2 class="sr-only">Garanties</h2>
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+		<FeatureCard
+			icon="ri/timer-flash-line"
+			title="Aucune contrainte de runtime"
+			description="HexaGlue agit uniquement à la compilation. Rien n'est embarqué en production."
+		/>
+		<FeatureCard
+			icon="ri/code-s-slash-line"
+			title="Aucun framework imposé"
+			description="Votre code reste le vôtre. Vos choix technologiques restent ouverts."
+		/>
+		<FeatureCard
+			icon="bi/shield-lock"
+			title="Aucun vendor lock-in"
+			description="Les modèles, les règles et le code généré vous appartiennent."
 		/>
 	</div>
+</div>
 
-	<GreenishStardust height="h-64 md:h-80 lg:h-96" />
+<section class="py-16 md:py-24 mb-12 relative">
+	<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+		<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+			<span class="text-astro-gray-300">Prêt à reprendre le contrôle ?</span><br/>
+			Analysez votre architecture existante.
+		</h2>
 
-	<div class="relative text-center space-y-8 px-4 sm:px-8">
-		<div class="space-y-4">
-			<h2 class="section-title font-heading text-[48px] text-white text-balance">
-				Prêt à Migrer vers le DDD ?
-			</h2>
-			<p class="text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
-				HexaGlue ne documente pas l'architecture.
-				<br />
-				Il la rend <strong class="text-white">observable</strong>, <strong class="text-white"
-					>vérifiable</strong
-				> et <strong class="text-white">actionnable</strong>.
-			</p>
-		</div>
+		<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+			Lancez un audit DDD et hexagonal sur votre application Java.
+		</p>
 
-		<div class="flex flex-col items-center gap-4">
-			<Link href="/getting-started/" class="primary">
-				<span
-					class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500"
-				>
-					Démarrer maintenant
-				</span>
+		<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+			<Link href="/docs/getting-started/" class="primary">
+				Démarrer maintenant
 			</Link>
-			<CodeBlock typewriter={commands} />
-		</div>
-
-		<div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-4">
-			<a
-				href="/getting-started/"
-				class="flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors duration-300"
-			>
-				<Icon name="ri/file-list-3-line" class="size-5" aria-hidden="true" />
-				<span class="text-sm">Documentation</span>
-			</a>
-			<a
-				href="/case-studies/"
-				class="flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors duration-300"
-			>
+			<Link href="/case-studies/" class="secondary">
 				<Icon name="ri/code-box-line" class="size-5" aria-hidden="true" />
-				<span class="text-sm">Etude de cas</span>
-			</a>
-			<a
-				href="https://github.com/hexaglue/hexaglue"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors duration-300"
-			>
-				<Icon name="logos/github" class="size-5" aria-hidden="true" />
-				<span class="text-sm">GitHub</span>
-			</a>
+				<span>Explorer nos études de cas</span>
+			</Link>
 		</div>
 	</div>
+	<div
+		class="absolute -inset-x-[50%] md:inset-x-0 bottom-0 h-[100vw] md:h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+	></div>
 </section>
-
-<style>
-	.section-title {
-		font-variation-settings: 'wght' 700;
-	}
-
-	.cta-bg-container {
-		position: absolute;
-		inset: -50% -25%;
-		z-index: -40;
-		overflow: hidden;
-		pointer-events: none;
-	}
-
-	.cta-bg-image {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		opacity: 0.8;
-	}
-
-	@media (max-width: 768px) {
-		.cta-bg-container {
-			inset: -30% -50%;
-		}
-	}
-</style>

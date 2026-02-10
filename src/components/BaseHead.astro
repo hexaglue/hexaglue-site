@@ -1,8 +1,15 @@
 ---
+import { SEO } from 'astro-seo';
 import siteInfo from '~/data/site-info';
 import '~/styles/fonts.css';
 import Favicon from './Favicon.astro';
-import SEO from './SEO.astro';
+import SchemaOrg from './SchemaOrg.astro';
+import { type SchemaType, type Breadcrumb, inferSchemaType, buildBreadcrumbs } from '~/helpers/breadcrumbs';
+
+export type SchemaOverride = {
+	"@type": string;
+	[key: string]: unknown;
+};
 
 export type Props = {
 	title?: string;
@@ -11,6 +18,7 @@ export type Props = {
 	image?: { src: string; alt: string };
 	canonicalURL?: URL | null;
 	pageType?: 'website' | 'article';
+	schema?: SchemaOverride;
 };
 
 const {
@@ -19,21 +27,121 @@ const {
 	image = siteInfo.image,
 	canonicalURL = new URL(Astro.request.url, Astro.site),
 	pageType = 'website',
+	schema,
 } = Astro.props;
 
-const title = rawTitle ?? [Astro.props.title, siteInfo.name].filter(Boolean).join(' | ');
 const resolvedImage = {
 	src: new URL(image.src, Astro.site).toString(),
 	alt: image.alt,
 };
+
+/**
+ * Enforce some standard canonical URL formatting across the site.
+ */
+function formatCanonicalURL(url: string | URL) {
+	const path = url.toString();
+	const hasQueryParams = path.includes('?');
+	return hasQueryParams ? path.replace(/\/(\?)/, '$1') : path.replace(/\/?$/, '/');
+}
+
+const isNoIndex = canonicalURL === null;
+const canonical = canonicalURL ? formatCanonicalURL(canonicalURL) : undefined;
+
+// --- Schema.org inference ---
+
+const pathname = Astro.url.pathname;
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://hexaglue.io';
+const schemaType = isNoIndex ? undefined : inferSchemaType(pathname);
+const pageTitle = Astro.props.title ?? rawTitle ?? siteInfo.name;
+const breadcrumbs = schemaType ? buildBreadcrumbs(pathname, pageTitle, siteUrl) : undefined;
 ---
 
 <!-- High Priority Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{title}</title>
 <meta name="generator" content={Astro.generator} />
-<meta name="theme-color" content="#3245FF" />
+
+{rawTitle ? (
+	<SEO
+		title={rawTitle}
+		description={description}
+		noindex={isNoIndex}
+		nofollow={isNoIndex}
+		canonical={canonical}
+		openGraph={{
+			basic: {
+				title: rawTitle,
+				type: pageType,
+				image: resolvedImage.src,
+			},
+			optional: {
+				description,
+				locale: 'fr',
+				siteName: siteInfo.name,
+			},
+			image: {
+				alt: resolvedImage.alt,
+				width: 1200,
+				height: 630,
+				type: 'image/jpeg',
+			},
+		}}
+		twitter={{
+			card: 'summary_large_image',
+			title: rawTitle,
+			description,
+			image: resolvedImage.src,
+			imageAlt: resolvedImage.alt,
+		}}
+		extend={{
+			meta: [
+				{ name: 'robots', content: 'max-image-preview:large' },
+				{ name: 'theme-color', content: '#3245FF' },
+			],
+		}}
+	/>
+) : (
+	<SEO
+		title={Astro.props.title}
+		titleTemplate="%s | HexaGlue"
+		titleDefault={`${siteInfo.title} | ${siteInfo.name}`}
+		description={description}
+		noindex={isNoIndex}
+		nofollow={isNoIndex}
+		canonical={canonical}
+		openGraph={{
+			basic: {
+				title: Astro.props.title ? `${Astro.props.title} | HexaGlue` : `${siteInfo.title} | ${siteInfo.name}`,
+				type: pageType,
+				image: resolvedImage.src,
+			},
+			optional: {
+				description,
+				locale: 'fr',
+				siteName: siteInfo.name,
+			},
+			image: {
+				alt: resolvedImage.alt,
+				width: 1200,
+				height: 630,
+				type: 'image/jpeg',
+			},
+		}}
+		twitter={{
+			card: 'summary_large_image',
+			title: Astro.props.title ? `${Astro.props.title} | HexaGlue` : `${siteInfo.title} | ${siteInfo.name}`,
+			description,
+			image: resolvedImage.src,
+			imageAlt: resolvedImage.alt,
+		}}
+		extend={{
+			meta: [
+				{ name: 'robots', content: 'max-image-preview:large' },
+				{ name: 'theme-color', content: '#3245FF' },
+			],
+		}}
+	/>
+)}
 
 <!-- Font preloads, omit JetBrains Mono to improve initial load -->
 <link rel="preload" href="/fonts/Degular.ttf" as="font" type="font/ttf" crossorigin />
@@ -43,11 +151,14 @@ const resolvedImage = {
 <Favicon />
 <link rel="sitemap" href="/sitemap-index.xml" />
 
-<SEO
-	name={siteInfo.name}
-	title={title}
-	description={description}
-	image={resolvedImage}
-	og={{ type: pageType }}
-	canonicalURL={canonicalURL}
-/>
+{!isNoIndex && (
+	<SchemaOrg
+		name={siteInfo.name}
+		description={description}
+		pageTitle={pageTitle}
+		pageUrl={canonical}
+		schemaType={schemaType}
+		breadcrumbs={breadcrumbs}
+		schema={schema}
+	/>
+)}

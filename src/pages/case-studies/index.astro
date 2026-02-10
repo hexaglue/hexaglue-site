@@ -3,25 +3,33 @@ import { Icon } from 'astro-icon/components';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
-import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+import PurpleStardust from '../_components/landing-page/PurpleStardust.astro';
 ---
 
 <MainLayout
 	title="Études de cas"
 	description="Découvrez comment des équipes utilisent HexaGlue pour gouverner leur architecture Java."
+	schema={{
+		"@type": "CollectionPage",
+		about: [
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+			{ "@type": "Thing", name: "Migration d'architecture" },
+		],
+	}}
 >
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-64 md:h-80" />
+		<PurpleStardust height="h-64 md:h-80" />
 
 		<div class="text-center max-w-3xl mx-auto">
-			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
-				Retours d'expérience
+			<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+				Études de cas
 			</span>
 
 			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
 				Études de Cas.<br/>
-				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Des résultats concrets.</span>
+				<span class="bg-clip-text text-transparent bg-blue-purple-gradient">Des résultats concrets.</span>
 			</h1>
 
 			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
@@ -32,29 +40,29 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 
 	<!-- Featured Case Study -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-64" />
+		<PurpleStardust height="h-64" />
 
 		<div class="max-w-4xl mx-auto">
 			<SectionCopy
-				label="Mise en avant"
+				label="Monolithe · Java 17 · E-Commerce"
 				title="Migration d'un site E-Commerce"
-				description="Suivez la migration pas-à-pas d'une application Spring Boot vers une architecture hexagonale complète, à l'aide d'HexaGlue."
-				gradient="bg-orange-yellow-gradient"
+				description="Un monolithe Spring Boot classique migré pas-à-pas vers une architecture hexagonale complète avec HexaGlue."
+				gradient="bg-blue-purple-gradient"
 			/>
 
-			<a href="/case-studies/ecommerce-migration/" class="featured-card group mt-8 block p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+			<a href="/case-studies/ecommerce-migration/" class="featured-card group mt-8 block p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300">
 				<div class="flex flex-col md:flex-row md:items-center gap-6">
 					<div class="p-4 w-fit rounded-xl bg-astro-green/10 group-hover:scale-110 transition-transform duration-300">
 						<Icon name="ri/shopping-cart-2-line" class="size-8 text-astro-green" aria-hidden="true" />
 					</div>
 					<div class="flex-1">
-						<h3 class="text-xl md:text-2xl font-semibold text-white mb-2">D'un legacy à une architecture hexagonal</h3>
+						<h3 class="text-xl md:text-2xl font-semibold text-white mb-2">D'un monolithe Spring Boot à une architecture hexagonale</h3>
 						<p class="text-astro-gray-200 font-light mb-4">
-							50 classes Spring Boot, 10 anti-patterns, 37 violations initiales.<br>
-							Migration progressive guidée par les rapports d'audit HexaGlue jusqu'à une architecture hexagonale, avec génération automatique de l'infrastructure.
+							Java 17, 50 classes, 10 anti-patterns, 37 violations initiales.<br>
+							Migration progressive d'un module unique guidée par les rapports d'audit HexaGlue, avec génération automatique de l'infrastructure JPA.
 						</p>
 					</div>
-					<Icon name="ri/arrow-right-line" class="size-6 text-astro-gray-400 group-hover:text-amber-400 transition-colors hidden md:block" aria-hidden="true" />
+					<Icon name="ri/arrow-right-line" class="size-6 text-astro-gray-400 group-hover:text-purple-400 transition-colors hidden md:block" aria-hidden="true" />
 				</div>
 			</a>
 		</div>
@@ -62,29 +70,29 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 
 	<!-- Featured Case Study - Banking -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-64" />
+		<PurpleStardust height="h-64" />
 
 		<div class="max-w-4xl mx-auto">
 			<SectionCopy
-				label="Mise en avant"
+				label="Multi-module · Java 21 · Banque"
 				title="Migration d'une application bancaire multi-modules"
-				description="Suivez la migration pas-à-pas d'une application Spring Boot multi-modules vers une architecture hexagonale avec routage inter-modules HexaGlue."
-				gradient="bg-orange-yellow-gradient"
+				description="Une application Spring Boot multi-modules migrée vers une architecture hexagonale avec routage inter-modules HexaGlue."
+				gradient="bg-blue-purple-gradient"
 			/>
 
-			<a href="/case-studies/banking-migration/" class="featured-card group mt-8 block p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+			<a href="/case-studies/banking-migration/" class="featured-card group mt-8 block p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300">
 				<div class="flex flex-col md:flex-row md:items-center gap-6">
 					<div class="p-4 w-fit rounded-xl bg-astro-green/10 group-hover:scale-110 transition-transform duration-300">
 						<Icon name="ri/bank-line" class="size-8 text-astro-green" aria-hidden="true" />
 					</div>
 					<div class="flex-1">
-						<h3 class="text-xl md:text-2xl font-semibold text-white mb-2">D'un legacy multi-modules à une architecture hexagonale</h3>
+						<h3 class="text-xl md:text-2xl font-semibold text-white mb-2">D'un multi-modules bancaire à une architecture hexagonale</h3>
 						<p class="text-astro-gray-200 font-light mb-4">
-							45 classes, 5 modules Maven, 10 anti-patterns.<br>
-							Migration progressive avec routage inter-modules et génération automatique de l'infrastructure ciblée.
+							Java 21, 5 modules Maven, 45 classes, 10 anti-patterns.<br>
+							Migration progressive avec modèle architectural unifié, routage inter-modules et génération d'infrastructure ciblée par module.
 						</p>
 					</div>
-					<Icon name="ri/arrow-right-line" class="size-6 text-astro-gray-400 group-hover:text-amber-400 transition-colors hidden md:block" aria-hidden="true" />
+					<Icon name="ri/arrow-right-line" class="size-6 text-astro-gray-400 group-hover:text-purple-400 transition-colors hidden md:block" aria-hidden="true" />
 				</div>
 			</a>
 		</div>
@@ -97,12 +105,12 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 				label="À venir"
 				title="Prochaines études de cas"
 				description="Des retours concrets sur l'utilisation de HexaGlue en production."
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			/>
 		</div>
 
 		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300">
 				<div class="p-3 w-fit rounded-xl bg-astro-green/10 mb-4 group-hover:scale-110 transition-transform duration-300">
 					<Icon name="ri/stack-line" class="size-6 text-astro-green" aria-hidden="true" />
 				</div>
@@ -112,7 +120,7 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 				</p>
 			</div>
 
-			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300">
 				<div class="p-3 w-fit rounded-xl bg-astro-blue/10 mb-4 group-hover:scale-110 transition-transform duration-300">
 					<Icon name="ri/code-box-line" class="size-6 text-astro-blue" aria-hidden="true" />
 				</div>
@@ -122,7 +130,7 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 				</p>
 			</div>
 
-			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300">
 				<div class="p-3 w-fit rounded-xl bg-astro-purple/10 mb-4 group-hover:scale-110 transition-transform duration-300">
 					<Icon name="ri/file-list-3-line" class="size-6 text-astro-purple" aria-hidden="true" />
 				</div>
@@ -132,7 +140,7 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 				</p>
 			</div>
 
-			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300">
+			<div class="case-study-card group p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300">
 				<div class="p-3 w-fit rounded-xl bg-red-400/10 mb-4 group-hover:scale-110 transition-transform duration-300">
 					<Icon name="ri/shield-check-line" class="size-6 text-red-400" aria-hidden="true" />
 				</div>
@@ -157,19 +165,17 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 			</p>
 
 			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-				<Link href="/contact/" class="primary">
-					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
-						Partagez votre histoire
-					</span>
+				<Link href="/contact/" class="primary" gradient="linear-gradient(83.21deg, #3245FF 0%, #B845ED 100%)">
+					Partager votre histoire
 				</Link>
-				<Link href="/getting-started/" class="secondary">
+				<Link href="/docs/getting-started/" class="secondary">
 					<Icon name="ri/file-list-3-line" class="size-5" aria-hidden="true" />
 					<span>Essayer HexaGlue</span>
 				</Link>
 			</div>
 		</div>
 		<div
-			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
 		></div>
 	</section>
 </MainLayout>
@@ -183,7 +189,7 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 		content: '';
 		position: absolute;
 		inset: 30% 15%;
-		background: radial-gradient(ellipse at center, rgba(255, 125, 84, 0.06) 0%, transparent 70%);
+		background: radial-gradient(ellipse at center, rgba(147, 107, 255, 0.06) 0%, transparent 70%);
 		border-radius: 50%;
 		filter: blur(25px);
 		z-index: -1;
@@ -199,7 +205,7 @@ import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 		content: '';
 		position: absolute;
 		inset: 20% 10%;
-		background: radial-gradient(ellipse at center, rgba(255, 125, 84, 0.08) 0%, transparent 70%);
+		background: radial-gradient(ellipse at center, rgba(147, 107, 255, 0.08) 0%, transparent 70%);
 		border-radius: 50%;
 		filter: blur(30px);
 		z-index: -1;

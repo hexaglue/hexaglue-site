@@ -1,0 +1,223 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import IntroPoint from '../_components/IntroPoint.astro';
+import GemIcon from '~/components/GemIcon.astro';
+import Insight from '~/components/Insight.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+---
+
+<MainLayout
+	title="HexaGlue pour les Architectes"
+	description="HexaGlue transforme vos décisions d'architecture DDD et hexagonale en contraintes vérifiables à la compilation. Les écarts sont détectés dans la CI, pas lors de la prochaine revue manuelle."
+	schema={{
+		"@type": "WebPage",
+		audience: { "@type": "Audience", audienceType: "Architecte logiciel, Architecte solution" },
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Pour les architectes
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Formalisez vos règles.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Vérifiez-les automatiquement.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				HexaGlue transforme vos décisions d'architecture DDD et hexagonale en contraintes vérifiables à la compilation. Les écarts sont détectés dans la CI, pas lors de la prochaine revue manuelle.
+			</p>
+
+			<div class="mt-8 flex justify-center">
+				<Icon name="ri/layout-grid-line" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 1 : Vos défis -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Contexte"
+			title="Les règles existent, mais rien ne les applique"
+		>
+			Vous définissez des conventions DDD et hexagonales pour votre projet : structure de packages, isolation du domaine, ports typés. Mais entre la documentation et le code, il n'y a pas de vérification automatique. Les écarts s'accumulent sans être détectés.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="amber" title="Les décisions d'architecture ne sont pas vérifiées">
+				<GemIcon slot="icon" icon="ri/shield-cross-line" gradient="red-pink" />
+				<Fragment slot="description">
+					Vous définissez des règles : le domaine ne dépend pas de l'infrastructure, les ports sont des interfaces, les agrégats ont un identifiant typé. Ces règles sont documentées dans un ADR ou un wiki. Mais rien ne vérifie leur respect dans le code. Vous le découvrez en revue, quand le code est déjà écrit.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Les frontières hexagonales s'érodent">
+				<GemIcon slot="icon" icon="ri/error-warning-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Un développeur ajoute un <code>@Entity</code> sur une classe de domaine. Un autre appelle un repository directement depuis un service applicatif. Chaque raccourci est petit, mais ils s'accumulent. En 6 mois, les couches sont percées et la migration vers le DDD stagne.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="La traçabilité des classifications est absente">
+				<GemIcon slot="icon" icon="ri/question-line" gradient="blue-purple" />
+				<Fragment slot="description">
+					Quand une classe est classée comme agrégat ou value object, sur quel critère ? En revue manuelle, c'est une décision implicite. Si un nouveau développeur conteste le choix, il n'y a pas de trace de la justification.
+				</Fragment>
+			</IntroPoint>
+		</div>
+	</section>
+
+	<!-- Section 2 : Comment HexaGlue vous aide -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Réponse"
+			title="Vos règles d'architecture deviennent du code"
+		>
+			HexaGlue formalise les règles DDD et hexagonales en contraintes vérifiables. À chaque build, il détecte les violations et produit un rapport exploitable.
+		</SectionCopy>
+
+		<div class="mt-10 table-panel">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Votre défi</th>
+							<th class="py-3 text-astro-gray-300 font-medium">Ce que HexaGlue fournit</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Règles non vérifiées</td>
+							<td class="py-3"><strong class="text-white">Contraintes automatiques</strong> : <code>ddd:entity-identity</code>, <code>ddd:domain-purity</code>, <code>hexagonal:layer-isolation</code>, <code>hexagonal:port-coverage</code>, etc. Chaque violation est localisée (classe, package) et classée par sévérité</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Frontières érodées</td>
+							<td class="py-3"><strong class="text-white">Audit à chaque build</strong> : l'audit s'exécute dans la CI avec un seuil configurable (<code>failOnError</code>). Un import JPA dans le domaine bloque le build immédiatement, pas dans 3 semaines</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white">Traçabilité absente</td>
+							<td class="py-3"><strong class="text-white">Classification traçable</strong> : chaque type reçoit un rôle (agrégat, entité, VO, port...) avec la règle qui a déclenché la décision. Les conflits sont signalés explicitement avec des pistes de remédiation</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>HexaGlue ne remplace pas vos décisions d'architecture : il les rend vérifiables. Vous définissez les règles (quelles conventions, quels seuils, quelles exclusions). HexaGlue les applique systématiquement à chaque build, sur l'ensemble du code.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 3 : Un workflow concret -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="En pratique"
+			title="De la règle à la vérification en 3 étapes"
+		>
+			HexaGlue s'intègre au cycle Maven existant. Vous définissez les conventions, il les vérifie à chaque build et produit un rapport exploitable.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="green" title="1. Vous définissez les conventions">
+				<GemIcon slot="icon" icon="ri/settings-3-line" gradient="blue-green" />
+				<Fragment slot="description">
+					Arborescence de packages, suffixes de noms, surcharges explicites dans <code>hexaglue.yaml</code>. HexaGlue classifie automatiquement à partir de ces conventions.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="green" title="2. L'audit vérifie à chaque build">
+				<GemIcon slot="icon" icon="ri/shield-check-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					À chaque <code>mvn verify</code>, HexaGlue produit un rapport avec le score, les violations et l'inventaire architectural. En CI, le build échoue si une violation critique est détectée.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="green" title="3. L'architecture évolue avec le code">
+				<GemIcon slot="icon" icon="ri/refresh-line" gradient="blue-purple" />
+				<Fragment slot="description">
+					La living documentation et le rapport d'audit reflètent l'état réel du code. Quand un développeur ajoute un agrégat ou modifie un port, la documentation et l'audit se mettent à jour automatiquement.
+				</Fragment>
+			</IntroPoint>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Dans l'étude de cas e-commerce, les 43 violations initiales ont été réduites à 7 en 6 étapes. Chaque étape montre la correction d'une catégorie de violations et l'impact sur le score. Le code source et les rapports sont disponibles sur GitHub.</p>
+			</Insight>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto">
+			<a href="/case-studies/ecommerce-migration/" class="inline-flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors">
+				<Icon name="ri/arrow-right-line" class="size-4" aria-hidden="true" />
+				<span>Parcourir l'étude de cas</span>
+			</a>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Les règles existent déjà.</span><br/>
+				Rendez-les vérifiables à chaque build.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez comment HexaGlue détecte les violations architecturales sur un projet réel ou commencez avec le tutoriel.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/features/" class="primary">
+					Explorer les fonctionnalités
+				</Link>
+				<Link href="/docs/getting-started/" class="secondary">
+					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<span>Démarrer en 5 minutes</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(56, 189, 126, 0.07);
+		border-bottom: 1px solid rgba(56, 189, 126, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(56, 189, 126, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(56, 189, 126, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(56, 189, 126, 0.12),
+			0 0 50px rgba(56, 189, 126, 0.07),
+			0 0 80px rgba(56, 189, 126, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

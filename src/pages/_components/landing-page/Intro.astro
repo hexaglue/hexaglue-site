@@ -7,37 +7,37 @@ import GreenishStardust from './GreenishStardust.astro';
 <section class="mt-20 sm:mt-36 xs:p-6 mx-auto w-full max-w-screen-xl space-y-8 p-4 sm:p-8">
 	<div class="space-y-1">
 		<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold">
-			À quoi sert HexaGlue
+			Comment ça fonctionne
 		</span>
 		<h2
 			class="section-title max-w-screen-lg text-balance text-[30px] font-heading md:leading-tight"
 		>
-			<strong>HexaGlue</strong> accompagne la migration de vos applications Java vers le DDD et l'architecture hexagonale.
+			<strong>Votre code contient le modèle architectural</strong>
 		</h2>
 	</div>
 
 	<div class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
-		<IntroPoint title="Classification">
+		<IntroPoint tint="green" title="Classifier">
 			<GemIcon slot="icon" icon="ri/search-eye-line" gradient="blue-green" />
 			<Fragment slot="description">
-				HexaGlue analyse le code et le modèle de domaine à la compilation afin d'en extraire un modèle architectural structuré.
-				Les concepts clés (agrégats, entités, objets valeur, cas d'usage, ports, relations…) sont identifiés de manière fiable et traçable.
+				HexaGlue analyse votre code et identifie les concepts de votre domaine : agrégats, entités, objets valeur, événements métier, ports et services applicatifs.<br><br>
+				<strong>Chaque classification est explicite, traçable et justifiée.</strong>
 			</Fragment>
 		</IntroPoint>
 
-		<IntroPoint title="Validation">
+		<IntroPoint tint="green" title="Valider">
 			<GemIcon slot="icon" icon="ri/shield-check-line" gradient="red-pink" />
 			<Fragment slot="description">
-				À partir de ce modèle, les règles d'architecture sont formalisées et vérifiées automatiquement.
-				Les écarts et ambiguïtés sont détectés dès la compilation, avant qu'ils ne se transforment pas en dette ou en risque en production.
+				Les règles de votre architecture hexagonale sont formalisées et vérifiées à chaque build : frontières du domaine, dépendances, contrats de ports.<br><br>
+				<strong>Les écarts sont détectés dès la CI, pas en production.</strong>
 			</Fragment>
 		</IntroPoint>
 
-		<IntroPoint title="Génération">
+		<IntroPoint tint="green" title="Générer">
 			<GemIcon slot="icon" icon="ri/code-box-line" gradient="orange-yellow" />
 			<Fragment slot="description">
-				Parce qu'il connait l'architecture de votre application, HexaGlue peut automatiser la génération de vos
-				adaptateurs d'infrastructure, entités de persistance, repositories, interfaces REST, documentation ou audits d'architecture, à partir du code métier.
+				À partir du modèle de domaine, HexaGlue génère les adaptateurs d'infrastructure : entités JPA, repositories, documentation vivante et rapports d'audit.<br><br>
+				<strong>Le code généré est toujours aligné sur l'architecture cible.</strong>
 			</Fragment>
 		</IntroPoint>
 	</div>

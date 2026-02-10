@@ -2,26 +2,18 @@
 import MainLayout from '~/layouts/MainLayout.astro';
 import Hero from './_components/landing-page/Hero.astro';
 import Intro from './_components/landing-page/Intro.astro';
-import Problem from './_components/landing-page/Problem.astro';
-import Solution from './_components/landing-page/Solution.astro';
-import Personas from './_components/landing-page/Personas.astro';
-import Features from './_components/landing-page/Features.astro';
-import Benefits from './_components/landing-page/Benefits.astro';
+import ValueProposition from './_components/landing-page/ValueProposition.astro';
 import Adoption from './_components/landing-page/Adoption.astro';
 import FinalCTA from './_components/landing-page/FinalCTA.astro';
 ---
 
 <MainLayout
-	rawTitle="HexaGlue - Audit et migration d'architecture hexagonale Java"
-	description="Outil de migration Java : classification automatique, audit d'architecture, living documentation et génération de code. Sans vendor lock-in."
+	rawTitle="HexaGlue - DDD et Architecture Hexagonale pour Java"
+	description="Rendez votre architecture DDD et hexagonale visible et gouvernable depuis votre code Java. Audit, documentation vivante et génération d'infrastructure à la compilation."
 >
 	<Hero />
 	<Intro />
-	<Problem />
-	<Solution />
-	<Personas />
+	<ValueProposition />
 	<Adoption />
-	<Features />
-	<Benefits />
 	<FinalCTA />
 </MainLayout>

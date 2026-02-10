@@ -1,0 +1,485 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import IntroPoint from '../_components/IntroPoint.astro';
+import GemIcon from '~/components/GemIcon.astro';
+import Insight from '~/components/Insight.astro';
+import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+
+const drivingPortCode = `/** Port entrant : cas d'usage "passer une commande". */
+public interface PlaceOrderUseCase {
+
+    OrderConfirmation placeOrder(PlaceOrderCommand command);
+}
+
+/** Commande portant les données nécessaires. */
+public record PlaceOrderCommand(
+    CustomerId customerId,
+    List<OrderLineRequest> lines
+) {}`;
+
+const drivenPortCode = `/** Port sortant : persistance des commandes. */
+public interface OrderRepository {
+
+    void save(Order order);
+
+    Optional<Order> findById(OrderId id);
+
+    List<Order> findByCustomer(CustomerId customerId);
+}
+
+/** Port sortant : notification de paiement. */
+public interface PaymentGateway {
+
+    PaymentResult authorize(OrderId orderId, Money amount);
+}`;
+
+const dependencyInversionCode = `/** Service applicatif : orchestre le cas d'usage. */
+public class PlaceOrderService implements PlaceOrderUseCase {
+
+    // Le domaine DÉFINIT les interfaces (ports)
+    private final OrderRepository orderRepository;
+    private final PaymentGateway paymentGateway;
+    private final PricingService pricingService;
+
+    // L'infrastructure IMPLÉMENTE via injection de dépendances
+    public PlaceOrderService(
+            OrderRepository orderRepository,
+            PaymentGateway paymentGateway,
+            PricingService pricingService) {
+        this.orderRepository = orderRepository;
+        this.paymentGateway = paymentGateway;
+        this.pricingService = pricingService;
+    }
+
+    @Override
+    public OrderConfirmation placeOrder(PlaceOrderCommand command) {
+        var order = Order.create(command.customerId());
+        command.lines().forEach(line ->
+            order.addLine(line.product(), line.quantity())
+        );
+
+        Money total = pricingService.calculate(order);
+        PaymentResult payment = paymentGateway.authorize(order.id(), total);
+
+        if (payment.isAuthorized()) {
+            OrderPlaced event = order.confirm();
+            orderRepository.save(order);
+            return OrderConfirmation.success(order.id(), event);
+        }
+        return OrderConfirmation.paymentDeclined(order.id());
+    }
+}`;
+
+const drivenAdapterCode = `/** Driven Adapter : implémentation JPA du port OrderRepository. */
+@Repository
+public class JpaOrderRepository implements OrderRepository {
+
+    private final SpringDataOrderRepository springRepo;
+    private final OrderMapper mapper;
+
+    @Override
+    public void save(Order order) {
+        var entity = mapper.toJpaEntity(order);
+        springRepo.save(entity);
+    }
+
+    @Override
+    public Optional<Order> findById(OrderId id) {
+        return springRepo.findById(id.value())
+            .map(mapper::toDomainObject);
+    }
+}`;
+---
+
+<MainLayout
+	title="Architecture Hexagonale : Ports et Adapters"
+	description="Guide complet de l'architecture hexagonale (Ports & Adapters) : principes, Driving et Driven Ports, inversion de dépendances, comparaison avec l'architecture en couches. Avec exemples Java."
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		about: [
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+			{ "@type": "Thing", name: "Ports and Adapters" },
+			{ "@type": "Thing", name: "Inversion de dépendances" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Guide Architecture
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Architecture Hexagonale<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Ports, Adapters et inversion de dépendances.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				L'architecture hexagonale (Ports & Adapters) isole votre domaine métier de l'infrastructure technique. Ce guide couvre les principes fondamentaux, la distinction Driving/Driven, l'inversion de dépendances et la comparaison avec l'architecture en couches, avec des exemples Java concrets.
+			</p>
+		</div>
+	</section>
+
+	<!-- Section 1 : Pourquoi l'architecture hexagonale ? -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Contexte"
+			title="Pourquoi l'architecture hexagonale ?"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Dans une application classique, le code métier finit par dépendre directement de la base de données, du framework web, du système de messaging. Changer de technologie de persistence ou de mode d'exposition revient à réécrire une partie du domaine.
+			<br>
+			L'architecture hexagonale, proposée par Alistair Cockburn en 2005 sous le nom de "Ports and Adapters", résout ce problème en inversant les dépendances : le domaine définit ses besoins via des interfaces (ports), et l'infrastructure fournit des implémentations (adapters). Le domaine ne sait pas qui l'appelle ni où il persiste.
+			<br>
+			En 2026, avec l'essor du cloud, des architectures modulaires et du déploiement continu, ce pattern est devenu un standard pour les applications Java d'entreprise. Il permet de tester le domaine sans infrastructure, de remplacer une technologie sans toucher au métier, et de raisonner clairement sur les responsabilités de chaque couche.
+		</SectionCopy>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber" title="Hexagonal n'est pas microservices">
+				<p>L'architecture hexagonale est un pattern d'organisation du code au sein d'une application. Elle ne préjuge pas du style de déploiement : monolithe, modulaire, microservices. Un monolithe bien structuré en hexagonal est souvent préférable à des microservices mal découpés.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 2 : Le modèle Ports & Adapters -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Modèle"
+			title="Le domaine au centre"
+			gradient="bg-orange-yellow-gradient"
+		>
+			L'architecture hexagonale se structure autour d'un principe simple : le domaine métier est au centre, entouré de ports qui définissent ses contrats, et d'adapters qui les implémentent. Toutes les dépendances pointent vers le domaine.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="amber" title="Le domaine">
+				<GemIcon slot="icon" icon="hexaglue/aggregate" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Le domaine contient la logique métier pure : agrégats, entités, value objects, domain events, domain services. Il n'a aucune dépendance vers l'extérieur : pas de framework, pas de base de données, pas de HTTP. C'est le modèle DDD au centre de l'architecture.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Les ports">
+				<GemIcon slot="icon" icon="ri/git-branch-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Les ports sont les interfaces que le domaine expose (ports entrants) ou dont il dépend (ports sortants). Un port entrant définit un cas d'usage : <code>PlaceOrderUseCase</code>. Un port sortant définit un besoin : <code>OrderRepository</code>. Le domaine ne connaît que ces interfaces.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Les adapters">
+				<GemIcon slot="icon" icon="ri/plug-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Les adapters sont les implémentations concrètes des ports. Un adapter REST appelle un port entrant. Un adapter JPA implémente un port sortant. Ils traduisent entre le monde technique et le domaine. On peut les remplacer sans toucher au domaine.
+				</Fragment>
+			</IntroPoint>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>Le domaine ne sait pas QUI l'appelle (un contrôleur REST ? un test ? une CLI ?) ni OÙ il persiste (PostgreSQL ? MongoDB ? un fichier ?). Cette ignorance est précisément ce qui le rend testable, portable et maintenable.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 3 : Driving vs Driven -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Directions"
+			title="Driving vs Driven : deux directions, un même principe"
+			gradient="bg-orange-yellow-gradient"
+		>
+			L'architecture hexagonale distingue deux types de ports et d'adapters selon la direction du flux. Les ports entrants (Driving) exposent les cas d'usage. Les ports sortants (Driven) déclarent les dépendances du domaine. Cette symétrie clarifie les responsabilités.
+		</SectionCopy>
+
+		<div class="mt-10 table-panel">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Direction</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Côté</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Ports</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Adapters</th>
+							<th class="py-3 text-astro-gray-300 font-medium">Exemples</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Driving (entrant)</td>
+							<td class="py-3 pr-4">Gauche</td>
+							<td class="py-3 pr-4">Cas d'usage</td>
+							<td class="py-3 pr-4">Contrôleurs</td>
+							<td class="py-3"><code>PlaceOrderUseCase</code> → REST Controller</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white">Driven (sortant)</td>
+							<td class="py-3 pr-4">Droite</td>
+							<td class="py-3 pr-4">Dépendances</td>
+							<td class="py-3 pr-4">Implémentations</td>
+							<td class="py-3"><code>OrderRepository</code> → JPA Adapter</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<h3 class="text-xl font-heading font-semibold text-white mb-4">Driving Port : le cas d'usage</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed mb-6">
+				Un Driving Port définit un cas d'usage exposé par le domaine. C'est l'interface que les adapters entrants (REST, CLI, event listener) appellent pour déclencher une action métier.
+			</p>
+			<Code code={drivingPortCode} lang="java" title="PlaceOrderUseCase.java" />
+		</div>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<h3 class="text-xl font-heading font-semibold text-white mb-4">Driven Port : la dépendance du domaine</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed mb-6">
+				Un Driven Port déclare une dépendance du domaine vers l'extérieur. Le domaine définit l'interface, l'infrastructure fournit l'implémentation.
+			</p>
+			<Code code={drivenPortCode} lang="java" title="OrderRepository.java & PaymentGateway.java" />
+		</div>
+	</section>
+
+	<!-- Section 4 : Inversion de dépendances -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Principe clé"
+			title="Le domaine définit, l'infrastructure implémente"
+			gradient="bg-orange-yellow-gradient"
+		>
+			L'inversion de dépendances est le mécanisme central de l'architecture hexagonale. Dans une architecture en couches classique, la couche métier dépend de la couche d'accès aux données. En hexagonal, c'est l'inverse : le domaine définit les interfaces (ports), et l'infrastructure les implémente (adapters).
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Code code={dependencyInversionCode} lang="java" title="PlaceOrderService.java" />
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto">
+			<Code code={drivenAdapterCode} lang="java" title="JpaOrderRepository.java" />
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green" title="Tester sans infrastructure">
+				<p>Grâce à l'inversion de dépendances, le <code>PlaceOrderService</code> peut être testé avec des mocks des ports sortants : un <code>OrderRepository</code> en mémoire et un <code>PaymentGateway</code> stub. Aucune base de données, aucun service externe, aucune configuration Spring : le test vérifie la logique métier pure en quelques millisecondes.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 5 : Comparaison avec l'architecture en couches -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Comparaison"
+			title="Hexagonal vs Couches : quand choisir ?"
+			gradient="bg-orange-yellow-gradient"
+		>
+			L'architecture en couches (Presentation → Service → Persistence) est le pattern le plus répandu. L'architecture hexagonale propose une alternative centrée sur le domaine. Chacune a ses forces et ses cas d'usage.
+		</SectionCopy>
+
+		<div class="mt-10 table-panel">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Critère</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Architecture en couches</th>
+							<th class="py-3 text-astro-gray-300 font-medium">Architecture hexagonale</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Couplage</td>
+							<td class="py-3 pr-4">Fort : le métier dépend de la persistence</td>
+							<td class="py-3">Faible : le domaine ne dépend de rien</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Testabilité</td>
+							<td class="py-3 pr-4">Tests souvent liés à l'infra (DB, Spring Context)</td>
+							<td class="py-3">Domaine testable sans infrastructure</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Remplacement d'infra</td>
+							<td class="py-3 pr-4">Difficile : changements en cascade</td>
+							<td class="py-3">Simple : changer un adapter suffit</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Complexité initiale</td>
+							<td class="py-3 pr-4">Faible : structure familière</td>
+							<td class="py-3">Modérée : plus d'interfaces et de packages</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white">Cas d'usage idéal</td>
+							<td class="py-3 pr-4">CRUD simple, prototypage rapide</td>
+							<td class="py-3">Logique métier riche, évolution long terme</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>L'architecture hexagonale n'est pas toujours nécessaire. Pour une application CRUD avec peu de logique métier, l'architecture en couches est plus simple et suffit. L'hexagonal prend tout son sens lorsque le domaine est complexe, que les règles métier évoluent et que vous avez besoin de tester le métier indépendamment de l'infrastructure.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 6 : Stratégie de tests -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Tests"
+			title="Tester sans infrastructure"
+			gradient="bg-orange-yellow-gradient"
+		>
+			L'un des avantages majeurs de l'architecture hexagonale est la stratégie de test qu'elle rend possible. Chaque couche se teste indépendamment, avec le bon niveau d'isolation.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="amber" title="Tests du domaine">
+				<GemIcon slot="icon" icon="ri/shield-check-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Le domaine se teste en logique pure. Les ports sortants sont mockés ou stubés. Pas de base de données, pas de framework : les tests vérifient les invariants métier, les transitions d'état et les événements émis. Ils s'exécutent en millisecondes.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Tests d'intégration">
+				<GemIcon slot="icon" icon="ri/database-2-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Chaque adapter se teste séparément. Un test d'intégration pour <code>JpaOrderRepository</code> utilise une base de données réelle (H2 ou Testcontainers). Un test pour le contrôleur REST utilise MockMvc. Un adapter à la fois, avec son infrastructure réelle.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Tests end-to-end">
+				<GemIcon slot="icon" icon="ri/route-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Les tests end-to-end traversent le pipeline complet : un appel via le driving adapter (REST), à travers le domaine, jusqu'aux driven adapters (JPA, messaging). Ils sont peu nombreux, ciblent les scénarios critiques et valident l'assemblage des composants.
+				</Fragment>
+			</IntroPoint>
+		</div>
+	</section>
+
+	<!-- Section 7 : Architecture hexagonale et HexaGlue -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="HexaGlue"
+			title="De la théorie à l'automatisation"
+			gradient="bg-orange-yellow-gradient"
+		>
+			HexaGlue opère à l'intersection du DDD et de l'architecture hexagonale. Il analyse votre domaine, détecte les ports, génère les adapters d'infrastructure et audite la conformité architecturale, le tout à chaque build Maven.
+		</SectionCopy>
+
+		<div class="mt-10 table-panel">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Ce que fait HexaGlue</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Fonctionnalité</th>
+							<th class="py-3 text-astro-gray-300 font-medium">En savoir plus</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Détecte les Driving et Driven Ports</td>
+							<td class="py-3 pr-4">Classification automatique</td>
+							<td class="py-3"><a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Génère les Driven Adapters JPA</td>
+							<td class="py-3 pr-4">Génération de code</td>
+							<td class="py-3"><a href="/features/jpa-generation/" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Vérifie les dépendances entre couches</td>
+							<td class="py-3 pr-4">Audit d'architecture</td>
+							<td class="py-3"><a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors">Audit</a></td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white">Documente la topologie</td>
+							<td class="py-3 pr-4">Living Documentation</td>
+							<td class="py-3"><a href="/features/living-documentation/" class="text-[#FF7D54] hover:text-white transition-colors">Living Doc</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green" title="Détection, génération, audit">
+				<p>HexaGlue détecte automatiquement les ports (Driving et Driven), génère les adapters JPA à partir du modèle de domaine, et audite la conformité de l'architecture hexagonale à chaque build. Les violations sont signalées dans le <a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors underline">rapport d'audit</a> avec leur sévérité et des pistes de remédiation.</p>
+			</Insight>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto">
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
+				L'architecture hexagonale protège le modèle <a href="/guides/ddd-principles/" class="text-[#FF7D54] hover:text-white transition-colors underline">DDD</a> des détails d'infrastructure. HexaGlue automatise la partie technique : vous écrivez le domaine, il génère l'infrastructure et vérifie que les frontières architecturales sont respectées.
+				Vous pouvez voir ces principes appliqués à un projet réel dans l'<a href="/case-studies/ecommerce-migration/" class="text-[#FF7D54] hover:text-white transition-colors underline">étude de cas e-commerce</a>.
+			</p>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Votre domaine est au centre.</span><br/>
+				HexaGlue protège ses frontières.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez l'architecture hexagonale appliquée sur un projet réel ou commencez avec le tutoriel.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/ecommerce-migration/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Voir l'étude de cas
+				</Link>
+				<Link href="/docs/getting-started/" class="secondary">
+					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<span>Commencer</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(255, 125, 84, 0.07);
+		border-bottom: 1px solid rgba(255, 125, 84, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(255, 125, 84, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(255, 125, 84, 0.04) 0%, rgba(255, 125, 84, 0.02) 50%, rgba(255, 125, 84, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(255, 125, 84, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(255, 125, 84, 0.12),
+			0 0 50px rgba(255, 125, 84, 0.07),
+			0 0 80px rgba(255, 125, 84, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

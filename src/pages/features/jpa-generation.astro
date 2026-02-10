@@ -1,0 +1,234 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import { Image } from 'astro:assets';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import codeJpaScreenshot from '~/assets/screenshots/code-jpa.png';
+
+const domainCode = `// Pas d'annotation JPA, pas d'import infrastructure
+public class Order {
+    private OrderId id;
+    private CustomerId customerId;
+    private List<OrderLine> lines;
+    private Money total;
+    private OrderStatus status;
+
+    public void addLine(Product product, int quantity) {
+        // Logique métier uniquement
+    }
+}`;
+
+const jpaCode = `@Entity
+@Table(name = "orders")
+public class OrderJpaEntity {
+    @Id @GeneratedValue
+    private Long id;
+
+    @Column(name = "customer_id")
+    private Long customerId;
+
+    @OneToMany @JoinColumn(name = "order_id")
+    private List<OrderLineJpaEntity> lines;
+
+    @Embedded
+    private MoneyEmbeddable total;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+}`;
+---
+
+<MainLayout
+	title="Génération JPA"
+	description="HexaGlue génère les entités JPA, repositories Spring Data, mappers MapStruct et adapters de ports depuis votre modèle de domaine. Zéro code manuel pour la couche persistence."
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		about: [
+			{ "@type": "Thing", name: "JPA" },
+			{ "@type": "Thing", name: "Génération de code" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Génération JPA
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Votre domaine reste pur, l'infrastructure est générée.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Du modèle de domaine aux entités JPA.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				HexaGlue génère les entités JPA, repositories Spring Data, mappers MapStruct et adapters de ports depuis votre modèle de domaine. Zéro code manuel pour la couche persistence.
+			</p>
+		</div>
+	</section>
+
+	<!-- Section 1 : Ce qui est généré -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Artefacts générés"
+			title="5 types d'artefacts, synchronisés à chaque build"
+		>
+			À partir de votre modèle de domaine pur (sans annotations JPA), HexaGlue produit toute la couche persistence. Dans l'étude de cas e-commerce, cela représente 29 fichiers générés automatiquement.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Artefact</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Quantité typique</th>
+							<th class="py-3 text-astro-gray-300 font-medium">Rôle</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Entités JPA</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 par agrégat</td>
+							<td class="py-3">Classes annotées <code>@Entity</code>, <code>@Table</code>, <code>@Column</code>, prêtes pour Hibernate</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Embeddables</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 par Value Object persisté</td>
+							<td class="py-3"><code>@Embeddable</code> pour les VO stockés en colonnes (ex: <code>MoneyEmbeddable</code>)</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Repositories Spring Data</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 par agrégat</td>
+							<td class="py-3">Interfaces <code>extends JpaRepository&lt;T, ID&gt;</code></td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Mappers MapStruct</td>
+							<td class="py-3 pr-4 whitespace-nowrap">2 par agrégat (interface + impl)</td>
+							<td class="py-3">Conversion bidirectionnelle domaine &#8596; JPA</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Adapters de port</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 par driven port Repository</td>
+							<td class="py-3">Implémente le port défini dans le domaine, wrappe le repository Spring Data</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Le nombre d'artefacts générés croît linéairement avec la taille du domaine. Pour un domaine de 8 agrégats (étude de cas e-commerce), HexaGlue produit 29 fichiers. Pour un domaine de 20 agrégats, attendez environ 70 fichiers. C'est du code que vous n'avez pas à écrire ni à maintenir.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 2 : Avant / Après -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Comparaison"
+			title="Votre code vs le code généré"
+		>
+			Vous écrivez le domaine. HexaGlue génère l'infrastructure. Les deux sont synchronisés par construction.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<Code code={domainCode} lang="java" title="Ce que vous écrivez : domaine pur" />
+			<Code code={jpaCode} lang="java" title="Ce que HexaGlue génère : entité JPA" />
+		</div>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Image
+				src={codeJpaScreenshot}
+				alt="Capture d'écran du code JPA généré par HexaGlue à partir du modèle de domaine"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 1024px) 100vw, 800px"
+				class="w-full rounded-xl border border-astro-dark-100/15 shadow-2xl"
+				loading="lazy"
+			/>
+		</div>
+	</section>
+
+	<!-- Section 3 : Pourquoi séparer domaine et infrastructure -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Principe"
+			title="La pureté du domaine n'est pas un luxe"
+		>
+			Dans une architecture hexagonale, le domaine exprime les règles métier. L'infrastructure (persistence, API, messaging) est un détail d'implémentation. Mélanger les deux rend le code fragile et difficile à tester.<br><br>Le problème classique : un développeur ajoute <code>@Entity</code> sur une classe de domaine pour aller plus vite. Le domaine devient dépendant de JPA. Les tests unitaires nécessitent une base de données. Les changements de framework deviennent impossibles.<br><br>HexaGlue automatise cette séparation : vous n'avez jamais besoin de toucher à JPA dans votre domaine, parce que l'infrastructure est régénérée à chaque build.
+		</SectionCopy>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>Si votre domaine contient des annotations JPA, l'audit le détecte comme une violation <code>ddd:domain-purity</code>. Vous corrigez le domaine (en retirant les annotations), et le plugin JPA génère automatiquement la couche persistence correspondante. C'est le workflow démontré dans l'étude de cas e-commerce, étapes 4 et 5.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Votre domaine mérite mieux que des annotations JPA.</span><br/>
+				Générez l'infrastructure en un build.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez comment HexaGlue produit 29 fichiers de persistence à partir d'un domaine pur.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/ecommerce-migration/step-5-generated/" class="primary">
+					Voir la génération en action
+				</Link>
+				<Link href="/docs/plugin-jpa/" class="secondary">
+					<Icon name="ri/settings-3-line" class="size-5" aria-hidden="true" />
+					<span>Configurer le plugin JPA</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(56, 189, 126, 0.07);
+		border-bottom: 1px solid rgba(56, 189, 126, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(56, 189, 126, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(56, 189, 126, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(56, 189, 126, 0.12),
+			0 0 50px rgba(56, 189, 126, 0.07),
+			0 0 80px rgba(56, 189, 126, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

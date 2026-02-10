@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
 import Link from '../../_components/Link.astro';
-import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
 import { steps } from './_data/steps';
 
 const lessons = [
@@ -25,20 +25,20 @@ const lessons = [
 >
 	<!-- Hero -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-64 md:h-80" />
+		<PurpleStardust height="h-64 md:h-80" />
 
 		<div class="max-w-4xl mx-auto"> 
-			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+			<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
 				Étude de cas
 			</span>
 
 			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
 				Migration d'un site E-Commerce.<br/>
-				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">D'un legacy à une architecture hexagonal.</span>
+				<span class="bg-clip-text text-transparent bg-blue-purple-gradient">D'un legacy à une architecture hexagonal.</span>
 			</h1>
 
 			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl text-balance">
-				Application Spring Boot de 50 classes, 10 anti-patterns, migrée en 7 étapes vers une architecture hexagonale complète, avec génération automatique de l'infrastructure.
+				Un monolithe Java 17, Spring Boot, 50 classes, 10 anti-patterns, migré en 7 étapes vers une architecture hexagonale complète, avec génération automatique de l'infrastructure JPA.
 			</p>
 
 			<div class="mt-8 flex flex-wrap gap-4">
@@ -62,7 +62,7 @@ const lessons = [
 				label="Point de départ"
 				title="L'application legacy"
 				description="Une application e-commerce classique, Spring Boot, avec les anti-patterns typiques d'une application d'entreprise."
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			/>
 
 			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -98,20 +98,20 @@ const lessons = [
 
 	<!-- Timeline -->
 	<section id="etapes" class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-96" />
+		<PurpleStardust height="h-96" />
 
 		<SectionCopy
 			label="Le parcours"
 			title="7 étapes de migration"
 			description="Chaque étape correspond à une branche Git dans le dépôt."
-			gradient="bg-orange-yellow-gradient"
+			gradient="bg-blue-purple-gradient"
 		/>
 
 		<div class="mt-12 space-y-4 max-w-4xl mx-auto">
 			{steps.map((step, i) => (
 				<a
 					href={`/case-studies/ecommerce-migration/${step.slug}/`}
-					class="step-link group flex items-center gap-4 md:gap-6 p-4 md:p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-amber-400/30 transition-all duration-300"
+					class="step-link group flex items-center gap-4 md:gap-6 p-4 md:p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300"
 				>
 					<div class={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-${step.color}/10 border border-${step.color}/30 flex items-center justify-center shrink-0`}>
 						<span class={`text-lg md:text-xl font-bold text-${step.color}`}>{step.number}</span>
@@ -142,7 +142,7 @@ const lessons = [
 						</div>
 					)}
 
-					<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-amber-400 transition-colors shrink-0" aria-hidden="true" />
+					<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-purple-400 transition-colors shrink-0" aria-hidden="true" />
 				</a>
 			))}
 		</div>
@@ -150,14 +150,14 @@ const lessons = [
 
 	<!-- Before/After -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-64" />
+		<PurpleStardust height="h-64" />
 
 		<div class="max-w-4xl mx-auto">
 			<SectionCopy
 				label="Bilan"
 				title="Avant vs Après"
 				description="Comparaison entre l'application legacy (étape 0) et l'architecture hexagonale finale (étape 6)."
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			/>
 
 			<div class="mt-8 overflow-x-auto">
@@ -196,21 +196,21 @@ const lessons = [
 
 	<!-- Lessons Learned -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-64" />
+		<PurpleStardust height="h-64" />
 
 		<div class="max-w-4xl mx-auto">
 			<SectionCopy
 				label="Retours"
 				title="Leçons apprises"
 				description="Les enseignements clés tirés de cette migration."
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			/>
 
 			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{lessons.map((lesson) => (
 					<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
-						<div class="p-2 w-fit rounded-lg bg-amber-400/10 mb-3">
-							<Icon name={lesson.icon} class="size-5 text-amber-400" aria-hidden="true" />
+						<div class="p-2 w-fit rounded-lg bg-purple-400/10 mb-3">
+							<Icon name={lesson.icon} class="size-5 text-purple-400" aria-hidden="true" />
 						</div>
 						<h3 class="text-base font-semibold text-white mb-1.5">{lesson.title}</h3>
 						<p class="text-sm text-astro-gray-200 font-light leading-relaxed">{lesson.desc}</p>
@@ -233,10 +233,8 @@ const lessons = [
 			</p>
 
 			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-				<Link href="/case-studies/" class="primary">
-					<span class="bg-clip-text text-transparent bg-orange-yellow-gradient group-hover:text-[#92400e] transition-all ease-in-out duration-500">
-						Toutes les études de cas
-					</span>
+				<Link href="/case-studies/" class="primary" gradient="linear-gradient(83.21deg, #3245FF 0%, #B845ED 100%)">
+					Toutes les études de cas
 				</Link>
 				<Link href="/contact/" class="secondary">
 					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
@@ -245,7 +243,7 @@ const lessons = [
 			</div>
 		</div>
 		<div
-			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
 		></div>
 	</section>
 </MainLayout>

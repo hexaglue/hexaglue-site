@@ -1,0 +1,90 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import FeatureCard from '~/components/FeatureCard.astro';
+import Link from '../_components/Link.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+---
+
+<MainLayout
+	title="Pour qui est HexaGlue ?"
+	description="Architectes, tech leads, décideurs : découvrez comment HexaGlue répond aux défis spécifiques de chaque rôle dans un projet Java."
+	schema={{
+		"@type": "CollectionPage",
+		about: [
+			{ "@type": "Thing", name: "Architecture logicielle" },
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Pour qui
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Conçu pour les DSI,<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Architectes et Tech Leads.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Chaque rôle y trouve une réponse concrète à ses défis quotidiens : gouverner l'architecture, réduire le code répétitif ou piloter la transformation.
+			</p>
+		</div>
+	</section>
+
+	<!-- Grille de cartes -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+			<FeatureCard
+				icon="ri/building-4-line"
+				title="DSI / Transformation"
+				description="Une vision fiable des domaines, des dépendances et des zones à risque du coeur applicatif, pour orienter les décisions de transformation avec des données, pas des impressions."
+				href="/for/decision-makers/"
+			/>
+			<FeatureCard
+				icon="ri/layout-grid-line"
+				title="Architectes"
+				description="Les règles d'architecture sont formalisées et vérifiées automatiquement à chaque build : dépendances, frontières et responsabilités. Les écarts sont détectés dans la CI, pas lors de la prochaine revue manuelle."
+				href="/for/architects/"
+			/>
+			<FeatureCard
+				icon="ri/code-s-slash-line"
+				title="Tech Leads"
+				description="Moins de code répétitif, plus de logique métier. La génération respecte l'intention architecturale et signale les ambiguïtés. Votre équipe se concentre sur le code qui compte."
+				href="/for/tech-leads/"
+			/>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Quel que soit votre rôle,</span><br/>
+				votre architecture mérite mieux.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Essayez HexaGlue en 5 minutes ou explorez une étude de cas complète.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/docs/getting-started/" class="primary">
+					Démarrer en 5 minutes
+				</Link>
+				<Link href="/case-studies/" class="secondary">
+					<Icon name="ri/bar-chart-box-line" class="size-5" aria-hidden="true" />
+					<span>Explorer une étude de cas</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>

@@ -1,0 +1,480 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import IntroPoint from '../_components/IntroPoint.astro';
+import GemIcon from '~/components/GemIcon.astro';
+import Insight from '~/components/Insight.astro';
+import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+
+const aggregateRootCode = `public class Order {
+
+    private final OrderId id;
+    private final CustomerId customerId;
+    private OrderStatus status;
+    private final List<OrderLine> lines;
+    private Money totalAmount;
+
+    public Order(OrderId id, CustomerId customerId) {
+        this.id = id;
+        this.customerId = customerId;
+        this.status = OrderStatus.DRAFT;
+        this.lines = new ArrayList<>();
+        this.totalAmount = Money.ZERO;
+    }
+
+    /** Ajoute une ligne en vérifiant les invariants métier. */
+    public void addLine(Product product, int quantity) {
+        if (status != OrderStatus.DRAFT) {
+            throw new IllegalStateException("Cannot modify a confirmed order");
+        }
+        var line = new OrderLine(product, quantity);
+        lines.add(line);
+        totalAmount = recalculateTotal();
+    }
+
+    /** Confirme la commande : vérifie qu'elle contient au moins une ligne. */
+    public OrderPlaced confirm() {
+        if (lines.isEmpty()) {
+            throw new IllegalStateException("Cannot confirm an empty order");
+        }
+        this.status = OrderStatus.CONFIRMED;
+        return new OrderPlaced(id, customerId, totalAmount);
+    }
+}`;
+
+const valueObjectCode = `/** Objet valeur représentant un montant monétaire. */
+public record Money(BigDecimal amount, Currency currency) {
+
+    public static final Money ZERO = new Money(BigDecimal.ZERO, Currency.EUR);
+
+    public Money {
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Amount must be non-negative");
+        }
+        Objects.requireNonNull(currency, "Currency is required");
+    }
+
+    public Money add(Money other) {
+        if (!currency.equals(other.currency)) {
+            throw new IllegalArgumentException("Cannot add different currencies");
+        }
+        return new Money(amount.add(other.amount), currency);
+    }
+
+    public Money multiply(int quantity) {
+        return new Money(amount.multiply(BigDecimal.valueOf(quantity)), currency);
+    }
+}`;
+
+const identifierCode = `/** Identifiant typé pour les commandes. */
+public record OrderId(UUID value) {
+
+    public OrderId {
+        Objects.requireNonNull(value, "OrderId value is required");
+    }
+
+    public static OrderId generate() {
+        return new OrderId(UUID.randomUUID());
+    }
+
+    public static OrderId of(String raw) {
+        return new OrderId(UUID.fromString(raw));
+    }
+}`;
+
+const domainEventCode = `/** Événement émis lorsqu'une commande est confirmée. */
+public record OrderPlaced(
+    OrderId orderId,
+    CustomerId customerId,
+    Money totalAmount,
+    Instant occurredAt
+) {
+    public OrderPlaced(OrderId orderId, CustomerId customerId, Money totalAmount) {
+        this(orderId, customerId, totalAmount, Instant.now());
+    }
+}`;
+---
+
+<MainLayout
+	title="Domain-Driven Design : les principes essentiels"
+	description="Guide complet du Domain-Driven Design : Aggregate Roots, Entities, Value Objects, Domain Events, Bounded Contexts. Avec exemples Java et détection automatique HexaGlue."
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		about: [
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+			{ "@type": "Thing", name: "Aggregate Root" },
+			{ "@type": "Thing", name: "Value Object" },
+			{ "@type": "Thing", name: "Domain Event" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Guide DDD
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Domain-Driven Design<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Les principes essentiels du modèle de domaine.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Le Domain-Driven Design (DDD) propose une approche de modélisation logicielle centrée sur le domaine métier. Ce guide présente les building blocks tactiques, les patterns stratégiques et les anti-patterns courants, avec des exemples Java concrets.
+			</p>
+		</div>
+	</section>
+
+	<!-- Section 1 : Pourquoi DDD ? -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Contexte"
+			title="Pourquoi le Domain-Driven Design ?"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Dans un projet logiciel, la complexité provient rarement de la technologie : elle vient du domaine métier. Un système de gestion de commandes, un workflow de paiement, un moteur de tarification : la difficulté réside dans les règles métier, leurs exceptions et leurs interactions.
+			<br>
+			Le Domain-Driven Design, introduit par Eric Evans en 2003 dans son livre <em>Domain-Driven Design: Tackling Complexity in the Heart of Software</em>, propose une réponse structurée : placer le modèle métier au centre de l'architecture logicielle. Plutôt que de laisser la technique dicter la structure du code, DDD aligne le code sur le langage et les concepts du métier.
+			<br>
+			En 2026, DDD reste plus pertinent que jamais. Avec la montée des architectures modulaires, du déploiement continu et des systèmes distribués, avoir un modèle de domaine explicite et bien délimité est devenu un prérequis pour la maintenabilité à long terme.
+		</SectionCopy>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber" title="DDD n'est pas une technologie">
+				<p>Le Domain-Driven Design n'est ni un framework, ni une librairie. C'est une approche de modélisation : un ensemble de principes pour structurer le code autour du métier. Il s'applique indépendamment du langage, du framework ou de l'infrastructure.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 2 : Les Building Blocks tactiques -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Building Blocks"
+			title="Les 6 briques de construction du domaine"
+			gradient="bg-orange-yellow-gradient"
+		>
+			DDD définit un vocabulaire précis pour modéliser le domaine métier. Chaque brique a un rôle clair et des règles de conception spécifiques. Les six building blocks tactiques constituent le socle de tout modèle DDD.
+		</SectionCopy>
+
+		<!-- Aggregate Root -->
+		<div class="mt-12 max-w-4xl mx-auto">
+			<h3 class="text-2xl font-heading font-semibold text-white mb-4">Aggregate Root</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed mb-6">
+				L'Aggregate Root est le gardien d'un groupe cohérent d'objets. Il constitue la frontière transactionnelle : toute modification des objets qu'il contient passe par lui. C'est la source de vérité pour les invariants métier.
+				Un agrégat <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Order</code> contient ses <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">OrderLine</code> : on ne crée jamais une ligne sans passer par la commande.
+			</p>
+
+			<Code code={aggregateRootCode} lang="java" title="Order.java" />
+
+			<Insight variant="green" title="Règle d'or de l'agrégat">
+				<p>Un agrégat protège ses invariants métier. Dans l'exemple ci-dessus, <code>Order</code> empêche l'ajout de lignes après confirmation et interdit la confirmation d'une commande vide. Ces règles sont garanties à chaque appel, quel que soit le code appelant.</p>
+			</Insight>
+		</div>
+
+		<!-- Entity -->
+		<div class="mt-12 max-w-4xl mx-auto">
+			<h3 class="text-2xl font-heading font-semibold text-white mb-4">Entity</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
+				Une Entity est un objet avec une identité propre qui persiste dans le temps. Deux entités avec les mêmes attributs mais des identités différentes sont des objets différents. L'entité a un cycle de vie : elle est créée, modifiée et éventuellement supprimée.
+				Dans un agrégat <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Order</code>, chaque <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">OrderLine</code> est une entité : elle a un index ou un identifiant local qui la distingue des autres lignes.
+			</p>
+		</div>
+
+		<!-- Value Object -->
+		<div class="mt-12 max-w-4xl mx-auto">
+			<h3 class="text-2xl font-heading font-semibold text-white mb-4">Value Object</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed mb-6">
+				Un Value Object est un objet sans identité, défini uniquement par ses attributs. Deux Value Objects avec les mêmes valeurs sont interchangeables. Ils sont immuables : au lieu de modifier un Value Object, on en crée un nouveau.
+				En Java, les records sont parfaitement adaptés aux Value Objects : immuabilité garantie, <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">equals</code>/<code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">hashCode</code> basés sur les valeurs, syntaxe concise.
+			</p>
+
+			<Code code={valueObjectCode} lang="java" title="Money.java" />
+		</div>
+
+		<!-- Identifier -->
+		<div class="mt-12 max-w-4xl mx-auto">
+			<h3 class="text-2xl font-heading font-semibold text-white mb-4">Identifier</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed mb-6">
+				Un Identifier est un type wrapper qui encapsule une valeur primitive (<code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">UUID</code>, <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Long</code>) dans un type métier explicite. Au lieu de passer un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">UUID</code> anonyme, on passe un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">OrderId</code> : le compilateur empêche de confondre un identifiant de commande avec un identifiant de client.
+			</p>
+
+			<Code code={identifierCode} lang="java" title="OrderId.java" />
+		</div>
+
+		<!-- Domain Event -->
+		<div class="mt-12 max-w-4xl mx-auto">
+			<h3 class="text-2xl font-heading font-semibold text-white mb-4">Domain Event</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed mb-6">
+				Un Domain Event représente un fait métier qui s'est produit dans le domaine. Il est nommé au passé composé (<code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">OrderPlaced</code>, <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">PaymentReceived</code>) et porte les données nécessaires aux consommateurs. Les événements découplent les agrégats entre eux : un agrégat émet un événement, d'autres y réagissent.
+			</p>
+
+			<Code code={domainEventCode} lang="java" title="OrderPlaced.java" />
+		</div>
+
+		<!-- Domain Service -->
+		<div class="mt-12 max-w-4xl mx-auto">
+			<h3 class="text-2xl font-heading font-semibold text-white mb-4">Domain Service</h3>
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
+				Un Domain Service encapsule une logique métier qui n'appartient naturellement à aucune entité. Un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">PricingService</code> qui calcule le prix d'une commande en fonction de règles de tarification, de remises et de taxes est un bon exemple : cette logique implique plusieurs agrégats et ne peut pas être rattachée à un seul.
+				Le Domain Service est stateless : il reçoit ses données en paramètre et retourne un résultat.
+			</p>
+		</div>
+
+		<!-- Table récapitulative -->
+		<div class="table-panel mt-12">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Concept</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Identité</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Immuable</th>
+						<th class="py-3 text-astro-gray-300 font-medium">Exemple</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Aggregate Root</td>
+						<td class="py-3 pr-4">Oui (globale)</td>
+						<td class="py-3 pr-4">Non</td>
+						<td class="py-3"><code>Order</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Entity</td>
+						<td class="py-3 pr-4">Oui (locale)</td>
+						<td class="py-3 pr-4">Non</td>
+						<td class="py-3"><code>OrderLine</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Value Object</td>
+						<td class="py-3 pr-4">Non</td>
+						<td class="py-3 pr-4">Oui</td>
+						<td class="py-3"><code>Money</code>, <code>Address</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Identifier</td>
+						<td class="py-3 pr-4">Non (wrapper)</td>
+						<td class="py-3 pr-4">Oui</td>
+						<td class="py-3"><code>OrderId</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Domain Event</td>
+						<td class="py-3 pr-4">Non</td>
+						<td class="py-3 pr-4">Oui</td>
+						<td class="py-3"><code>OrderPlaced</code></td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 font-medium text-white">Domain Service</td>
+						<td class="py-3 pr-4">Non</td>
+						<td class="py-3 pr-4">Stateless</td>
+						<td class="py-3"><code>PricingService</code></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 3 : Les patterns stratégiques -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Patterns stratégiques"
+			title="Organiser à grande échelle"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Les building blocks tactiques structurent le code à l'intérieur d'un module. Les patterns stratégiques organisent le système dans son ensemble : ils délimitent les contextes, définissent un langage commun et gèrent les relations entre équipes.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="amber" title="Bounded Context">
+				<GemIcon slot="icon" icon="ri/layout-masonry-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Un Bounded Context est une frontière logique et linguistique autour d'un modèle. À l'intérieur d'un contexte, chaque terme a un sens précis et unique. Le mot "Commande" peut désigner une chose différente dans le contexte "Vente" et dans le contexte "Logistique" : chaque contexte a son propre modèle.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Ubiquitous Language">
+				<GemIcon slot="icon" icon="ri/chat-quote-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					L'Ubiquitous Language est le vocabulaire partagé entre les développeurs et les experts métier, dans un Bounded Context donné. Chaque concept du code utilise les mêmes termes que le métier. Si l'expert dit "confirmer une commande", la méthode s'appelle <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">confirm()</code>, pas <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">processOrder()</code>.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Context Mapping">
+				<GemIcon slot="icon" icon="ri/mind-map" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Le Context Mapping décrit les relations entre Bounded Contexts. Chaque relation suit un pattern : Anti-Corruption Layer (ACL) pour isoler un contexte d'un autre, Shared Kernel pour partager un modèle commun, ou Open Host Service pour exposer une API publique. Ces patterns explicites évitent le couplage accidentel entre équipes.
+				</Fragment>
+			</IntroPoint>
+		</div>
+	</section>
+
+	<!-- Section 4 : Anti-patterns courants -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Anti-patterns"
+			title="Les pièges à éviter"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le DDD est souvent mal appliqué. Trois anti-patterns reviennent régulièrement dans les projets Java et minent la qualité du modèle de domaine.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="amber" title="Anemic Domain Model">
+				<GemIcon slot="icon" icon="ri/ghost-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Le modèle anémique est le piège le plus courant : les entités ne contiennent que des getters/setters, et toute la logique métier se retrouve dans des services. Résultat : le domaine n'est qu'un conteneur de données passif. Si votre classe <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Order</code> ne contient aucune règle métier, c'est un modèle anémique.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="God Aggregate">
+				<GemIcon slot="icon" icon="ri/stack-line" gradient="red-pink" />
+				<Fragment slot="description">
+					Le God Aggregate est un agrégat qui englobe trop d'entités et de responsabilités. Un agrégat <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Customer</code> qui contient les commandes, les paiements, les adresses et les préférences est trop gros : il crée des conflits de concurrence et rend le système difficile à faire évoluer. Chaque agrégat doit avoir une frontière transactionnelle minimale.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Primitive Obsession">
+				<GemIcon slot="icon" icon="ri/error-warning-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					La Primitive Obsession consiste à utiliser des types primitifs (<code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Long</code>, <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">String</code>) là où un type métier serait plus expressif. Un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Long orderId</code> peut être confondu avec un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Long customerId</code> : le compilateur ne protège rien. Un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">OrderId</code> typé élimine cette classe d'erreurs.
+				</Fragment>
+			</IntroPoint>
+		</div>
+	</section>
+
+	<!-- Section 5 : DDD et HexaGlue -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="DDD et HexaGlue"
+			title="De la théorie à la détection automatique"
+			gradient="bg-orange-yellow-gradient"
+		>
+			HexaGlue applique les principes DDD de manière concrète : il analyse votre code Java et détecte automatiquement chaque building block. Pas d'annotations à ajouter, pas de configuration obligatoire : les conventions de nommage et la structure du code suffisent.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Concept DDD</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Ce que HexaGlue détecte</th>
+						<th class="py-3 text-astro-gray-300 font-medium">En savoir plus</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Aggregate Root</td>
+						<td class="py-3 pr-4">Classe avec un champ d'identité typé</td>
+						<td class="py-3"><a href="/features/jpa-generation/" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Entity</td>
+						<td class="py-3 pr-4">Classe membre d'un agrégat</td>
+						<td class="py-3"><a href="/features/jpa-generation/" class="text-[#FF7D54] hover:text-white transition-colors">Génération JPA</a></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Value Object</td>
+						<td class="py-3 pr-4">Record immuable, sans identité</td>
+						<td class="py-3"><a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Identifier</td>
+						<td class="py-3 pr-4">Record wrappant un type primitif</td>
+						<td class="py-3"><a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors">Classification</a></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium text-white">Domain Event</td>
+						<td class="py-3 pr-4">Record avec suffixe <code>Event</code></td>
+						<td class="py-3"><a href="/features/living-documentation/" class="text-[#FF7D54] hover:text-white transition-colors">Living Doc</a></td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 font-medium text-white">Domain Service</td>
+						<td class="py-3 pr-4">Classe stateless dans le domaine</td>
+						<td class="py-3"><a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors">Audit</a></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green" title="Classification automatique et traçable">
+				<p>HexaGlue <a href="/features/classification/" class="text-[#FF7D54] hover:text-white transition-colors underline">classifie automatiquement</a> chaque building block DDD à partir de la structure de votre code. Chaque décision est traçable : le <a href="/features/audit/" class="text-[#FF7D54] hover:text-white transition-colors underline">rapport d'audit</a> indique la règle qui a déclenché la classification et le niveau de confiance associé.</p>
+			</Insight>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto">
+			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
+				Le DDD s'applique naturellement dans une <a href="/guides/hexagonal-architecture/" class="text-[#FF7D54] hover:text-white transition-colors underline">architecture hexagonale</a> : le domaine est au centre, protégé des détails d'infrastructure par les ports et les adapters. HexaGlue détecte les deux : les building blocks DDD et la structure hexagonale.
+				Vous pouvez voir ces principes appliqués à un projet réel dans l'<a href="/case-studies/ecommerce-migration/" class="text-[#FF7D54] hover:text-white transition-colors underline">étude de cas e-commerce</a>.
+			</p>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Le DDD structure votre domaine métier.</span><br/>
+				HexaGlue en prend soin.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez la classification DDD en action sur un projet réel ou commencez avec le tutoriel.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/ecommerce-migration/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Voir l'étude de cas
+				</Link>
+				<Link href="/docs/getting-started/" class="secondary">
+					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<span>Commencer</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(255, 125, 84, 0.07);
+		border-bottom: 1px solid rgba(255, 125, 84, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(255, 125, 84, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(255, 125, 84, 0.04) 0%, rgba(255, 125, 84, 0.02) 50%, rgba(255, 125, 84, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(255, 125, 84, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(255, 125, 84, 0.12),
+			0 0 50px rgba(255, 125, 84, 0.07),
+			0 0 80px rgba(255, 125, 84, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

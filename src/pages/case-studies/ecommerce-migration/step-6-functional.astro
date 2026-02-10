@@ -9,7 +9,7 @@ import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
 import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
 import MetricsTable from '../_components/MetricsTable.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
-import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
 import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import ModificationList from '../_components/ModificationList.astro';
@@ -36,10 +36,10 @@ const violationRows: ViolationRow[] = [
 <MainLayout title={title} description={description}>
   <!-- Hero -->
   <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <AmberStardust height="h-64 md:h-80" />
+    <PurpleStardust height="h-64 md:h-80" />
     <div class="max-w-5xl mx-auto">
       <div class="mt-8 max-w-3xl">
-        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+        <span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
           Étape 6
         </span>
         <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
@@ -52,7 +52,7 @@ const violationRows: ViolationRow[] = [
           class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
         >
           <Icon name="logos/github" class="size-5" aria-hidden="true" />
-          <code class="text-sm text-amber-400">main</code>
+          <code class="text-sm text-purple-400">main</code>
         </a>
         <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
           <li>Validation bout en bout avec infrastructure générée.</li>
@@ -69,7 +69,7 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Modifications"
         title="Modifications effectuées"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Cette dernière étape résout les points identifiés par HexaGlue pour rendre l'application fonctionnelle de bout en bout :
         migration des identifiants, convention de reconstruction des agrégats, et refactoring du dernier composant non classifié.
@@ -110,7 +110,7 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Validation"
         title="Test bout en bout"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Ce scénario exerce le parcours complet d'une commande : création du client et du produit, initialisation du stock,
         passage de commande, paiement, et livraison.<br>
@@ -210,7 +210,7 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Build"
         title="Vérification du build"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Avant le test fonctionnel, les trois étapes du build Maven confirment que le projet compile, passe l'audit, et démarre correctement.
       </SectionCopy>
@@ -381,7 +381,7 @@ const violationRows: ViolationRow[] = [
   <!-- Final Summary -->
   <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
     <div class="max-w-5xl mx-auto">
-      <SectionCopy label="Résultat" title="Bilan final" gradient="bg-orange-yellow-gradient" />
+      <SectionCopy label="Résultat" title="Bilan final" gradient="bg-blue-purple-gradient" />
 
       <div class="mt-8 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-8">
         <div class="flex items-start gap-4 mb-6">
@@ -435,7 +435,7 @@ const violationRows: ViolationRow[] = [
       <SectionCopy
         label="Bilan"
         title="Ce que révèle cette étape"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Cette dernière étape valide le résultat complet de la migration.<br>
         Chaque carte ci-dessous résume un enseignement clé, issu directement des rapports HexaGlue.
@@ -532,7 +532,7 @@ const violationRows: ViolationRow[] = [
     <div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
       <h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
         <span class="text-astro-gray-300">Une architecture propre.</span><br/>
-        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Une dette technique résorbée.</span>
+        <span class="bg-clip-text text-transparent bg-blue-purple-gradient">Une dette technique résorbée.</span>
       </h2>
 
       <p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
@@ -541,13 +541,13 @@ const violationRows: ViolationRow[] = [
 
       <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
         <a
-          href="/getting-started/"
+          href="/docs/getting-started/"
           class="px-6 py-3 group inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-white hover:bg-astro-gray-100 text-base font-medium transition-all ease-in-out duration-300"
         >
-          <span class="bg-clip-text text-transparent bg-orange-yellow-gradient group-hover:text-[#92400e] transition-all ease-in-out duration-500">
+          <span class="bg-clip-text text-transparent bg-blue-purple-gradient group-hover:text-[#4c3a9e] transition-all ease-in-out duration-500">
             Guide de démarrage
           </span>
-          <Icon name="ri/arrow-right-line" class="size-5 text-amber-500" aria-hidden="true" />
+          <Icon name="ri/arrow-right-line" class="size-5 text-purple-500" aria-hidden="true" />
         </a>
         <Link href="/case-studies/ecommerce-migration/" class="secondary">
           <Icon name="ri/arrow-left-line" class="size-5" aria-hidden="true" />
@@ -556,7 +556,7 @@ const violationRows: ViolationRow[] = [
       </div>
     </div>
     <div
-      class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+      class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
     ></div>
   </section>
 

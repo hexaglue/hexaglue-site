@@ -1,0 +1,209 @@
+---
+import { Schema } from 'astro-seo-schema';
+import { findCaseStudy, findStep } from '~/data/case-studies-meta';
+import type { SchemaType, Breadcrumb } from '~/helpers/breadcrumbs';
+import type { SchemaOverride } from './BaseHead.astro';
+
+interface Props {
+	name: string;
+	description: string;
+	locale?: string;
+	pageTitle?: string;
+	pageUrl?: string;
+	schemaType?: SchemaType;
+	breadcrumbs?: Breadcrumb[];
+	schema?: SchemaOverride;
+}
+
+const {
+	name,
+	description,
+	locale = 'fr',
+	pageTitle,
+	pageUrl,
+	schemaType,
+	breadcrumbs,
+	schema,
+} = Astro.props;
+
+const inLanguage = locale === 'fr' ? 'fr-FR' : 'en-US';
+const SITE_URL = 'https://hexaglue.io';
+const pathname = Astro.url.pathname;
+
+const graph: Record<string, unknown>[] = [];
+
+// --- Case study detection ---
+const caseStudy = findCaseStudy(pathname);
+const stepInfo = findStep(pathname);
+const isCaseStudyIndex = caseStudy && !stepInfo && pathname.match(/\/case-studies\/[\w-]+\/$/);
+
+if (isCaseStudyIndex && caseStudy && pageUrl) {
+	// Case study index → HowTo with all steps
+	graph.push({
+		"@type": "HowTo",
+		"@id": `${pageUrl}#howto`,
+		url: pageUrl,
+		name: `${caseStudy.name} : du monolithe à l'architecture hexagonale`,
+		description: caseStudy.description,
+		inLanguage,
+		isPartOf: { "@id": `${SITE_URL}/#website` },
+		step: caseStudy.steps.map((s, i) => ({
+			"@type": "HowToStep",
+			position: i + 1,
+			name: `Étape ${s.number} : ${s.title}`,
+			url: `${SITE_URL}/case-studies/${caseStudy.slug}/${s.slug}/`,
+		})),
+	});
+
+} else if (stepInfo && pageUrl) {
+	// Step page → enriched TechArticle
+	const { caseStudy: cs, step, position } = stepInfo;
+	const caseStudyUrl = `${SITE_URL}/case-studies/${cs.slug}/`;
+
+	graph.push({
+		"@type": "TechArticle",
+		"@id": `${pageUrl}#webpage`,
+		url: pageUrl,
+		name: pageTitle,
+		description,
+		inLanguage,
+		isPartOf: { "@id": `${caseStudyUrl}#howto` },
+		mainEntityOfPage: { "@id": `${pageUrl}#webpage` },
+		position,
+		proficiencyLevel: cs.proficiencyLevel,
+		about: cs.about,
+		publisher: { "@id": `${SITE_URL}/#organization` },
+	});
+
+} else if (schema && pageUrl) {
+	// Page with explicit schema override → merge common fields + page data
+	graph.push({
+		"@id": `${pageUrl}#${schema["@type"] === "HowTo" ? "howto" : "webpage"}`,
+		url: pageUrl,
+		name: pageTitle,
+		description,
+		inLanguage,
+		isPartOf: { "@id": `${SITE_URL}/#website` },
+		publisher: { "@id": `${SITE_URL}/#organization` },
+		...schema,
+	});
+
+} else if (schemaType && pageUrl) {
+	// Other pages: WebPage / ContactPage / CollectionPage
+	graph.push({
+		"@type": schemaType,
+		"@id": `${pageUrl}#webpage`,
+		url: pageUrl,
+		name: pageTitle,
+		description,
+		inLanguage,
+		isPartOf: { "@id": `${SITE_URL}/#website` },
+		publisher: { "@id": `${SITE_URL}/#organization` },
+	});
+
+} else {
+	// Homepage: global entities
+	graph.push(
+		{
+			"@type": "WebSite",
+			"@id": `${SITE_URL}/#website`,
+			url: `${SITE_URL}/`,
+			name,
+			description,
+			inLanguage,
+			publisher: { "@id": `${SITE_URL}/#organization` },
+		},
+		{
+			"@type": "Organization",
+			"@id": `${SITE_URL}/#organization`,
+			name: "HexaGlue",
+			url: `${SITE_URL}/`,
+			logo: {
+				"@type": "ImageObject",
+				url: `${SITE_URL}/favicon.svg`,
+			},
+			contactPoint: {
+				"@type": "ContactPoint",
+				contactType: "customer service",
+				email: "info@hexaglue.io",
+				url: `${SITE_URL}/contact/`,
+				availableLanguage: ["French", "English"],
+			},
+			hasOfferCatalog: {
+				"@type": "OfferCatalog",
+				name: "Services HexaGlue",
+				url: `${SITE_URL}/services/`,
+				itemListElement: [
+					{
+						"@type": "Offer",
+						itemOffered: {
+							"@type": "Service",
+							name: "Audit Architectural",
+							description:
+								"Analyse et cartographie de votre architecture existante pour objectiver l'\u00e9tat des lieux avant toute transformation.",
+						},
+					},
+					{
+						"@type": "Offer",
+						itemOffered: {
+							"@type": "Service",
+							name: "Adoption Progressive",
+							description:
+								"Accompagnement des \u00e9quipes dans l'adoption d'HexaGlue et des pratiques DDD : int\u00e9gration CI/CD, r\u00e8gles d'architecture et coaching pragmatique.",
+						},
+					},
+					{
+						"@type": "Offer",
+						itemOffered: {
+							"@type": "Service",
+							name: "Gouvernance \u00e0 l'\u00c9chelle",
+							description:
+								"Industrialisation de la gouvernance architecturale sur plusieurs \u00e9quipes : standards partag\u00e9s, plugins sp\u00e9cifiques et indicateurs d'architecture.",
+						},
+					},
+				],
+			},
+		},
+		{
+			"@type": "SoftwareApplication",
+			"@id": `${SITE_URL}/#software`,
+			name: "HexaGlue",
+			description:
+				"Plugin Maven open-source qui rend votre architecture DDD et hexagonale visible et gouvernable : audit de conformit\u00e9, documentation vivante et g\u00e9n\u00e9ration d'infrastructure Java \u00e0 la compilation.",
+			url: `${SITE_URL}/`,
+			applicationCategory: "DeveloperApplication",
+			operatingSystem: "Cross-platform (JVM)",
+			isAccessibleForFree: true,
+			softwareHelp: {
+				"@type": "WebPage",
+				url: `${SITE_URL}/docs/getting-started/`,
+			},
+			author: { "@id": `${SITE_URL}/#organization` },
+		},
+		{
+			"@type": "SoftwareSourceCode",
+			"@id": `${SITE_URL}/#sourcecode`,
+			name: "HexaGlue Source Code",
+			codeRepository: "https://github.com/hexaglue/hexaglue",
+			programmingLanguage: "Java",
+			license: "https://opensource.org/license/MPL-2.0",
+			author: { "@id": `${SITE_URL}/#organization` },
+		},
+	);
+}
+
+// BreadcrumbList (all pages except homepage)
+if (breadcrumbs?.length) {
+	graph.push({
+		"@type": "BreadcrumbList",
+		itemListElement: breadcrumbs.map((crumb, i) => ({
+			"@type": "ListItem",
+			position: i + 1,
+			name: crumb.name,
+			item: crumb.url,
+		})),
+	});
+}
+---
+
+<Schema item={{ "@context": "https://schema.org", "@graph": graph }} />

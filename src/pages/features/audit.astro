@@ -1,0 +1,318 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import auditScreenshot from '~/assets/screenshots/audit.png';
+---
+
+<MainLayout
+	title="Audit d'Architecture"
+	description="À chaque build, HexaGlue mesure la conformité de votre architecture DDD et hexagonale. Score détaillé, violations localisées, rapport exploitable en CI/CD."
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		about: [
+			{ "@type": "Thing", name: "Audit d'architecture logicielle" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Audit
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Audit d'architecture à la compilation.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Score, violations, métriques en un rapport.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				À chaque build, HexaGlue mesure la conformité de votre architecture DDD et hexagonale. Score détaillé, violations localisées, rapport exploitable en CI/CD. Les écarts sont détectés en intégration continue, pas en production.
+			</p>
+		</div>
+	</section>
+
+	<!-- Section 1 : Ce que l'audit mesure -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Score de conformité"
+			title="6 dimensions, un score objectif et reproductible"
+		>
+			Le score d'audit évalue votre architecture sur 6 dimensions pondérées. Chaque dimension mesure un aspect précis de la conformité DDD et hexagonale.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Dimension</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Poids</th>
+							<th class="py-3 text-astro-gray-300 font-medium">Ce qu'elle évalue</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Conformité DDD</td>
+							<td class="py-3 pr-4 whitespace-nowrap">25%</td>
+							<td class="py-3">Présence et cohérence des patterns : agrégats avec identité typée, value objects immuables, événements de domaine</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Architecture hexagonale</td>
+							<td class="py-3 pr-4 whitespace-nowrap">25%</td>
+							<td class="py-3">Isolation des ports, couverture des adapters, direction des dépendances entre couches</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Dépendances</td>
+							<td class="py-3 pr-4 whitespace-nowrap">20%</td>
+							<td class="py-3">Direction des dépendances Maven : l'application dépend du domaine, pas l'inverse</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Couplage</td>
+							<td class="py-3 pr-4 whitespace-nowrap">15%</td>
+							<td class="py-3">Ratio de couplage entre packages : afférent, efférent, distance à la séquence principale</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Cohésion</td>
+							<td class="py-3 pr-4 whitespace-nowrap">15%</td>
+							<td class="py-3">Regroupement des classes liées : les concepts d'un même agrégat dans le même package</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Le score n'est pas une note scolaire : c'est un indicateur objectif et reproductible qui permet de suivre l'évolution de votre architecture dans le temps.<br>Un projet legacy démarre typiquement entre 10 et 20/100. Un projet correctement structuré atteint 60 à 80/100. L'objectif n'est pas 100 : c'est la progression qui compte.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 2 : Les violations détectées -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Violations"
+			title="Violations DDD et hexagonales détectées automatiquement"
+		>
+			L'audit détecte les écarts par rapport aux règles DDD et hexagonales. Chaque violation est localisée (classe, package) et classée par sévérité.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+			<!-- Violations DDD -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+					<Icon name="hexaglue/aggregate" class="size-5 text-astro-green" aria-hidden="true" />
+					Violations DDD
+				</h3>
+				<ul class="space-y-3 text-sm text-astro-gray-200">
+					<li>
+						<code class="accent">ddd:entity-identity</code>
+						<p class="mt-1 font-light">Entité sans identifiant typé (un champ <code>Long id</code> au lieu d'un <code>OrderId</code>)</p>
+					</li>
+					<li>
+						<code class="accent">ddd:domain-purity</code>
+						<p class="mt-1 font-light">Import d'infrastructure dans le domaine (<code>javax.persistence</code>, <code>org.springframework</code>)</p>
+					</li>
+					<li>
+						<code class="accent">ddd:aggregate-boundary</code>
+						<p class="mt-1 font-light">Entité exposée en dehors de son agrégat</p>
+					</li>
+					<li>
+						<code class="accent">ddd:value-object-mutability</code>
+						<p class="mt-1 font-light">Value object avec état mutable</p>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Violations hexagonales -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+					<Icon name="hexaglue/validation" class="size-5 text-astro-green" aria-hidden="true" />
+					Violations hexagonales
+				</h3>
+				<ul class="space-y-3 text-sm text-astro-gray-200">
+					<li>
+						<code class="accent">hexagonal:layer-isolation</code>
+						<p class="mt-1 font-light">Service accédant directement à un repository sans passer par un port</p>
+					</li>
+					<li>
+						<code class="accent">hexagonal:port-coverage</code>
+						<p class="mt-1 font-light">Port driven sans implémentation d'adapter</p>
+					</li>
+					<li>
+						<code class="accent">hexagonal:port-direction</code>
+						<p class="mt-1 font-light">Port appelé dans le mauvais sens (driven utilisé comme driving)</p>
+					</li>
+					<li>
+						<code class="accent">hexagonal:application-purity</code>
+						<p class="mt-1 font-light">Service applicatif avec annotations de framework</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="mt-8 max-w-4xl mx-auto">
+			<div class="flex flex-wrap gap-4">
+				<div class="flex items-center gap-2 px-4 py-2 bg-astro-dark-800/40 border border-red-400/20 rounded-lg">
+					<span class="text-red-400 font-medium text-sm">CRITICAL</span>
+					<span class="text-astro-gray-200 text-sm font-light">Bloque le build en CI (configurable). Violation d'un principe fondamental.</span>
+				</div>
+				<div class="flex items-center gap-2 px-4 py-2 bg-astro-dark-800/40 border border-yellow-400/20 rounded-lg">
+					<span class="text-yellow-400 font-medium text-sm">MAJOR</span>
+					<span class="text-astro-gray-200 text-sm font-light">Avertissement. Écart significatif mais non bloquant par défaut.</span>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 3 : Le rapport complet -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Rapport"
+			title="Un rapport d'audit exploitable"
+		>
+			Le rapport d'audit contient 7 sections qui donnent une vision complète de l'état de votre architecture.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<ol class="space-y-4">
+				<li class="flex items-start gap-3 p-4 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<span class="shrink-0 size-7 flex items-center justify-center rounded-full bg-blue-green-gradient text-white text-sm font-semibold">1</span>
+					<div>
+						<h3 class="text-white font-semibold">Verdict</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Score global, grade (A à F), statut (PASSED / FAILED), nombre de violations critiques et majeures</p>
+					</div>
+				</li>
+				<li class="flex items-start gap-3 p-4 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<span class="shrink-0 size-7 flex items-center justify-center rounded-full bg-blue-green-gradient text-white text-sm font-semibold">2</span>
+					<div>
+						<h3 class="text-white font-semibold">Décomposition du score</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Les 6 KPI avec leur poids, valeur, contribution et seuil</p>
+					</div>
+				</li>
+				<li class="flex items-start gap-3 p-4 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<span class="shrink-0 size-7 flex items-center justify-center rounded-full bg-blue-green-gradient text-white text-sm font-semibold">3</span>
+					<div>
+						<h3 class="text-white font-semibold">Inventaire architectural</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Comptage par rôle (agrégats, entités, VO, ports, services)</p>
+					</div>
+				</li>
+				<li class="flex items-start gap-3 p-4 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<span class="shrink-0 size-7 flex items-center justify-center rounded-full bg-blue-green-gradient text-white text-sm font-semibold">4</span>
+					<div>
+						<h3 class="text-white font-semibold">Violations</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Liste détaillée avec contrainte, sévérité, localisation et observation</p>
+					</div>
+				</li>
+				<li class="flex items-start gap-3 p-4 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<span class="shrink-0 size-7 flex items-center justify-center rounded-full bg-blue-green-gradient text-white text-sm font-semibold">5</span>
+					<div>
+						<h3 class="text-white font-semibold">Métriques qualité</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Couverture domaine, pureté, complexité, taux de classification</p>
+					</div>
+				</li>
+				<li class="flex items-start gap-3 p-4 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<span class="shrink-0 size-7 flex items-center justify-center rounded-full bg-blue-green-gradient text-white text-sm font-semibold">6</span>
+					<div>
+						<h3 class="text-white font-semibold">Stabilité des packages</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Couplage afférent/efférent, instabilité, abstractness, zones (Main Sequence / Zone of Pain / Zone of Uselessness)</p>
+					</div>
+				</li>
+				<li class="flex items-start gap-3 p-4 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<span class="shrink-0 size-7 flex items-center justify-center rounded-full bg-blue-green-gradient text-white text-sm font-semibold">7</span>
+					<div>
+						<h3 class="text-white font-semibold">Estimation de remédiation</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Effort manuel vs automatisable par HexaGlue, en jours par contrainte</p>
+					</div>
+				</li>
+			</ol>
+
+			<div class="mt-10">
+				<Image
+					src={auditScreenshot}
+					alt="Capture d'écran du rapport d'audit HexaGlue montrant le score, les violations et les métriques"
+					widths={[400, 600, 800, 1200]}
+					sizes="(max-width: 1024px) 100vw, 800px"
+					class="w-full rounded-xl border border-astro-dark-100/15 shadow-2xl"
+					loading="lazy"
+				/>
+			</div>
+
+			<Insight variant="green">
+				<p>L'estimation de remédiation distingue l'effort manuel de l'effort automatisable par HexaGlue. Par exemple, les violations <code>ddd:domain-purity</code> nécessitent une correction manuelle (retirer les annotations JPA du domaine), mais la couche persistence sera régénérée automatiquement par le plugin JPA.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Votre architecture a besoin d'un diagnostic objectif.</span><br/>
+				Lancez votre premier audit.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Découvrez les 6 dimensions de conformité et les violations détectées sur un projet réel.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/ecommerce-migration/step-1-discovery/" class="primary">
+					Voir un rapport réel
+				</Link>
+				<Link href="/docs/plugin-audit/" class="secondary">
+					<Icon name="ri/settings-3-line" class="size-5" aria-hidden="true" />
+					<span>Configurer l'audit</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	code.accent {
+		@apply bg-transparent px-0 py-0 text-astro-green;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(56, 189, 126, 0.07);
+		border-bottom: 1px solid rgba(56, 189, 126, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(56, 189, 126, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(56, 189, 126, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(56, 189, 126, 0.12),
+			0 0 50px rgba(56, 189, 126, 0.07),
+			0 0 80px rgba(56, 189, 126, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

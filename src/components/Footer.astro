@@ -22,16 +22,33 @@ type LinkGroup = {
 
 const groups: LinkGroup[] = [
 	{
-		title: 'Ressources',
+		title: 'Produit',
 		links: [
-			{ label: 'Documentation', href: '/getting-started/' },
+			{ label: 'Fonctionnalités', href: '/features/' },
+			{ label: 'Pour les décideurs', href: '/for/decision-makers/' },
+			{ label: 'Pour les architectes', href: '/for/architects/' },
+			{ label: 'Pour les tech leads', href: '/for/tech-leads/' },
+		],
+	},
+	{
+		title: 'Documentation',
+		links: [
+			{ label: 'Guides', href: '/guides/' },
+			{ label: 'Démarrage rapide', href: '/docs/getting-started/' },
+			{ label: 'Guide DDD', href: '/guides/ddd-principles/' },
+			{ label: 'Guide Hexagonal', href: '/guides/hexagonal-architecture/' },
+			{ label: 'Plugin Audit', href: '/docs/plugin-audit/' },
+			{ label: 'Plugin JPA', href: '/docs/plugin-jpa/' },
+			{ label: 'Plugin Living Doc', href: '/docs/plugin-living-doc/' },
 			{ label: 'GitHub', href: 'https://github.com/hexaglue/hexaglue' },
 		],
 	},
 	{
-		title: 'Exemples',
+		title: 'Études de cas',
 		links: [
-			{ label: 'Études de cas', href: '/case-studies/' },
+			{ label: 'Vue d\'ensemble', href: '/case-studies/' },
+			{ label: 'Migration E-Commerce', href: '/case-studies/ecommerce-migration/' },
+			{ label: 'Migration Bancaire', href: '/case-studies/banking-migration/' },
 			{ label: 'Exemples de code', href: 'https://github.com/hexaglue/hexaglue/tree/main/examples' },
 		],
 	},
@@ -58,7 +75,7 @@ const socialLinks = siteInfo.socialLinks;
 	<div class="w-full max-w-screen-2xl mx-auto px-4 sm:px-8">
 		<nav
 			aria-label="Secondary"
-			class="flex flex-col lg:flex-row justify-between gap-8 lg:gap-20 py-8 md:py-12"
+			class="flex flex-col lg:flex-row justify-between gap-8 lg:gap-12 py-8 md:py-12"
 		>
 			<div class="flex flex-col gap-4 w-full lg:max-w-sm text-center lg:text-left items-center lg:items-start">
 				<a href="/" data-astro-prefetch title="Accueil">
@@ -69,10 +86,10 @@ const socialLinks = siteInfo.socialLinks;
 				</p>
 			</div>
 
-			<div class="grid grid-cols-2 gap-y-8 sm:flex sm:flex-wrap xl:grid xl:grid-cols-4 sm:gap-12 lg:gap-20 w-full lg:w-auto justify-items-stretch">
+			<div class="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 sm:gap-x-10 xl:grid-cols-5 xl:gap-x-8 w-full lg:flex-1 lg:min-w-0">
 				{
 					groups.map(({ title, links }, index) => (
-						<section class="group flex flex-col sm:basis-32">
+						<section class="group flex flex-col">
 							<h2
 								id={`footerHeading${index}`}
 								class="mb-4 label-base leading-none text-white font-semibold"
@@ -88,9 +105,10 @@ const socialLinks = siteInfo.socialLinks;
 												href={href}
 												target={isExternal ? '_blank' : undefined}
 												rel={isExternal ? 'noopener noreferrer' : undefined}
-												class="whitespace-nowrap link flex gap-2 items-center"
+												class="link flex gap-2 items-center"
 											>
 												{label}
+												{isExternal && <Icon name="ri/external-link-line" class="size-3 shrink-0 opacity-50" aria-hidden="true" />}
 											</a>
 										</li>
 									);

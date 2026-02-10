@@ -1,9 +1,7 @@
 ---
 import SectionCopy from '../SectionCopy.astro';
 import PurpleStardust from './PurpleStardust.astro';
-import AdoptionStep from './AdoptionStep.astro';
 import AdoptionPanel from './AdoptionPanel.astro';
-import FeatureCard from './feature-cards/FeatureCard.astro';
 import livingDocScreenshot from '~/assets/screenshots/living-doc.png';
 import auditScreenshot from '~/assets/screenshots/audit.png';
 import codeJpaScreenshot from '~/assets/screenshots/code-jpa.png';
@@ -12,219 +10,73 @@ import codeJpaScreenshot from '~/assets/screenshots/code-jpa.png';
 <section class="mt-20 md:mt-24 lg:mt-28 xl:mt-36 relative">
 	<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy
-			label="Adoption"
-			title="Une Adoption Progressive, Sans Risque"
-			description="Avec HexaGlue, avancez à votre rythme. Observez, décidez, automatisez, sans jamais vous enfermer."
-		/>
-
-		<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-			<FeatureCard
-				icon="ri/timer-flash-line"
-				title="Aucune contrainte de runtime"
-				description="HexaGlue agit uniquement à la compilation. Rien n'est embarqué en production. Vous pouvez vous arrêter à tout moment, sans dette technique."
-			/>
-			<FeatureCard
-				icon="ri/code-s-slash-line"
-				title="Aucun framework imposé"
-				description="Votre code reste le vôtre. Vos choix technologiques restent ouverts. Pas de dépendance cachée, pas de marche arrière coûteuse."
-			/>
-			<FeatureCard
-				icon="bi/shield-lock"
-				title="Aucun vendor lock-in"
-				description="Les modèles, les règles et le code généré vous appartiennent. Reprenez le contrôle de votre architecture, en toute sécurité."
-			/>
-		</div>
-	</div>
-
-	<div class="mx-auto w-full max-w-screen-xl">
-		<div
-			role="tablist"
-			aria-label="Étapes d'adoption"
-			class="mt-6 py-6 sm:mt-10 px-2 sm:px-8 w-full flex items-center justify-center overflow-visible gap-2 sm:gap-6"
+			label="Cas d'usage"
+			title="Auditer, documenter, migrer."
+			gradient="bg-blue-purple-gradient"
 		>
-			<AdoptionStep number={1} label="Observer" isActive />
-			<svg class="adoption-arrow w-5 h-5 sm:w-8 sm:h-8 text-astro-gray-500 flex-shrink-0 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-			</svg>
-			<AdoptionStep number={2} label="Gouverner" />
-			<svg class="adoption-arrow w-5 h-5 sm:w-8 sm:h-8 text-astro-gray-500 flex-shrink-0 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-			</svg>
-			<AdoptionStep number={3} label="Accélérer" />
-		</div>
+			HexaGlue s'adapte à votre contexte :
+			<ul>
+				<li>Auditez la conformité DDD et hexagonale de votre code existant</li>
+				<li>Accompagnez progressivement une migration vers le DDD et l'architecture hexagonale</li>
+				<li>Automatisez la production des adaptateurs d'infrastructure</li>
+			</ul>
+		</SectionCopy>
 	</div>
 
 	<PurpleStardust height="h-64 lg:h-80 xl:h-96" />
 
-	<div class="my-4 w-full border-t border-t-astro-gray-600"></div>
-
-	<div class="mx-auto w-full max-w-screen-xl px-4 sm:px-8">
+	<div class="mx-auto w-full max-w-screen-xl px-4 sm:px-8 space-y-16 md:space-y-24">
 		<AdoptionPanel
 			id="1"
-			tab="observer"
-			icon="ri/eye-line"
-			title="Observer"
-			description="Construisez le modèle, obtenez la classification, générez la living documentation."
-			features={[
-				'Classification automatique du domaine',
-				'Génération de documentation synchronisée',
-				'Visualisation de l\'architecture existante',
-			]}
-			image={livingDocScreenshot}
-			imageAlt="Living documentation générée par HexaGlue"
-		/>
-		<AdoptionPanel
-			id="2"
-			tab="gouverner"
-			class="hidden"
-			icon="ri/compass-line"
-			title="Gouverner"
-			description="Activez l'audit et la validation en CI : la conformité de votre architecture est automatiquement contrôlée."
-			features={[
-				'Validation des règles architecturales',
-				'Audit automatique en CI/CD',
-				'Détection des violations avant déploiement',
-			]}
+			icon="ri/shield-check-line"
+			gradient="red-pink"
+			title="Auditer l'existant"
 			image={auditScreenshot}
 			imageAlt="Rapport d'audit d'architecture HexaGlue"
-		/>
+			imagePosition="right"
+		>
+			Mesurez la conformité DDD et hexagonale de votre codebase : score global, détection des violations, métriques par composant.<br><br>
+			<ul>
+				<li>Des recommandations claires pour migrer vers le DDD et l'architecture hexagonale.</li>
+				<li>Des métriques exploitables directement dans vos pipelines CI/CD.</li>
+			</ul>
+		</AdoptionPanel>
+		<AdoptionPanel
+			id="2"
+			icon="ri/file-list-3-line"
+			gradient="orange-yellow"
+			title="Documenter votre architecture"
+			image={livingDocScreenshot}
+			imageAlt="Living documentation générée par HexaGlue"
+			imagePosition="left"
+		>
+			Générez une documentation vivante de votre domaine : agrégats, entités, services, ports.<br><br>
+			<strong>Toujours à jour, sans effort de maintenance.</strong>
+		</AdoptionPanel>
 		<AdoptionPanel
 			id="3"
-			tab="accelerer"
-			class="hidden"
-			icon="bi/rocket-takeoff-fill"
-			title="Accélérer"
-			description="Branchez la génération d'infrastructure : standardisez et industrialisez."
-			features={[
-				'Génération automatique des entités JPA',
-				'Création des repositories',
-				'Production de code d\'infrastructure aligné',
-			]}
+			icon="ri/code-box-line"
+			gradient="blue-purple"
+			title="Migrer facilement"
 			image={codeJpaScreenshot}
 			imageAlt="Code JPA généré automatiquement par HexaGlue"
-		/>
+			imagePosition="right"
+		>
+			Automatisez la production des adaptateurs d'infrastructure : entités JPA, repositories, code d'intégration.<br><br>
+			<strong>Le code généré est aligné sur l'architecture hexagonale cible.</strong>
+		</AdoptionPanel>
 	</div>
 </section>
 
 <script>
-	const tabs = document.querySelectorAll('.adoption-tab');
-	const arrows = document.querySelectorAll('.adoption-arrow');
-	let activeTabIndex = 0;
-	let autoPlayInterval: ReturnType<typeof setInterval> | null = null;
-	const AUTO_PLAY_DELAY = 5000; // 5 seconds per tab
-
-	function updateTabStyles(tab: Element, state: 'active' | 'completed' | 'inactive') {
-		const numberBadge = tab.querySelector('span:first-child');
-
-		// Reset all classes first
-		tab.classList.remove(
-			'bg-astro-dark-800/30', 'border-astro-dark-100/20', 'text-astro-gray-200',
-			'bg-astro-dark-700/50', 'border-astro-green', 'text-white', 'shadow-[0_0_20px_rgba(23,191,127,0.3)]'
-		);
-		numberBadge?.classList.remove('bg-astro-dark-100/30', 'text-astro-gray-200', 'bg-astro-green', 'text-black');
-
-		if (state === 'active') {
-			tab.classList.add('bg-astro-dark-700/50', 'border-astro-green', 'text-white', 'shadow-[0_0_20px_rgba(23,191,127,0.3)]');
-			numberBadge?.classList.add('bg-astro-green', 'text-black');
-		} else if (state === 'completed') {
-			tab.classList.add('bg-astro-dark-700/50', 'border-astro-green', 'text-white');
-			numberBadge?.classList.add('bg-astro-green', 'text-black');
-		} else {
-			tab.classList.add('bg-astro-dark-800/30', 'border-astro-dark-100/20', 'text-astro-gray-200');
-			numberBadge?.classList.add('bg-astro-dark-100/30', 'text-astro-gray-200');
-		}
-	}
-
-	function updateTabSelection(index: number, shouldFocus: boolean = false) {
-		const nextTab = tabs[index];
-		const nextTabContent = document.querySelector(`#adoption-panel-${index + 1}`);
-
-		if (!nextTab || !nextTabContent) return;
-
-		// Hide all panels and update all tabs
-		tabs.forEach((tab, i) => {
-			const tabContent = document.querySelector(`#adoption-panel-${i + 1}`);
-
-			tab.setAttribute('aria-selected', i === index ? 'true' : 'false');
-			tab.setAttribute('tabindex', i === index ? '0' : '-1');
-			tabContent?.classList.add('hidden');
-			tabContent?.querySelector('.adoption-panel-image')?.classList.remove('is-visible');
-
-			// Update visual styles based on position relative to active tab
-			if (i === index) {
-				updateTabStyles(tab, 'active');
-			} else if (i < index) {
-				updateTabStyles(tab, 'completed');
-			} else {
-				updateTabStyles(tab, 'inactive');
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach((entry) => {
+			if (entry.isIntersecting) {
+				entry.target.classList.add('is-visible');
+				observer.unobserve(entry.target);
 			}
 		});
+	}, { threshold: 0.15, rootMargin: '0px 0px -100px 0px' });
 
-		// Show active panel
-		nextTabContent.classList.remove('hidden');
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				nextTabContent.querySelector('.adoption-panel-image')?.classList.add('is-visible');
-			});
-		});
-
-		// Update arrows - arrow at position i lights up when we're past step i+1
-		arrows.forEach((arrow, i) => {
-			if (i < index) {
-				arrow.classList.remove('text-astro-gray-500');
-				arrow.classList.add('text-astro-green');
-			} else {
-				arrow.classList.remove('text-astro-green');
-				arrow.classList.add('text-astro-gray-500');
-			}
-		});
-
-		if (shouldFocus) {
-			(tabs[index] as HTMLElement).focus();
-		}
-		activeTabIndex = index;
-	}
-
-	function startAutoPlay() {
-		if (autoPlayInterval) return;
-		autoPlayInterval = setInterval(() => {
-			const nextIndex = (activeTabIndex + 1) % tabs.length;
-			updateTabSelection(nextIndex, false);
-		}, AUTO_PLAY_DELAY);
-	}
-
-	function stopAutoPlay() {
-		if (autoPlayInterval) {
-			clearInterval(autoPlayInterval);
-			autoPlayInterval = null;
-		}
-	}
-
-	tabs.forEach((tab, index) => {
-		tab.addEventListener('click', () => {
-			stopAutoPlay();
-			updateTabSelection(index, true);
-		});
-
-		tab.addEventListener('keydown', (e) => {
-			const event = e as KeyboardEvent;
-			if (event.key === 'ArrowRight') {
-				event.preventDefault();
-				stopAutoPlay();
-				const nextIndex = (activeTabIndex + 1) % tabs.length;
-				updateTabSelection(nextIndex, true);
-			} else if (event.key === 'ArrowLeft') {
-				event.preventDefault();
-				stopAutoPlay();
-				const prevIndex = (activeTabIndex - 1 + tabs.length) % tabs.length;
-				updateTabSelection(prevIndex, true);
-			}
-		});
-	});
-
-	// Animate initial panel image
-	document.querySelector('#adoption-panel-1 .adoption-panel-image')?.classList.add('is-visible');
-
-	// Start auto-play
-	startAutoPlay();
+	document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el));
 </script>

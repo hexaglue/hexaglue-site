@@ -24,11 +24,14 @@ const hasDefaultSlot = Astro.slots.has('default');
 	.section-description :global(em) {
 		@apply italic;
 	}
+	.section-description :global(a) {
+		@apply text-astro-gray-100 underline hover:text-white transition-colors;
+	}
 	.section-description :global(br) {
 		@apply block mt-2;
 	}
 	.section-description :global(ul) {
-		@apply list-disc list-inside mt-2 space-y-1;
+		@apply list-disc list-inside mt-2 space-y-1 text-astro-gray-100 font-normal;
 	}
 	.section-description :global(ol) {
 		@apply list-decimal list-inside mt-2 space-y-1;

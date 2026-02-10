@@ -1,0 +1,219 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import IntroPoint from '../_components/IntroPoint.astro';
+import GemIcon from '~/components/GemIcon.astro';
+import Insight from '~/components/Insight.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+---
+
+<MainLayout
+	title="HexaGlue pour les DSI et CTO"
+	description="HexaGlue donne aux DSI et CTO une vision objectivée du patrimoine applicatif : état de l'architecture, zones à risque, coût de remédiation. Les décisions de transformation s'appuient sur des données, pas sur des impressions."
+	schema={{
+		"@type": "WebPage",
+		audience: { "@type": "Audience", audienceType: "DSI, CTO, Directeur de la Transformation" },
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Pour les décideurs
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Des décisions d'architecture<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">fondées sur des faits.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				HexaGlue donne aux DSI et CTO une vision objectivée du patrimoine applicatif : état de l'architecture, zones à risque, coût de remédiation. Les décisions de transformation s'appuient sur des données, pas sur des impressions.
+			</p>
+
+			<div class="mt-8 flex justify-center">
+				<Icon name="ri/building-4-line" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 1 : Vos défis -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Contexte"
+			title="Ce que vous devez savoir, et que personne ne peut vous montrer"
+		>
+			Vous pilotez un patrimoine applicatif Java. Mais l'état réel de l'architecture, les zones à risque et le coût des migrations restent des estimations. Il n'y a pas de mesure objectivée pour prendre des décisions éclairées.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="amber" title="La visibilité sur l'architecture est limitée">
+				<GemIcon slot="icon" icon="ri/eye-off-line" gradient="red-pink" />
+				<Fragment slot="description">
+					Vous pilotez un patrimoine de dizaines de services Java. Mais quand on vous demande l'état réel de l'architecture, la réponse dépend de qui vous posez la question. Il n'y a pas de mesure objectivée, pas d'indicateur partagé, pas de baseline fiable.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="Le coût des migrations est imprévisible">
+				<GemIcon slot="icon" icon="ri/money-dollar-circle-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Chaque projet de modernisation commence par la même question : combien ça va coûter ? Sans cartographie précise des dépendances et des violations, les estimations sont des approximations. Les surprises arrivent en cours de route, quand il est trop tard pour ajuster.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="amber" title="La gouvernance ne passe pas à l'échelle">
+				<GemIcon slot="icon" icon="ri/team-line" gradient="blue-purple" />
+				<Fragment slot="description">
+					Les revues d'architecture manuelles fonctionnent pour une équipe. Pour cinq ou dix équipes, elles deviennent un goulot d'étranglement. Les règles sont documentées mais pas vérifiées. Les écarts s'accumulent silencieusement.
+				</Fragment>
+			</IntroPoint>
+		</div>
+	</section>
+
+	<!-- Section 2 : Comment HexaGlue vous aide -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Réponse"
+			title="Des signaux fiables pour piloter la transformation"
+		>
+			HexaGlue analyse le code source à chaque build et produit des indicateurs objectifs et reproductibles. Vous n'avez pas besoin de comprendre le code : vous lisez un rapport.
+		</SectionCopy>
+
+		<div class="mt-10 table-panel">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Votre défi</th>
+							<th class="py-3 text-astro-gray-300 font-medium">Ce que HexaGlue fournit</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Visibilité limitée</td>
+							<td class="py-3"><strong class="text-white">Score de conformité</strong> sur 6 dimensions (DDD, hexagonal, dépendances, couplage, cohésion) : un chiffre objectif, comparable dans le temps et entre projets</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white">Coût imprévisible</td>
+							<td class="py-3"><strong class="text-white">Estimation de remédiation</strong> : pour chaque catégorie de violation, le rapport distingue l'effort manuel (en jours) de l'effort automatisable par HexaGlue</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white">Gouvernance manuelle</td>
+							<td class="py-3"><strong class="text-white">Audit automatisé en CI/CD</strong> : les règles d'architecture sont vérifiées à chaque build, sur tous les projets. Les violations sont détectées immédiatement, pas au prochain comité d'architecture</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>HexaGlue est un outil de compilation, pas un service cloud. Il s'exécute dans votre pipeline CI/CD existant (Maven). Aucune donnée ne sort de votre infrastructure. Aucune dépendance runtime. Aucun vendor lock-in.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 3 : Résultats concrets -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Preuve"
+			title="Ce que montrent nos études de cas"
+		>
+			L'étude de cas e-commerce illustre la progression d'un monolithe Spring Boot vers une architecture hexagonale, avec des indicateurs mesurables à chaque étape.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl text-center">
+				<p class="text-3xl font-bold text-white">13 → 63</p>
+				<p class="text-sm text-astro-gray-300 mt-1">/100</p>
+				<p class="text-sm text-astro-gray-200 mt-2 font-light">Progression du score d'architecture en 7 étapes</p>
+			</div>
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl text-center">
+				<p class="text-3xl font-bold text-white">43 → 7</p>
+				<p class="text-sm text-astro-gray-300 mt-1">violations</p>
+				<p class="text-sm text-astro-gray-200 mt-2 font-light">Réduction entre l'état initial et l'architecture hexagonale</p>
+			</div>
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl text-center">
+				<p class="text-3xl font-bold text-white">29</p>
+				<p class="text-sm text-astro-gray-300 mt-1">fichiers</p>
+				<p class="text-sm text-astro-gray-200 mt-2 font-light">Code d'infrastructure généré automatiquement</p>
+			</div>
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl text-center">
+				<p class="text-3xl font-bold text-white">0</p>
+				<p class="text-sm text-astro-gray-300 mt-1">impact runtime</p>
+				<p class="text-sm text-astro-gray-200 mt-2 font-light">HexaGlue s'exécute à la compilation uniquement</p>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Ces résultats sont issus d'applications réelles de 50 classes. Le code source est disponible sur GitHub, les rapports d'audit sont reproduits étape par étape dans les études de cas.</p>
+			</Insight>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto">
+			<a href="/case-studies/ecommerce-migration/" class="inline-flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors">
+				<Icon name="ri/arrow-right-line" class="size-4" aria-hidden="true" />
+				<span>Parcourir l'étude de cas e-commerce</span>
+			</a>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Les PowerPoint ne suffisent plus.</span><br/>
+				Pilotez par la donnée.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Découvrez comment HexaGlue objectivise l'état de votre patrimoine applicatif ou échangez directement avec nous.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/contact/" class="primary">
+					Discuter de votre projet
+				</Link>
+				<Link href="/services/" class="secondary">
+					<Icon name="ri/service-line" class="size-5" aria-hidden="true" />
+					<span>Découvrir nos services</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(56, 189, 126, 0.07);
+		border-bottom: 1px solid rgba(56, 189, 126, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(56, 189, 126, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(56, 189, 126, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(56, 189, 126, 0.12),
+			0 0 50px rgba(56, 189, 126, 0.07),
+			0 0 80px rgba(56, 189, 126, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

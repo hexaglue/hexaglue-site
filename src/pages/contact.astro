@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from './_components/SectionCopy.astro';
 import Link from './_components/Link.astro';
-import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
+import BlueStardust from './_components/landing-page/BlueStardust.astro';
 ---
 
 <MainLayout
@@ -12,16 +12,16 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 >
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<PurpleStardust height="h-64 md:h-80" />
+		<BlueStardust height="h-64 md:h-80" />
 
 		<div class="text-center max-w-3xl mx-auto">
-			<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+			<span class="bg-clip-text text-transparent bg-blue-cyan-gradient font-semibold text-sm uppercase tracking-wider">
 				Parlons de votre projet
 			</span>
 
 			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
 				Contactez-nous.<br/>
-				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Construisons ensemble.</span>
+				<span class="bg-clip-text text-transparent bg-blue-cyan-gradient">Construisons ensemble.</span>
 			</h1>
 
 			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
@@ -96,10 +96,10 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 			</div>
 
 			<!-- Entreprise Card -->
-			<div class="contact-card group p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-astro-purple/40 transition-all duration-300">
+			<div class="contact-card group p-6 md:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-astro-blue/40 transition-all duration-300">
 				<div class="flex items-center gap-4 mb-6">
-					<div class="p-3 rounded-xl bg-astro-purple/10 group-hover:scale-110 transition-transform duration-300">
-						<Icon name="ri/building-4-line" class="size-8 text-astro-purple" aria-hidden="true" />
+					<div class="p-3 rounded-xl bg-astro-blue/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri/building-4-line" class="size-8 text-astro-blue" aria-hidden="true" />
 					</div>
 					<div>
 						<h2 class="text-2xl font-semibold text-white">Entreprise</h2>
@@ -113,29 +113,29 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 
 				<div class="space-y-4 mb-8">
 					<div class="flex items-start gap-3">
-						<Icon name="ri/check-line" class="size-5 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+						<Icon name="ri/check-line" class="size-5 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
 						<span class="text-astro-gray-200">Accompagnement sur la mise en place de l'architecture hexagonale</span>
 					</div>
 					<div class="flex items-start gap-3">
-						<Icon name="ri/check-line" class="size-5 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+						<Icon name="ri/check-line" class="size-5 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
 						<span class="text-astro-gray-200">Formation sur le DDD et la Clean Architecture</span>
 					</div>
 					<div class="flex items-start gap-3">
-						<Icon name="ri/check-line" class="size-5 text-astro-purple mt-0.5 shrink-0" aria-hidden="true" />
+						<Icon name="ri/check-line" class="size-5 text-astro-blue mt-0.5 shrink-0" aria-hidden="true" />
 						<span class="text-astro-gray-200">Support pour l'intégration de HexaGlue</span>
 					</div>
 				</div>
 
 				<a
 					href="mailto:info@hexaglue.io"
-					class="flex items-center justify-center gap-3 w-full p-4 bg-gradient-to-r from-astro-purple/20 to-astro-blue/20 rounded-xl border border-astro-purple/30 hover:border-astro-purple/50 hover:from-astro-purple/30 hover:to-astro-blue/30 transition-all duration-300"
+					class="flex items-center justify-center gap-3 w-full p-4 bg-gradient-to-r from-astro-blue/20 to-[#00C2FF]/20 rounded-xl border border-astro-blue/30 hover:border-astro-blue/50 hover:from-astro-blue/30 hover:to-[#00C2FF]/30 transition-all duration-300"
 				>
-					<Icon name="email" class="size-5 text-astro-purple" aria-hidden="true" />
+					<Icon name="email" class="size-5 text-astro-blue" aria-hidden="true" />
 					<span class="text-white font-medium">info@hexaglue.io</span>
 				</a>
 
 				<p class="mt-4 text-center">
-					<a href="/services/" class="text-sm text-astro-purple hover:text-astro-purple/80 transition-colors">
+					<a href="/services/" class="text-sm text-astro-blue hover:text-astro-blue/80 transition-colors">
 						Voir notre offre de services →
 					</a>
 				</p>
@@ -147,7 +147,7 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy
 			label="Où nous trouver"
-			title="Nous sommes basés à Paris, en France"
+			title="Nous sommes basés en France, à Paris"
 			description="Notre démarche de croissance privilégie dans un premier temps la proximité avec les entreprises franciliennes, tout en restant ouverts à toute collaboration prometteuse, où qu'elle se trouve."
 		/>
 
@@ -176,10 +176,8 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 			</p>
 
 			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-				<Link href="/services/" class="primary">
-					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
-						Découvrir nos services
-					</span>
+				<Link href="/services/" class="primary" gradient="linear-gradient(247.23deg, #00C2FF 0%, #3245FF 100%)">
+					Découvrir nos services
 				</Link>
 				<Link href="/case-studies/" class="secondary">
 					<Icon name="ri/building-4-line" class="size-5" aria-hidden="true" />
@@ -188,7 +186,7 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 			</div>
 		</div>
 		<div
-			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-cyan-gradient opacity-50 mask-radial-gradient pointer-events-none"
 		></div>
 	</section>
 </MainLayout>
@@ -202,7 +200,7 @@ import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
 		content: '';
 		position: absolute;
 		inset: 30% 15%;
-		background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+		background: radial-gradient(ellipse at center, rgba(50, 69, 255, 0.08) 0%, transparent 70%);
 		border-radius: 50%;
 		filter: blur(30px);
 		z-index: -1;

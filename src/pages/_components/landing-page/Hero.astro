@@ -20,14 +20,13 @@ const slogans = [
 		class="mt-16 md:mt-20 lg:mt-24 px-4 sm:px-8 mx-auto w-full sm:max-w-screen-md flex flex-col items-center justify-center gap-5 md:gap-6 lg:gap-8"
 	>
 		<PillLink
-			href="/getting-started/"
+			href="/docs/getting-started/"
 			title="Nouveau"
 			subtitle={`HexaGlue v${versions.hexaglue} disponible`}
 		/>
 		<PageTitleBlock
 			wide
 			lg
-			body="Sans framework imposé - Sans lock-in éditeur - Sans impact sur le runtime"
 		>
 			<h1
 				slot="title"
@@ -37,7 +36,7 @@ const slogans = [
 			</h1>
 			<div slot="body" class="text-astro-gray-200 text-center text-balance font-light max-w-2xl">
 				<h2 class="mb-4 text-lg md:text-xl lg:text-2xl">
-					<strong class="text-white font-medium">Auditer. Documenter. Migrer.</strong>
+					<strong class="text-white font-medium">Votre architecture visible, vérifiable et actionnable.</strong>
 				</h2>
 				<div class="flex items-center justify-center">
 					<CodeBlock typewriter={slogans} />
@@ -46,12 +45,8 @@ const slogans = [
 		</PageTitleBlock>
 
 		<div class="grid grid-rows-2 gap-2">
-			<Link href="/getting-started/" class="primary">
-				<span
-					class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500"
-				>
-					Démarrer maintenant
-				</span>
+			<Link href="/docs/getting-started/" class="primary">
+				Démarrer maintenant
 			</Link>
 		</div>
 	</div>

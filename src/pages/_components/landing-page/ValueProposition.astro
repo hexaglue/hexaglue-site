@@ -1,0 +1,43 @@
+---
+import SectionCopy from '../SectionCopy.astro';
+import GemIcon from '~/components/GemIcon.astro';
+import IntroPoint from '../IntroPoint.astro';
+import AmberStardust from './AmberStardust.astro';
+---
+
+<section class="mt-20 sm:mt-36 xs:p-6 mx-auto w-full max-w-screen-xl space-y-8 p-4 sm:p-8">
+	<SectionCopy
+		label="Pourquoi c'est utile"
+		title="Un modèle de domaine visible, gouvernable et directement exploitable"
+		gradient="bg-orange-yellow-gradient"
+	>
+		HexaGlue comprend votre architecture DDD et hexagonale. Il transforme votre code en un modèle exploitable tout au long de son cycle de vie.
+	</SectionCopy>
+
+	<div class="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+		<IntroPoint tint="amber" title="Observable">
+			<GemIcon slot="icon" icon="ri/eye-line" gradient="orange-yellow" />
+			<Fragment slot="description">
+				Votre modèle de domaine devient visible : agrégats, relations, services applicatifs, ports.<br><br>
+				<strong>La documentation est générée depuis le code source, toujours synchronisée, sans effort de maintenance.</strong>
+			</Fragment>
+		</IntroPoint>
+
+		<IntroPoint tint="amber" title="Gouvernable">
+			<GemIcon slot="icon" icon="ri/compass-line" gradient="red-pink" />
+			<Fragment slot="description">
+				Les frontières hexagonales et les règles d'architecture sont contrôlées en continu dans vos pipelines CI/CD.<br><br>
+				<strong>Les violations de dépendances et les ambiguïtés de classification sont détectées automatiquement.</strong>
+			</Fragment>
+		</IntroPoint>
+
+		<IntroPoint tint="amber" title="Actionnable">
+			<GemIcon slot="icon" icon="ri/rocket-line" gradient="blue-purple" />
+			<Fragment slot="description">
+				Le modèle architectural alimente directement la génération des adaptateurs d'infrastructure.<br><br>
+				<strong>Moins de glue code, plus de logique métier, une migration vers le DDD accélérée.</strong>
+			</Fragment>
+		</IntroPoint>
+	</div>
+	<AmberStardust height="h-40 md:h-56 lg:h-64" />
+</section>

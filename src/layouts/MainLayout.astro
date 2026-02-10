@@ -1,5 +1,6 @@
 ---
 import BaseHead, { type Props as HeadProps } from '~/components/BaseHead.astro';
+import Breadcrumb from '~/components/Breadcrumb.astro';
 import Footer from '~/components/Footer.astro';
 import Header from '~/components/Header.astro';
 import HeaderDrawerContent from '~/components/HeaderDrawerContent.astro';
@@ -13,6 +14,8 @@ interface Props extends HeadProps {
 }
 
 const { bgClass = 'bg-black', ...head } = Astro.props;
+const pageTitle = head.title ?? head.rawTitle;
+const is404 = head.canonicalURL === null;
 ---
 
 <!doctype html>
@@ -41,6 +44,8 @@ const { bgClass = 'bg-black', ...head } = Astro.props;
 				<HeaderDrawerContent slot="drawer" />
 			</Header>
 		</div>
+
+		<Breadcrumb pageTitle={pageTitle} is404={is404} />
 
 		<slot name="subnav" />
 

@@ -12,7 +12,7 @@ import InventoryTable, { type InventoryRow } from '../_components/InventoryTable
 import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
 import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
-import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
 import Insight from '~/components/Insight.astro';
 import ModificationList from '../_components/ModificationList.astro';
 import ModificationGroup from '../_components/ModificationGroup.astro';
@@ -116,10 +116,10 @@ const remediationRows: RemediationRow[] = [
 >
     <!-- Hero Section -->
     <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-        <AmberStardust height="h-64 md:h-80" />
+        <PurpleStardust height="h-64 md:h-80" />
         <div class="max-w-5xl mx-auto">
             <div class="mt-8 max-w-3xl">
-                <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+                <span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
                     Étape 3
                 </span>
                 <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
@@ -132,7 +132,7 @@ const remediationRows: RemediationRow[] = [
                   class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
                 >
                   <Icon name="logos/github" class="size-5" aria-hidden="true" />
-                  <code class="text-sm text-amber-400">step/3-hexagonal</code>
+                  <code class="text-sm text-purple-400">step/3-hexagonal</code>
                 </a>
                 <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
                     <li>Création des driving ports (use cases) et driven ports.</li>
@@ -149,7 +149,7 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Modifications"
                 title="Modifications effectuées"
-                gradient="bg-orange-yellow-gradient"
+                gradient="bg-blue-purple-gradient"
             >
                 L'application est restructurée selon l'architecture hexagonale : des ports (interfaces) sont créés pour séparer le domaine de l'infrastructure, et les services sont refactorisés en services applicatifs qui orchestrent les cas d'usage.
             </SectionCopy>
@@ -192,7 +192,7 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Code"
                 title="Exemples de code"
-                gradient="bg-orange-yellow-gradient"
+                gradient="bg-blue-purple-gradient"
             >
                 Deux extraits illustrent les patterns clés de l'architecture hexagonale : un driving port (cas d'usage) et un driven port (abstraction de persistance).
             </SectionCopy>
@@ -406,7 +406,7 @@ const remediationRows: RemediationRow[] = [
             <SectionCopy
                 label="Bilan"
                 title="Ce que révèle cette étape"
-                gradient="bg-orange-yellow-gradient"
+                gradient="bg-blue-purple-gradient"
             >
                 Les ports existent mais le domaine reste pollué par JPA. Le score ne progresse que d'un point car les violations DDD bloquent toute amélioration significative.
             </SectionCopy>
@@ -426,7 +426,7 @@ const remediationRows: RemediationRow[] = [
     <!-- Transition -->
     <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
         <div class="max-w-5xl mx-auto">
-            <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+            <div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-6">
                 <p class="text-lg text-astro-gray-200">
                     L'étape suivante purifie le domaine : suppression des annotations JPA, création des identifiants typés et des value objects.
                 </p>
@@ -445,7 +445,7 @@ const remediationRows: RemediationRow[] = [
             </div>
         </div>
         <div
-            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
         ></div>
     </section>
 </MainLayout>

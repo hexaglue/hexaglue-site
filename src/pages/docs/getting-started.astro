@@ -2,10 +2,9 @@
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import MainLayout from '~/layouts/MainLayout.astro';
-import SectionCopy from './_components/SectionCopy.astro';
-import Link from './_components/Link.astro';
-import PurpleStardust from './_components/landing-page/PurpleStardust.astro';
-import GreenishStardust from './_components/landing-page/GreenishStardust.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import AmberStardust from '../_components/landing-page/AmberStardust.astro';
 import versions from '~/data/versions';
 
 const codeStep1 = `git clone https://github.com/hexaglue/hexaglue-demo.git
@@ -75,19 +74,67 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 <MainLayout
 	title="Démarrage rapide"
 	description="Apprenez à configurer HexaGlue dans votre projet Java Maven en quelques minutes. Guide pas à pas avec un exemple concret."
+	schema={{
+		"@type": "HowTo",
+		name: "Démarrage rapide HexaGlue : 5 minutes pour comprendre",
+		description: "Configurez HexaGlue dans votre projet Java Maven, générez votre première documentation vivante et découvrez comment l'audit protège votre architecture.",
+		totalTime: "PT5M",
+		tool: [
+			{ "@type": "HowToTool", name: "Java 17+" },
+			{ "@type": "HowToTool", name: "Maven 3.8+" },
+			{ "@type": "HowToTool", name: "Git" },
+		],
+		step: [
+			{
+				"@type": "HowToStep",
+				position: 1,
+				name: "Cloner le projet de démonstration",
+				text: "Clonez l'application hexaglue-demo qui contient un domaine métier prêt à l'emploi.",
+				url: "https://hexaglue.io/docs/getting-started/#etapes",
+			},
+			{
+				"@type": "HowToStep",
+				position: 2,
+				name: "Activer la Living Documentation",
+				text: "Décommentez le plugin HexaGlue et hexaglue-plugin-living-doc dans le pom.xml, puis compilez avec mvn clean compile.",
+				url: "https://hexaglue.io/docs/getting-started/#etapes",
+			},
+			{
+				"@type": "HowToStep",
+				position: 3,
+				name: "Activer l'Audit : le build échoue",
+				text: "Décommentez hexaglue-plugin-audit dans le pom.xml. L'audit détecte une violation architecturale dans Task.java et le build échoue.",
+				url: "https://hexaglue.io/docs/getting-started/#etapes",
+			},
+			{
+				"@type": "HowToStep",
+				position: 4,
+				name: "Corriger la violation",
+				text: "Supprimez l'annotation @Entity et l'import jakarta.persistence.Entity de Task.java pour respecter la pureté du domaine. Le build passe.",
+				url: "https://hexaglue.io/docs/getting-started/#etapes",
+			},
+			{
+				"@type": "HowToStep",
+				position: 5,
+				name: "Générer l'infrastructure JPA",
+				text: "Décommentez hexaglue-plugin-jpa et build-helper-maven-plugin. HexaGlue génère entités, repositories, mappers et adapters automatiquement.",
+				url: "https://hexaglue.io/docs/getting-started/#etapes",
+			},
+		],
+	}}
 >
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<GreenishStardust height="h-64 md:h-80" />
+		<AmberStardust height="h-64 md:h-80" />
 
 		<div class="text-center max-w-3xl mx-auto">
-			<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
 				Tutoriel
 			</span>
 
 			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
 				Démarrage rapide.<br/>
-				<span class="bg-clip-text text-transparent bg-blue-green-gradient">5 minutes pour comprendre.</span>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">5 minutes pour comprendre.</span>
 			</h1>
 
 			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
@@ -141,11 +188,12 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 
 	<!-- Étapes -->
 	<section id="etapes" class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<GreenishStardust height="h-96" />
+		<AmberStardust height="h-96" />
 
 		<SectionCopy
 			label="Le parcours"
 			title="5 étapes pour maîtriser HexaGlue"
+			gradient="bg-orange-yellow-gradient"
 			description="Suivez ce tutoriel avec l'application hexaglue-demo pour une expérience pratique."
 		/>
 
@@ -271,6 +319,7 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 		<SectionCopy
 			label="Configuration"
 			title="Le plugin Maven"
+			gradient="bg-orange-yellow-gradient"
 			description="Déclarez le plugin HexaGlue puis ajoutez en dépendance uniquement les plugins qui correspondent à vos besoins. Toutes les dépendances transitoires (MapStruct, Jakarta Persistence) sont configurées automatiquement."
 		/>
 
@@ -283,7 +332,7 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<div class="max-w-4xl mx-auto">
 			<div class="text-center mb-10">
-				<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
 					Récapitulatif
 				</span>
 				<h2 class="mt-2 font-heading heading-bold text-3xl md:text-4xl text-white">
@@ -360,7 +409,7 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 					href="/case-studies/ecommerce-migration/"
 					class="px-6 py-3 group inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-white hover:bg-astro-gray-100 text-base font-medium transition-all ease-in-out duration-300"
 				>
-					<span class="bg-clip-text text-transparent bg-blue-green-gradient group-hover:text-[#1a7a4c] transition-all ease-in-out duration-500">
+					<span class="bg-clip-text text-transparent bg-orange-yellow-gradient group-hover:text-[#b35a20] transition-all ease-in-out duration-500">
 						Explorer une étude de cas
 					</span>
 				</a>
@@ -371,7 +420,7 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 			</div>
 		</div>
 		<div
-			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
 		></div>
 	</section>
 </MainLayout>

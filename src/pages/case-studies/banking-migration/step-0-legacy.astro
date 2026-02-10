@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
-import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
 import StepNavigation from '../_components/StepNavigation.astro';
 import Insight from '~/components/Insight.astro';
 
@@ -76,11 +76,11 @@ const antiPatterns = [
 >
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<AmberStardust height="h-64 md:h-80" />
+		<PurpleStardust height="h-64 md:h-80" />
 
 		<div class="max-w-5xl mx-auto">
 			<div class="mt-8 max-w-3xl">
-				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				<span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
 					Étape 0
 				</span>
 
@@ -95,7 +95,7 @@ const antiPatterns = [
 				  class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
 				>
 				  <Icon name="logos/github" class="size-5" aria-hidden="true" />
-				  <code class="text-sm text-amber-400">step/0-legacy</code>
+				  <code class="text-sm text-purple-400">step/0-legacy</code>
 				</a>
 
 				<ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
@@ -113,7 +113,7 @@ const antiPatterns = [
 			<SectionCopy
 				label="Les 10 anti-patterns"
 				title="Ce qui ne va pas"
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			>
 				Cette application bancaire concentre les problèmes classiques du code d'entreprise :
 				couplage entre domaine et infrastructure, logique dispersée dans les services, découpage multi-module par couche technique au lieu d'un découpage par domaine.<br>
@@ -149,7 +149,7 @@ const antiPatterns = [
 			<SectionCopy
 				label="Structure"
 				title="Organisation des modules"
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			>
 				L'application est découpée en 5 modules Maven : <code>banking-core</code>, <code>banking-persistence</code>, <code>banking-service</code>, <code>banking-api</code> et <code>banking-app</code>.<br>
 				Ce découpage suit une logique purement technique (couches horizontales) et non une logique métier (domaines verticaux).
@@ -179,7 +179,7 @@ const antiPatterns = [
 			<SectionCopy
 				label="Code legacy"
 				title="Exemple : Account.java"
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			>
 				La classe <code>Account</code> telle qu'elle existe dans l'application : annotations JPA, héritage de <code>BaseEntity</code>, primitives pour les montants et devises, référence directe à <code>Customer</code>.<br>
 				C'est typiquement ce que HexaGlue va analyser et signaler dans son rapport d'audit.
@@ -207,7 +207,7 @@ const antiPatterns = [
 			<SectionCopy
 				label="Vérification"
 				title="Est-ce que le projet compile ?"
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			>
 				Avant de commencer la migration, on vérifie que l'application compile et que le point de départ est stable.
 			</SectionCopy>
@@ -228,7 +228,7 @@ const antiPatterns = [
 			<SectionCopy
 				label="Bilan"
 				title="Ce que révèle cette étape"
-				gradient="bg-orange-yellow-gradient"
+				gradient="bg-blue-purple-gradient"
 			>
 				L'application compile et fonctionne, mais l'architecture pose des problèmes de fond malgré le découpage en modules.
 			</SectionCopy>
@@ -249,7 +249,7 @@ const antiPatterns = [
 	<!-- Transition -->
 	<section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
 		<div class="max-w-5xl mx-auto">
-			<div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+			<div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-6">
 				<p class="text-lg text-astro-gray-200">
 					L'étape suivante va brancher HexaGlue sur ce projet multi-modules pour obtenir un premier diagnostic chiffré.
 				</p>
@@ -270,7 +270,7 @@ const antiPatterns = [
 			</div>
 		</div>
 		<div
-			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
 		></div>
 	</section>
 </MainLayout>

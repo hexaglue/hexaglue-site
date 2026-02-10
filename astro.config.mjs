@@ -13,6 +13,9 @@ import houston from './houston.theme.json';
 export default defineConfig({
 	site: 'https://hexaglue.io',
 	prefetch: true,
+	redirects: {
+		'/getting-started/': '/docs/getting-started/',
+	},
 	integrations: [
 		tailwind({
 			applyBaseStyles: false,
@@ -60,10 +63,25 @@ export default defineConfig({
 					item.priority = 1.0;
 					item.changefreq = ChangeFreqEnum.WEEKLY;
 				}
-				// Getting Started - documentation importante
-				else if (url.includes('/getting-started')) {
-					item.priority = 0.9;
+				// Documentation section
+				else if (url.includes('/docs/')) {
+					item.priority = 0.85;
 					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Features section
+				else if (url.includes('/features/')) {
+					item.priority = 0.80;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Personas section
+				else if (url.includes('/for/')) {
+					item.priority = 0.70;
+					item.changefreq = ChangeFreqEnum.WEEKLY;
+				}
+				// Guides section - high priority for SEO evergreen content
+				else if (url.includes('/guides/')) {
+					item.priority = 0.90;
+					item.changefreq = ChangeFreqEnum.MONTHLY;
 				}
 				// Services
 				else if (url.includes('/services')) {

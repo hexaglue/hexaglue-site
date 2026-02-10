@@ -1,11 +1,12 @@
 ---
-import FeatureCard from './FeatureCard.astro';
+import FeatureCard from '~/components/FeatureCard.astro';
 ---
 
 <FeatureCard
 	icon="ri/shield-check-line"
 	title="Validation au Build-time"
 	description="Capture les violations d'architecture avant les déploiements avec l'intégration d'un plugin Maven."
+	href="/features/audit/"
 >
 	<div slot="illustration" class="validation-illustration mt-4 pt-4 border-t border-astro-dark-100/10">
 		<!-- Dot pattern background -->

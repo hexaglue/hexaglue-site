@@ -12,7 +12,7 @@ import InventoryTable, { type InventoryRow } from '../_components/InventoryTable
 import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
 import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
-import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
 import Insight from '~/components/Insight.astro';
 import ModificationList from '../_components/ModificationList.astro';
 import ModificationGroup from '../_components/ModificationGroup.astro';
@@ -76,10 +76,10 @@ const inventoryRows: InventoryRow[] = [
 >
   <!-- Hero -->
   <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-    <AmberStardust height="h-64 md:h-80" />
+    <PurpleStardust height="h-64 md:h-80" />
     <div class="max-w-5xl mx-auto">
       <div class="mt-8 max-w-3xl">
-        <span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+        <span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
           Étape 5
         </span>
         <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
@@ -92,7 +92,7 @@ const inventoryRows: InventoryRow[] = [
           class="mt-4 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
         >
           <Icon name="logos/github" class="size-5" aria-hidden="true" />
-          <code class="text-sm text-amber-400">step/5-generated</code>
+          <code class="text-sm text-purple-400">step/5-generated</code>
         </a>
         <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
           <li>Activation du plugin JPA avec routage vers banking-persistence.</li>
@@ -109,7 +109,7 @@ const inventoryRows: InventoryRow[] = [
       <SectionCopy
         label="Modifications"
         title="Modifications effectuées"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Les plugins HexaGlue sont activés pour générer automatiquement toute la couche de persistance.
         Le code JPA manuel est supprimé : entités, repositories, adapters et la <code>JpaBaseEntity</code>.
@@ -150,7 +150,7 @@ const inventoryRows: InventoryRow[] = [
       <SectionCopy
         label="Configuration"
         title="Configuration multi-module"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Le fichier <code>hexaglue.yaml</code> à la racine du projet configure le plugin JPA avec le routage multi-module et les rôles architecturaux de chaque module Maven.
       </SectionCopy>
@@ -176,7 +176,7 @@ const inventoryRows: InventoryRow[] = [
       <SectionCopy
         label="Génération"
         title="Code généré automatiquement"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Le plugin JPA d'HexaGlue analyse le modèle domaine pur et génère toute la couche de persistance à la compilation. Aucun de ces fichiers n'est écrit à la main : ils sont produits dans <code>banking-persistence</code>.
       </SectionCopy>
@@ -408,7 +408,7 @@ const inventoryRows: InventoryRow[] = [
       <SectionCopy
         label="Bilan"
         title="Ce que révèle cette étape"
-        gradient="bg-orange-yellow-gradient"
+        gradient="bg-blue-purple-gradient"
       >
         Cette étape marque un tournant : HexaGlue passe de l'analyse à la génération.<br>
         Le rapport montre l'impact de la génération JPA avec routage multi-module.
@@ -429,7 +429,7 @@ const inventoryRows: InventoryRow[] = [
   <!-- Transition -->
   <section class="relative w-full max-w-4xl mx-auto px-4 sm:px-8">
     <div class="max-w-5xl mx-auto">
-      <div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-6">
+      <div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-6">
         <p class="text-lg text-astro-gray-200">
           L'étape suivante ajoute les méthodes reconstitute() et câble les driven ports restants pour une application fonctionnelle end-to-end.
         </p>
@@ -448,7 +448,7 @@ const inventoryRows: InventoryRow[] = [
       </div>
     </div>
     <div
-      class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+      class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
     ></div>
   </section>
 </MainLayout>

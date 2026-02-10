@@ -15,35 +15,47 @@ const socialLinks = siteInfo.socialLinks.filter((link) => link.showInHeader);
 
 	<div class="hidden shrink flex-row items-center gap-12 lg:flex text-base">
 		<HeaderDropDown
-			label="Ressources"
+			label="Produit"
 			theme="green"
 			items={[
-				{ href: '/getting-started/', label: 'Documentation', icon: 'file-alt', prefetch: true },
+				{ href: '/features/', label: 'Fonctionnalités', icon: 'ri/search-eye-line', prefetch: true },
+				{ href: '/features/classification/', label: 'Classification', icon: 'ri/node-tree', prefetch: true },
+				{ href: '/features/audit/', label: 'Audit d\'architecture', icon: 'ri/shield-check-line', prefetch: true },
+				{ href: '/features/jpa-generation/', label: 'Génération JPA', icon: 'ri/database-2-line', prefetch: true },
+				{ href: '/features/living-documentation/', label: 'Living Documentation', icon: 'ri/file-text-line', prefetch: true },
+				{ href: '/for/architects/', label: 'Pour les architectes', icon: 'ri/layout-grid-line', prefetch: true },
+				{ href: '/for/tech-leads/', label: 'Pour les tech leads', icon: 'ri/code-s-slash-line', prefetch: true },
+				{ href: '/for/decision-makers/', label: 'Pour les décideurs', icon: 'ri/building-4-line', prefetch: true },
+			]}
+		/>
+		<HeaderDropDown
+			label="Documentation"
+			theme="orange"
+			items={[
+				{ href: '/guides/', label: 'Guides', icon: 'ri/book-open-line', prefetch: true },
+				{ href: '/docs/getting-started/', label: 'Démarrage rapide', icon: 'ri/rocket-line', prefetch: true },
+				{ href: '/docs/plugin-audit/', label: 'Plugin Audit', icon: 'ri/shield-check-line', prefetch: true },
+				{ href: '/docs/plugin-jpa/', label: 'Plugin JPA', icon: 'ri/database-2-line', prefetch: true },
+				{ href: '/docs/plugin-living-doc/', label: 'Plugin Living Doc', icon: 'ri/file-text-line', prefetch: true },
 				{ href: 'https://github.com/hexaglue/hexaglue', label: 'GitHub', icon: 'logos/github' },
 			]}
 		/>
 		<HeaderDropDown
-			label="Exemples"
-			theme="orange"
+			label="Études de cas"
+			theme="purple"
 			items={[
-				{ href: '/case-studies/', label: 'Études de cas', icon: 'file-alt', prefetch: true },
+				{ href: '/case-studies/', label: 'Vue d\'ensemble', icon: 'file-alt', prefetch: true },
+				{ href: '/case-studies/ecommerce-migration/', label: 'Migration E-Commerce', icon: 'ri/shopping-cart-2-line', prefetch: true },
+				{ href: '/case-studies/banking-migration/', label: 'Migration Bancaire', icon: 'ri/bank-line', prefetch: true },
 				{ href: 'https://github.com/hexaglue/hexaglue/tree/main/examples', label: 'Exemples de code', icon: 'ri/code-box-line' },
 			]}
 		/>
 		<HeaderDropDown
 			label="Entreprise"
-			theme="purple"
+			theme="blue"
 			items={[
 				{ href: '/services/', label: 'Services', icon: 'ri/building-4-line', prefetch: true },
 				{ href: '/contact/', label: 'Contact', icon: 'email', prefetch: true },
-			]}
-		/>
-		<HeaderDropDown
-			label="Communauté"
-			theme="blue"
-			items={[
-				{ href: 'https://github.com/hexaglue/hexaglue/discussions', label: 'GitHub Discussions', icon: 'logos/github' },
-				{ href: 'https://github.com/hexaglue/hexaglue/blob/main/CONTRIBUTING.md', label: 'Contribuer', icon: 'ri/code-s-slash-line' },
 			]}
 		/>
 	</div>

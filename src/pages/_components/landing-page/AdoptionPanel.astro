@@ -1,62 +1,43 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { Icon } from 'astro-icon/components';
+import GemIcon from '~/components/GemIcon.astro';
 
 interface Props {
 	id: string;
-	tab: string;
-	class?: string;
 	icon: string;
+	gradient?: 'blue-purple' | 'blue-green' | 'red-pink' | 'orange-yellow';
 	title: string;
-	description: string;
-	features: string[];
 	image?: ImageMetadata;
 	imageAlt?: string;
+	imagePosition?: 'left' | 'right';
 }
 
-const { id, tab, class: className, icon, title, description, features, image, imageAlt } = Astro.props;
+const { id, icon, gradient = 'blue-purple', title, image, imageAlt, imagePosition = 'right' } = Astro.props;
+const isImageLeft = imagePosition === 'left';
 ---
 
 <div
 	id={`adoption-panel-${id}`}
-	role="tabpanel"
-	aria-labelledby={`adoption-tab-${id}`}
-	data-tab={tab}
-	class:list={['adoption-panel', className]}
+	class="scroll-reveal adoption-panel"
 >
 	<div
-		class="p-6 sm:p-8 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl"
+		class="p-6 sm:p-8 bg-astro-dark-800/40 border border-astro-purple/15 rounded-xl"
 	>
-		<div class:list={[image && 'flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10']}>
+		<div class:list={[image && 'flex flex-col lg:items-center gap-6 lg:gap-10', image && (isImageLeft ? 'lg:flex-row-reverse' : 'lg:flex-row')]}>
 			<div class:list={['flex flex-col md:flex-row md:items-start gap-6', image && 'flex-1']}>
-				<div class="shrink-0 p-3 rounded-xl bg-blue-green-gradient/10 text-astro-green">
-					<Icon name={icon} class="size-8" aria-hidden="true" />
-				</div>
+				<GemIcon icon={icon} gradient={gradient} />
 
-				<div class="flex-1 space-y-4">
+				<div class="flex-1">
 					<h3 class="text-xl font-semibold text-white">{title}</h3>
-					<p class="text-astro-gray-200 font-light">{description}</p>
-
-					<ul class="space-y-2">
-						{
-							features.map((feature) => (
-								<li class="flex items-center gap-2 text-sm text-astro-gray-100">
-									<Icon
-										name="ri/check-line"
-										class="size-4 text-astro-green shrink-0"
-										aria-hidden="true"
-									/>
-									{feature}
-								</li>
-							))
-						}
-					</ul>
+					<div class="panel-description mt-3 text-astro-gray-200 font-light text-base">
+						<slot />
+					</div>
 				</div>
 			</div>
 
 			{image && (
-				<div class="adoption-panel-image lg:w-[45%] lg:shrink-0 h-80 sm:h-96 lg:h-[34rem]">
+				<div class:list={['adoption-panel-image lg:w-[45%] lg:shrink-0 h-80 sm:h-96 lg:h-[34rem]', isImageLeft ? 'from-left' : 'from-right']}>
 					<Image
 						src={image}
 						alt={imageAlt ?? ''}
@@ -72,19 +53,43 @@ const { id, tab, class: className, icon, title, description, features, image, im
 </div>
 
 <style>
-	.adoption-panel-image {
-		perspective: 800px;
+	.panel-description :global(strong) {
+		@apply font-semibold text-white;
+	}
+	.panel-description :global(br) {
+		@apply block mt-2;
+	}
+	.panel-description :global(ul) {
+		@apply list-disc list-inside mt-2 space-y-1 text-astro-gray-100 font-normal;
+	}
+
+	.scroll-reveal {
+		opacity: 0;
+		transform: translateY(40px);
+		transition: opacity 800ms cubic-bezier(0.22, 0.61, 0.36, 1),
+			transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
+	}
+
+	.scroll-reveal.is-visible {
+		opacity: 1;
+		transform: translateY(0);
 	}
 
 	.adoption-panel-image :global(img) {
 		opacity: 0;
-		transform: rotate(15deg);
-		transform-origin: bottom right;
-		transition: opacity 600ms ease-out, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+		transition: opacity 600ms ease-out 200ms, transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 200ms;
 	}
 
-	.adoption-panel-image.is-visible :global(img) {
+	.adoption-panel-image.from-right :global(img) {
+		transform: translateX(30px);
+	}
+
+	.adoption-panel-image.from-left :global(img) {
+		transform: translateX(-30px);
+	}
+
+	.scroll-reveal.is-visible .adoption-panel-image :global(img) {
 		opacity: 1;
-		transform: rotate(0deg);
+		transform: translateX(0);
 	}
 </style>

@@ -1,0 +1,197 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import { Image } from 'astro:assets';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import livingDocScreenshot from '~/assets/screenshots/living-doc.png';
+
+const yamlConfig = `plugins:
+  io.hexaglue.plugin.livingdoc:
+    outputDir: "living-doc"              # Répertoire de sortie (défaut)
+    generateDiagrams: true               # Diagrammes Mermaid (défaut)
+    maxPropertiesInDiagram: 5            # Propriétés max par classe (défaut)
+    includeDebugSections: true           # Sections de debug (défaut)`;
+---
+
+<MainLayout
+	title="Living Documentation"
+	description="HexaGlue produit une documentation vivante de votre modèle de domaine à chaque compilation. Elle reflète l'état réel de votre architecture, pas l'intention d'un document écrit il y a 6 mois."
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		about: [
+			{ "@type": "Thing", name: "Documentation logicielle" },
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Living Documentation
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Une documentation, toujours à jour.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Du code source à la documentation vivante.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				HexaGlue produit une documentation vivante de votre modèle de domaine à chaque compilation. Elle reflète l'état réel de votre architecture, pas l'intention d'un document écrit il y a 6 mois.
+			</p>
+		</div>
+	</section>
+
+	<!-- Section 1 : Ce qui est documenté -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Contenu généré"
+			title="L'inventaire complet de votre architecture"
+		>
+			La living documentation couvre tous les éléments classifiés par HexaGlue. Elle donne une vue structurée de votre domaine sans effort de rédaction.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="hexaglue/aggregate" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Agrégats</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Liste des agrégats avec leurs entités, value objects et identifiants associés</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri/database-2-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Entités et Value Objects</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Inventaire avec champs, types, rôles détectés</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri/plug-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Ports</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Driving ports (interfaces entrantes) et driven ports (interfaces sortantes) avec leur type (Repository, Gateway, EventPublisher)</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri/function-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Services applicatifs</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Services et leur câblage avec les ports</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri/git-branch-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Relations</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Composition, référence et dépendances entre types</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri/layout-masonry-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Topologie des modules</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">En multi-module, répartition des types par module et rôle architectural</p>
+			</div>
+		</div>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Image
+				src={livingDocScreenshot}
+				alt="Capture d'écran de la living documentation générée par HexaGlue montrant l'inventaire du domaine"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 1024px) 100vw, 800px"
+				class="w-full rounded-xl border border-astro-dark-100/15 shadow-2xl"
+				loading="lazy"
+			/>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>La living documentation est générée dès le premier <code>mvn compile</code> avec le plugin activé. Pas besoin d'attendre que le projet soit parfaitement structuré : elle documente l'état réel, y compris les types non classifiés. C'est un outil de diagnostic autant que de documentation.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 2 : Toujours synchronisée -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Synchronisation"
+			title="Le problème de la documentation manuelle"
+		>
+			La documentation d'architecture vieillit dès le premier commit après sa rédaction. Les diagrammes Confluence décrivent l'architecture cible, pas l'architecture réelle. Les wikis accumulent des pages obsolètes que personne n'ose supprimer.<br><br>Avec HexaGlue, la documentation est régénérée à chaque <code>mvn compile</code>. Elle reflète exactement ce que le code contient à cet instant. Si un développeur ajoute un agrégat, il apparaît dans la documentation au prochain build. Si un port est supprimé, il disparaît.
+		</SectionCopy>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>La living documentation complète l'audit : l'audit dit CE QUI NE VA PAS dans votre architecture, la documentation montre CE QUI EXISTE. Ensemble, ils donnent une vision complète : état des lieux + diagnostic.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 3 : Format et intégration -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Sortie"
+			title="Markdown par défaut, intégrable partout"
+		>
+			La documentation est générée en Markdown et est enrichie de graphiques et de diagrammes. Ce format est lisible directement sur GitHub, GitLab et intégrable dans un site statique (Docusaurus, MkDocs, Astro), ou convertible en PDF.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Code code={yamlConfig} lang="yaml" title="hexaglue.yaml" />
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Votre documentation d'architecture date de quand ?</span><br/>
+				Générez-la à chaque build.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez comment HexaGlue documente automatiquement un domaine de 50 classes.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/ecommerce-migration/step-2-configured/" class="primary">
+					Voir la documentation en action
+				</Link>
+				<Link href="/docs/plugin-living-doc/" class="secondary">
+					<Icon name="ri/settings-3-line" class="size-5" aria-hidden="true" />
+					<span>Configurer le plugin</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>

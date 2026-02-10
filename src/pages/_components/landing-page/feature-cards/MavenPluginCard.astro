@@ -1,0 +1,136 @@
+---
+import FeatureCard from '~/components/FeatureCard.astro';
+---
+
+<FeatureCard
+	icon="ri/plug-line"
+	title="Plugin Maven"
+	description="Intégration simple à l'aide d'un plugin Maven pour générer, valider et auditer votre application."
+	href="/docs/getting-started/"
+>
+	<div slot="illustration" class="maven-illustration mt-4 pt-4 border-t border-astro-dark-100/10">
+		<div class="terminal-container bg-astro-dark-900/60 rounded-lg border border-astro-dark-100/10 overflow-hidden">
+			<!-- Terminal header -->
+			<div class="terminal-header flex items-center gap-1.5 px-3 py-1.5 border-b border-astro-dark-100/10">
+				<div class="w-2 h-2 rounded-full bg-red-400/40"></div>
+				<div class="w-2 h-2 rounded-full bg-yellow-400/40"></div>
+				<div class="w-2 h-2 rounded-full bg-green-400/40"></div>
+				<span class="ml-2 text-[9px] text-astro-gray-400 font-mono">terminal</span>
+			</div>
+			<!-- Terminal body -->
+			<div class="terminal-body px-3 py-2.5 font-mono text-[10px] space-y-1.5">
+				<div class="prompt">
+					<span class="text-astro-green/70">$</span>
+					<span class="cmd text-white/80"> mvn verify</span>
+				</div>
+				<div class="output-line line-1">
+					<span class="text-astro-blue/70">[hexaglue]</span>
+					<span class="text-astro-gray-300"> generate</span>
+					<span class="check text-astro-green"> ✓</span>
+				</div>
+				<div class="output-line line-2">
+					<span class="text-astro-purple/70">[hexaglue]</span>
+					<span class="text-astro-gray-300"> audit</span>
+					<span class="check text-astro-green"> ✓</span>
+				</div>
+				<div class="output-line line-3">
+					<span class="text-astro-orange/70">[hexaglue]</span>
+					<span class="text-astro-gray-300"> living-doc</span>
+					<span class="check text-astro-green"> ✓</span>
+				</div>
+				<div class="result">
+					<span class="text-astro-green font-bold">BUILD SUCCESS</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</FeatureCard>
+
+<style>
+	.maven-illustration {
+		position: relative;
+	}
+
+	.terminal-container {
+		transition: all 0.3s ease-out;
+	}
+
+	:global(.group:hover) .terminal-container {
+		border-color: rgba(64, 222, 191, 0.2);
+		box-shadow: 0 0 20px rgba(64, 222, 191, 0.08);
+	}
+
+	/* Output lines hidden by default */
+	.output-line {
+		opacity: 0;
+		transform: translateY(-4px);
+		transition: all 0.3s ease-out;
+	}
+
+	.output-line .check {
+		opacity: 0;
+		transition: opacity 0.2s ease-out;
+	}
+
+	.result {
+		opacity: 0;
+		transform: translateY(-4px);
+		transition: all 0.3s ease-out;
+	}
+
+	/* Prompt cursor blink */
+	.cmd::after {
+		content: '▋';
+		color: rgba(64, 222, 191, 0.6);
+		animation: blink 1s step-end infinite;
+	}
+
+	:global(.group:hover) .cmd::after {
+		display: none;
+	}
+
+	@keyframes blink {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0; }
+	}
+
+	/* Hover: cascade reveal */
+	:global(.group:hover) .line-1 {
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: 200ms;
+	}
+
+	:global(.group:hover) .line-1 .check {
+		opacity: 1;
+		transition-delay: 400ms;
+	}
+
+	:global(.group:hover) .line-2 {
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: 500ms;
+	}
+
+	:global(.group:hover) .line-2 .check {
+		opacity: 1;
+		transition-delay: 700ms;
+	}
+
+	:global(.group:hover) .line-3 {
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: 800ms;
+	}
+
+	:global(.group:hover) .line-3 .check {
+		opacity: 1;
+		transition-delay: 1000ms;
+	}
+
+	:global(.group:hover) .result {
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: 1200ms;
+	}
+</style>

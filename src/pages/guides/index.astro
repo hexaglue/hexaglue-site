@@ -1,0 +1,86 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import FeatureCard from '~/components/FeatureCard.astro';
+import Link from '../_components/Link.astro';
+import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+---
+
+<MainLayout
+	title="Guides DDD et Architecture Hexagonale"
+	description="Guides complets sur le Domain-Driven Design et l'architecture hexagonale : principes, patterns et mise en pratique avec Java."
+	schema={{
+		"@type": "CollectionPage",
+		about: [
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Guides
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Comprendre les fondations<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">du DDD et de l'Architecture Hexagonale.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Deux guides complets pour comprendre les principes du Domain-Driven Design et de l'architecture hexagonale, avec des exemples Java concrets et leur application avec HexaGlue.
+			</p>
+		</div>
+	</section>
+
+	<!-- Grille de cartes -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+			<FeatureCard
+				tint="amber"
+				icon="hexaglue/aggregate"
+				title="Domain-Driven Design"
+				description="Aggregate Roots, Entities, Value Objects, Domain Events, Bounded Contexts : les building blocks essentiels du modèle de domaine, avec des exemples Java concrets."
+				href="/guides/ddd-principles/"
+			/>
+			<FeatureCard
+				tint="amber"
+				icon="hexaglue/hexagon"
+				title="Architecture Hexagonale"
+				description="Ports & Adapters, Driving et Driven, inversion de dépendances : le pattern qui protège votre domaine de l'infrastructure, avec des exemples Java concrets."
+				href="/guides/hexagonal-architecture/"
+			/>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Les principes, c'est bien.</span><br/>
+				Les appliquer automatiquement, c'est mieux.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Découvrez comment HexaGlue met en pratique le DDD et l'architecture hexagonale dans vos projets Java.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/features/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Découvrir les fonctionnalités
+				</Link>
+				<Link href="/docs/getting-started/" class="secondary">
+					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<span>Commencer</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>

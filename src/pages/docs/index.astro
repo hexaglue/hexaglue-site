@@ -1,0 +1,72 @@
+---
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import FeatureCard from '~/components/FeatureCard.astro';
+import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+---
+
+<MainLayout
+	title="Documentation"
+	description="Tout ce qu'il faut pour configurer et utiliser HexaGlue dans vos projets Java."
+	schema={{
+		"@type": "CollectionPage",
+		about: [
+			{ "@type": "Thing", name: "HexaGlue" },
+			{ "@type": "Thing", name: "Plugin Maven" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Documentation
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Guides et références
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Tout ce qu'il faut pour configurer et utiliser HexaGlue dans vos projets Java.
+			</p>
+		</div>
+	</section>
+
+	<!-- Grille de cartes -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+			<FeatureCard
+				tint="amber"
+				icon="ri/rocket-line"
+				title="Démarrage rapide"
+				description="Configurez HexaGlue dans un projet Java Maven en 5 minutes."
+				href="/docs/getting-started/"
+			/>
+			<FeatureCard
+				tint="amber"
+				icon="ri/shield-check-line"
+				title="Plugin Audit"
+				description="Contraintes, sévérités, métriques et formats de rapport."
+				href="/docs/plugin-audit/"
+			/>
+			<FeatureCard
+				tint="amber"
+				icon="ri/database-2-line"
+				title="Plugin JPA"
+				description="Suffixes, artefacts générés, auditing, multi-module."
+				href="/docs/plugin-jpa/"
+			/>
+			<FeatureCard
+				tint="amber"
+				icon="ri/file-text-line"
+				title="Plugin Living Documentation"
+				description="Format de sortie, diagrammes, topologie des modules."
+				href="/docs/plugin-living-doc/"
+			/>
+		</div>
+	</section>
+</MainLayout>
