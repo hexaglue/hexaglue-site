@@ -14,19 +14,19 @@ const { score, grade, status, violations, delta } = Astro.props;
 const statusConfig = {
 	FAILED: {
 		label: 'FAILED',
-		icon: 'ri/close-circle-line',
+		icon: 'ri:close-circle-line',
 		cardClass: 'bg-red-400/10 border-red-400/30',
 		textClass: 'text-red-400',
 	},
 	PASSED_WITH_WARNINGS: {
 		label: 'PASSED (warnings)',
-		icon: 'ri/error-warning-line',
+		icon: 'ri:error-warning-line',
 		cardClass: 'bg-yellow-400/10 border-yellow-400/30',
 		textClass: 'text-yellow-400',
 	},
 	PASSED: {
 		label: 'PASSED',
-		icon: 'ri/checkbox-circle-line',
+		icon: 'ri:checkbox-circle-line',
 		cardClass: 'bg-astro-green/10 border-astro-green/30',
 		textClass: 'text-astro-green',
 	},
@@ -74,7 +74,7 @@ const totalViolations = violations.critical + violations.major;
 			<div class="flex flex-row sm:flex-col justify-center sm:justify-start gap-3 sm:gap-1 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l border-astro-dark-100/15 sm:pl-6 text-xs sm:text-sm">
 				<div class="flex items-center gap-1">
 					<Icon
-						name={delta.score > 0 ? 'ri/arrow-up-line' : 'ri/arrow-down-line'}
+						name={delta.score > 0 ? 'ri:arrow-up-line' : 'ri:arrow-down-line'}
 						class={`size-3.5 sm:size-4 ${delta.score > 0 ? 'text-astro-green' : 'text-red-400'}`}
 						aria-hidden="true"
 					/>
@@ -84,7 +84,7 @@ const totalViolations = violations.critical + violations.major;
 				</div>
 				<div class="flex items-center gap-1">
 					<Icon
-						name={delta.violations < 0 ? 'ri/arrow-down-line' : 'ri/arrow-up-line'}
+						name={delta.violations < 0 ? 'ri:arrow-down-line' : 'ri:arrow-up-line'}
 						class={`size-3.5 sm:size-4 ${delta.violations < 0 ? 'text-astro-green' : 'text-red-400'}`}
 						aria-hidden="true"
 					/>

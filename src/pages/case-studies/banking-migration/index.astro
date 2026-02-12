@@ -7,15 +7,15 @@ import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro'
 import { steps } from './_data/steps';
 
 const lessons = [
-	{ icon: 'ri/brain-line', title: 'Inférence automatique', desc: 'Aucune classification explicite nécessaire si le code est bien structuré. Les exclusions dans hexaglue.yaml sont minimales après restructuration.' },
-	{ icon: 'ri/stack-line', title: 'Multi-module = visibilité globale', desc: 'Le mode reactor analyse tous les modules d\'un coup. Les ports définis dans banking-core sont naturellement vus par les plugins.' },
-	{ icon: 'ri/sparkling-2-line', title: 'Le domaine doit être pur', desc: 'La suppression des annotations JPA du domaine est le point d\'inflexion. Les records pour les identifiants et value objects permettent l\'inférence DDD complète.' },
-	{ icon: 'ri/code-box-line', title: 'Routage par module', desc: 'targetModule: banking-persistence route le code généré vers le bon module. L\'infrastructure ne pollue pas le domaine.' },
-	{ icon: 'ri/settings-3-line', title: 'Rôles de modules', desc: 'DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY : chaque module a un rôle architectural clair dans hexaglue.yaml.' },
-	{ icon: 'ri/git-branch-line', title: 'Migration incrémentale', desc: 'Chaque étape compile et les observations guident la suivante. Pas de Big Bang.' },
-	{ icon: 'ri/magic-line', title: 'Architecture générée', desc: '~32 fichiers générés remplacent ~20 fichiers manuels. Le coût de l\'architecture hexagonale est éliminé par la génération automatique.' },
-	{ icon: 'ri/organization-chart', title: 'Orchestration par agrégats', desc: 'Chaque service applicatif coordonne ses propres agrégats via les repositories, sans passer par d\'autres services.' },
-	{ icon: 'ri/bar-chart-box-line', title: 'Le score est un indicateur', desc: '66/100 avec 0 violations montre une architecture hexagonale bien structurée, malgré des métriques de couplage et dépendances encore perfectibles.' },
+	{ icon: 'ri:brain-line', title: 'Inférence automatique', desc: 'Aucune classification explicite nécessaire si le code est bien structuré. Les exclusions dans hexaglue.yaml sont minimales après restructuration.' },
+	{ icon: 'ri:stack-line', title: 'Multi-module = visibilité globale', desc: 'Le mode reactor analyse tous les modules d\'un coup. Les ports définis dans banking-core sont naturellement vus par les plugins.' },
+	{ icon: 'ri:sparkling-2-line', title: 'Le domaine doit être pur', desc: 'La suppression des annotations JPA du domaine est le point d\'inflexion. Les records pour les identifiants et value objects permettent l\'inférence DDD complète.' },
+	{ icon: 'ri:code-box-line', title: 'Routage par module', desc: 'targetModule: banking-persistence route le code généré vers le bon module. L\'infrastructure ne pollue pas le domaine.' },
+	{ icon: 'ri:settings-3-line', title: 'Rôles de modules', desc: 'DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY : chaque module a un rôle architectural clair dans hexaglue.yaml.' },
+	{ icon: 'ri:git-branch-line', title: 'Migration incrémentale', desc: 'Chaque étape compile et les observations guident la suivante. Pas de Big Bang.' },
+	{ icon: 'ri:magic-line', title: 'Architecture générée', desc: '~32 fichiers générés remplacent ~20 fichiers manuels. Le coût de l\'architecture hexagonale est éliminé par la génération automatique.' },
+	{ icon: 'ri:organization-chart', title: 'Orchestration par agrégats', desc: 'Chaque service applicatif coordonne ses propres agrégats via les repositories, sans passer par d\'autres services.' },
+	{ icon: 'ri:bar-chart-box-line', title: 'Le score est un indicateur', desc: '66/100 avec 0 violations montre une architecture hexagonale bien structurée, malgré des métriques de couplage et dépendances encore perfectibles.' },
 ];
 ---
 
@@ -68,7 +68,7 @@ const lessons = [
 			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
 					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-						<Icon name="ri/file-code-line" class="size-5 text-red-400" aria-hidden="true" />
+						<Icon name="ri:file-code-line" class="size-5 text-red-400" aria-hidden="true" />
 						Structure initiale
 					</h3>
 					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
@@ -81,7 +81,7 @@ const lessons = [
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
 					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-						<Icon name="ri/bug-line" class="size-5 text-red-400" aria-hidden="true" />
+						<Icon name="ri:bug-line" class="size-5 text-red-400" aria-hidden="true" />
 						Anti-patterns présents
 					</h3>
 					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
@@ -143,7 +143,7 @@ const lessons = [
 						</div>
 					)}
 
-					<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-purple-400 transition-colors shrink-0" aria-hidden="true" />
+					<Icon name="ri:arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-purple-400 transition-colors shrink-0" aria-hidden="true" />
 				</a>
 			))}
 		</div>
@@ -238,7 +238,7 @@ const lessons = [
 					Toutes les études de cas
 				</Link>
 				<Link href="/contact/" class="secondary">
-					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
 					<span>Parlons de votre projet</span>
 				</Link>
 			</div>

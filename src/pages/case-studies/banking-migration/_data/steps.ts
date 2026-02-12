@@ -24,7 +24,7 @@ export const steps: MigrationStep[] = [
 		status: null,
 		violations: null,
 		color: "red-500",
-		icon: "ri/archive-line",
+		icon: "ri:archive-line",
 	},
 	{
 		number: 1,
@@ -37,7 +37,7 @@ export const steps: MigrationStep[] = [
 		status: "FAILED",
 		violations: 36,
 		color: "red-400",
-		icon: "ri/search-eye-line",
+		icon: "ph:tree-structure-duotone",
 	},
 	{
 		number: 2,
@@ -50,7 +50,7 @@ export const steps: MigrationStep[] = [
 		status: "FAILED",
 		violations: 24,
 		color: "orange-400",
-		icon: "ri/settings-3-line",
+		icon: "ri:settings-3-line",
 	},
 	{
 		number: 3,
@@ -63,7 +63,7 @@ export const steps: MigrationStep[] = [
 		status: "FAILED",
 		violations: 24,
 		color: "amber-400",
-		icon: "ri/layout-masonry-line",
+		icon: "ri:layout-masonry-line",
 	},
 	{
 		number: 4,
@@ -76,7 +76,7 @@ export const steps: MigrationStep[] = [
 		status: "FAILED",
 		violations: 29,
 		color: "yellow-400",
-		icon: "ri/sparkling-2-line",
+		icon: "ri:sparkling-2-line",
 	},
 	{
 		number: 5,
@@ -89,7 +89,7 @@ export const steps: MigrationStep[] = [
 		status: "PASSED",
 		violations: 0,
 		color: "emerald-400",
-		icon: "ri/code-box-line",
+		icon: "ri:code-box-line",
 	},
 	{
 		number: 6,
@@ -102,6 +102,6 @@ export const steps: MigrationStep[] = [
 		status: "PASSED",
 		violations: 0,
 		color: "green-400",
-		icon: "ri/rocket-line",
+		icon: "ph:rocket-launch-duotone",
 	},
 ];

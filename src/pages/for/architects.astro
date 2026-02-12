@@ -1,12 +1,19 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
 import IntroPoint from '../_components/IntroPoint.astro';
 import GemIcon from '~/components/GemIcon.astro';
 import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import c4DrivingScreenshot from '~/assets/screenshots/c4-component-driving.png';
+import c4DomainScreenshot from '~/assets/screenshots/c4-component-domain.png';
+import c4DrivenScreenshot from '~/assets/screenshots/c4-component-driven.png';
+import domainModelScreenshot from '~/assets/screenshots/audit-domain-model.png';
+import packageStabilityScreenshot from '~/assets/screenshots/audit-package-stability.png';
 ---
 
 <MainLayout
@@ -36,7 +43,7 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 			</p>
 
 			<div class="mt-8 flex justify-center">
-				<Icon name="ri/layout-grid-line" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
+				<Icon name="ph:blueprint" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
 			</div>
 		</div>
 	</section>
@@ -52,21 +59,21 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="amber" title="Les décisions d'architecture ne sont pas vérifiées">
-				<GemIcon slot="icon" icon="ri/shield-cross-line" gradient="red-pink" />
+				<GemIcon slot="icon" icon="ri:shield-cross-line" gradient="red-pink" />
 				<Fragment slot="description">
 					Vous définissez des règles : le domaine ne dépend pas de l'infrastructure, les ports sont des interfaces, les agrégats ont un identifiant typé. Ces règles sont documentées dans un ADR ou un wiki. Mais rien ne vérifie leur respect dans le code. Vous le découvrez en revue, quand le code est déjà écrit.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Les frontières hexagonales s'érodent">
-				<GemIcon slot="icon" icon="ri/error-warning-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:error-warning-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Un développeur ajoute un <code>@Entity</code> sur une classe de domaine. Un autre appelle un repository directement depuis un service applicatif. Chaque raccourci est petit, mais ils s'accumulent. En 6 mois, les couches sont percées et la migration vers le DDD stagne.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="La traçabilité des classifications est absente">
-				<GemIcon slot="icon" icon="ri/question-line" gradient="blue-purple" />
+				<GemIcon slot="icon" icon="ri:question-line" gradient="blue-purple" />
 				<Fragment slot="description">
 					Quand une classe est classée comme agrégat ou value object, sur quel critère ? En revue manuelle, c'est une décision implicite. Si un nouveau développeur conteste le choix, il n'y a pas de trace de la justification.
 				</Fragment>
@@ -115,6 +122,46 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 				<p>HexaGlue ne remplace pas vos décisions d'architecture : il les rend vérifiables. Vous définissez les règles (quelles conventions, quels seuils, quelles exclusions). HexaGlue les applique systématiquement à chaque build, sur l'ensemble du code.</p>
 			</Insight>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Diagramme C4 Component : Driving Side (adaptateurs et ports entrants)">
+			<Image
+				src={c4DrivingScreenshot}
+				alt="Rapport d'audit HexaGlue : diagramme C4 Component montrant les driving adapters et driving ports d'une application bancaire"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Diagramme C4 Component : Domain Core (agrégats, entités, value objects)">
+			<Image
+				src={c4DomainScreenshot}
+				alt="Rapport d'audit HexaGlue : diagramme C4 Component montrant le Domain Core avec agrégats, entités et value objects"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Diagramme C4 Component : Driven Side et Infrastructure Layer">
+			<Image
+				src={c4DrivenScreenshot}
+				alt="Rapport d'audit HexaGlue : diagramme C4 Component montrant les driven ports et l'infrastructure layer avec les liens d'implémentation"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Diagramme Domain Model avec alertes architecturales">
+			<Image
+				src={domainModelScreenshot}
+				alt="Rapport d'audit HexaGlue : diagramme de classes du modèle de domaine avec alertes visuelles (cycles, impuretés)"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 3 : Un workflow concret -->
@@ -128,21 +175,21 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="green" title="1. Vous définissez les conventions">
-				<GemIcon slot="icon" icon="ri/settings-3-line" gradient="blue-green" />
+				<GemIcon slot="icon" icon="ri:settings-3-line" gradient="blue-green" />
 				<Fragment slot="description">
 					Arborescence de packages, suffixes de noms, surcharges explicites dans <code>hexaglue.yaml</code>. HexaGlue classifie automatiquement à partir de ces conventions.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="green" title="2. L'audit vérifie à chaque build">
-				<GemIcon slot="icon" icon="ri/shield-check-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:shield-check-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					À chaque <code>mvn verify</code>, HexaGlue produit un rapport avec le score, les violations et l'inventaire architectural. En CI, le build échoue si une violation critique est détectée.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="green" title="3. L'architecture évolue avec le code">
-				<GemIcon slot="icon" icon="ri/refresh-line" gradient="blue-purple" />
+				<GemIcon slot="icon" icon="ri:refresh-line" gradient="blue-purple" />
 				<Fragment slot="description">
 					La living documentation et le rapport d'audit reflètent l'état réel du code. Quand un développeur ajoute un agrégat ou modifie un port, la documentation et l'audit se mettent à jour automatiquement.
 				</Fragment>
@@ -155,11 +202,21 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 			</Insight>
 		</div>
 
-		<div class="mt-6 max-w-4xl mx-auto">
-			<a href="/case-studies/ecommerce-migration/" title="Parcourir l'étude de cas" class="inline-flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors">
-				<Icon name="ri/arrow-right-line" class="size-4" aria-hidden="true" />
-				<span>Parcourir l'étude de cas</span>
-			</a>
+		<BrowserFrame class="mt-10" caption="Métriques de stabilité des packages : zones Main Sequence, Zone of Pain, Zone of Uselessness">
+			<Image
+				src={packageStabilityScreenshot}
+				alt="Rapport d'audit HexaGlue : tableau de stabilité des packages avec métriques Ca, Ce, I, A, D et classification par zones"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<div class="mt-10 max-w-4xl mx-auto text-center">
+			<Link href="/case-studies/ecommerce-migration/" class="secondary">
+				<Icon name="ri:arrow-right-line" class="size-5" aria-hidden="true" />
+				<span>Parcourir l'étude de cas e-commerce</span>
+			</Link>
 		</div>
 	</section>
 
@@ -180,7 +237,7 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 					Explorer les fonctionnalités
 				</Link>
 				<Link href="/docs/getting-started/" class="secondary">
-					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
 					<span>Démarrer en 5 minutes</span>
 				</Link>
 			</div>

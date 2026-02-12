@@ -5,7 +5,11 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+import { Image } from 'astro:assets';
+import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
+import readmeOverviewScreenshot from '~/assets/screenshots/livingdoc-readme-overview.png';
 import versions from '~/data/versions';
 
 const pomPlugin = `<plugin>
@@ -198,6 +202,16 @@ const yamlConfig = `plugins:
 			</table>
 			</div>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Exemple de sortie : agrégat Account avec identity, properties et niveau de confiance">
+			<Image
+				src={accountAggregateScreenshot}
+				alt="Living documentation HexaGlue : agrégat Account avec identity details, properties (id, ownerName, balance, transactions) et niveau de confiance"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Contenu du README.md -->
@@ -210,46 +224,56 @@ const yamlConfig = `plugins:
 			Le <code>README.md</code> est le point d'entrée de la documentation. Il donne une vue synthétique de l'architecture.
 		</SectionCopy>
 
+		<BrowserFrame class="mt-10" caption="README.md généré : table des matières, métriques et liens de navigation">
+			<Image
+				src={readmeOverviewScreenshot}
+				alt="Living documentation HexaGlue : README.md généré avec table des matières, tableau récapitulatif des types et liens vers domain.md, ports.md, diagrams.md"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
 		<div class="mt-10 max-w-4xl mx-auto">
 			<ul class="space-y-3 text-astro-gray-200">
 				<li class="flex items-start gap-3">
-					<Icon name="ri/file-list-3-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:file-list-3-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Tableau récapitulatif</strong> : comptage des agrégats, entités, value objects, identifiants, services applicatifs, ports driving et driven</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/link" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:link" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Liens de navigation</strong> : vers <code>domain.md</code>, <code>ports.md</code>, <code>diagrams.md</code>, <code>modules.md</code></div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/organization-chart" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:organization-chart" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Diagramme d'architecture</strong> : diagramme Mermaid de vue d'ensemble (si diagrammes activés)</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/box-3-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:box-3-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Résumé du domaine</strong> : tableaux des agrégats, value objects, identifiants</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/arrow-right-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:arrow-right-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Résumé des ports</strong> : tableaux des ports driving et driven</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/layout-grid-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:layout-grid-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Contextes bornés</strong> : analyse de la structure des packages (si détectés)</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/stack-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:stack-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Topologie des modules</strong> : rôles et distribution des types par module (si multi-module)</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/book-open-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:book-open-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Glossaire</strong> : terminologie du domaine avec types et packages</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/node-tree" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:node-tree" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Arbre des packages</strong> : visualisation de l'arborescence</div>
 				</li>
 				<li class="flex items-start gap-3">
-					<Icon name="ri/list-check" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<Icon name="ri:list-check" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 					<div><strong class="text-white">Index</strong> : index alphabétique des types avec références croisées</div>
 				</li>
 			</ul>
@@ -271,7 +295,7 @@ const yamlConfig = `plugins:
 				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
 					<div class="flex items-center gap-3 mb-3">
 						<div class="p-1.5 rounded-lg bg-astro-green/10">
-							<Icon name="ri/organization-chart" class="size-4 text-astro-green" aria-hidden="true" />
+							<Icon name="ri:organization-chart" class="size-4 text-astro-green" aria-hidden="true" />
 						</div>
 						<h3 class="text-base font-semibold text-white">Diagramme de classes du domaine</h3>
 					</div>
@@ -281,7 +305,7 @@ const yamlConfig = `plugins:
 				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
 					<div class="flex items-center gap-3 mb-3">
 						<div class="p-1.5 rounded-lg bg-astro-green/10">
-							<Icon name="ri/box-3-line" class="size-4 text-astro-green" aria-hidden="true" />
+							<Icon name="ri:box-3-line" class="size-4 text-astro-green" aria-hidden="true" />
 						</div>
 						<h3 class="text-base font-semibold text-white">Diagrammes d'agrégats</h3>
 					</div>
@@ -291,7 +315,7 @@ const yamlConfig = `plugins:
 				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
 					<div class="flex items-center gap-3 mb-3">
 						<div class="p-1.5 rounded-lg bg-astro-green/10">
-							<Icon name="ri/arrow-right-line" class="size-4 text-astro-green" aria-hidden="true" />
+							<Icon name="ri:arrow-right-line" class="size-4 text-astro-green" aria-hidden="true" />
 						</div>
 						<h3 class="text-base font-semibold text-white">Flux hexagonal</h3>
 					</div>
@@ -301,7 +325,7 @@ const yamlConfig = `plugins:
 				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
 					<div class="flex items-center gap-3 mb-3">
 						<div class="p-1.5 rounded-lg bg-astro-green/10">
-							<Icon name="ri/git-branch-line" class="size-4 text-astro-green" aria-hidden="true" />
+							<Icon name="ri:git-branch-line" class="size-4 text-astro-green" aria-hidden="true" />
 						</div>
 						<h3 class="text-base font-semibold text-white">Graphe de dépendances</h3>
 					</div>
@@ -326,11 +350,11 @@ const yamlConfig = `plugins:
 				<h3 class="text-base font-semibold text-white mb-3">Ce que contient <code>modules.md</code></h3>
 				<ul class="space-y-2 text-base text-astro-gray-200">
 					<li class="flex items-start gap-2">
-						<Icon name="ri/table-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+						<Icon name="ri:table-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 						<div><strong class="text-white">Tableau récapitulatif</strong> : pour chaque module, son identifiant, son rôle (<code>DOMAIN</code>, <code>INFRASTRUCTURE</code>, <code>APPLICATION</code>, <code>API</code>, <code>ASSEMBLY</code>, <code>SHARED</code>), le nombre de types et le package de base</div>
 					</li>
 					<li class="flex items-start gap-2">
-						<Icon name="ri/list-unordered" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+						<Icon name="ri:list-unordered" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
 						<div><strong class="text-white">Sections par module</strong> : inventaire détaillé de tous les types classifiés dans chaque module, organisés par rôle architectural</div>
 					</li>
 				</ul>
@@ -355,7 +379,7 @@ const yamlConfig = `plugins:
 					Comprendre la living documentation
 				</Link>
 				<Link href="/case-studies/ecommerce-migration/step-2-configured/" class="secondary">
-					<Icon name="ri/eye-line" class="size-5" aria-hidden="true" />
+					<Icon name="ri:eye-line" class="size-5" aria-hidden="true" />
 					<span>Voir la documentation en action</span>
 				</Link>
 			</div>

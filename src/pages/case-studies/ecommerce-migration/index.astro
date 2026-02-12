@@ -7,15 +7,15 @@ import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro'
 import { steps } from './_data/steps';
 
 const lessons = [
-	{ icon: 'ri/brain-line', title: 'Inférence automatique', desc: 'Aucune classification explicite nécessaire si le code est bien structuré. Les exclusions dans hexaglue.yaml doivent être minimales.' },
-	{ icon: 'ri/search-eye-line', title: 'Classifier plus, révèle plus', desc: 'Supprimer l\'exclusion des services d\'application expose les problèmes architecturaux cachés. C\'est le comportement voulu.' },
-	{ icon: 'ri/sparkling-2-line', title: 'Le domaine doit être pur', desc: 'La suppression des annotations JPA du domaine est le point d\'inflexion qui permet l\'inférence DDD complète.' },
-	{ icon: 'ri/code-box-line', title: 'Services applicatifs purs', desc: 'La suppression des annotations Spring et l\'externalisation dans ApplicationServiceConfig élimine les violations application-purity.' },
-	{ icon: 'ri/settings-3-line', title: 'Les conventions comptent', desc: 'fabrique statique dans les classes du domaine, UUID pour les identifiants, records pour les value objects. Le langage que HexaGlue comprend.' },
-	{ icon: 'ri/git-branch-line', title: 'Migration incrémentale', desc: 'Chaque étape compile et les observations guident la suivante. Pas de Big Bang.' },
-	{ icon: 'ri/magic-line', title: 'Architecture générée', desc: 'Le coût de l\'architecture hexagonale (infrastructure manuelle) est éliminé par la génération automatique : 0 entities JPA, 0 mappers, 0 adapters à écrire.' },
-	{ icon: 'ri/organization-chart', title: 'Orchestration par agrégats', desc: 'Chaque service applicatif coordonne ses propres agrégats via les repositories, sans passer par d\'autres services.' },
-	{ icon: 'ri/bar-chart-box-line', title: 'Le score est un indicateur', desc: '63/100 avec 1 seule violation résiduelle montre une architecture hexagonale déjà bien structurée.' },
+	{ icon: 'ri:brain-line', title: 'Inférence automatique', desc: 'Aucune classification explicite nécessaire si le code est bien structuré. Les exclusions dans hexaglue.yaml doivent être minimales.' },
+	{ icon: 'ph:tree-structure-duotone', title: 'Classifier plus, révèle plus', desc: 'Supprimer l\'exclusion des services d\'application expose les problèmes architecturaux cachés. C\'est le comportement voulu.' },
+	{ icon: 'ri:sparkling-2-line', title: 'Le domaine doit être pur', desc: 'La suppression des annotations JPA du domaine est le point d\'inflexion qui permet l\'inférence DDD complète.' },
+	{ icon: 'ri:code-box-line', title: 'Services applicatifs purs', desc: 'La suppression des annotations Spring et l\'externalisation dans ApplicationServiceConfig élimine les violations application-purity.' },
+	{ icon: 'ri:settings-3-line', title: 'Les conventions comptent', desc: 'fabrique statique dans les classes du domaine, UUID pour les identifiants, records pour les value objects. Le langage que HexaGlue comprend.' },
+	{ icon: 'ri:git-branch-line', title: 'Migration incrémentale', desc: 'Chaque étape compile et les observations guident la suivante. Pas de Big Bang.' },
+	{ icon: 'ri:magic-line', title: 'Architecture générée', desc: 'Le coût de l\'architecture hexagonale (infrastructure manuelle) est éliminé par la génération automatique : 0 entities JPA, 0 mappers, 0 adapters à écrire.' },
+	{ icon: 'ri:organization-chart', title: 'Orchestration par agrégats', desc: 'Chaque service applicatif coordonne ses propres agrégats via les repositories, sans passer par d\'autres services.' },
+	{ icon: 'ri:bar-chart-box-line', title: 'Le score est un indicateur', desc: '63/100 avec 1 seule violation résiduelle montre une architecture hexagonale déjà bien structurée.' },
 ];
 ---
 
@@ -68,7 +68,7 @@ const lessons = [
 			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
 					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-						<Icon name="ri/file-code-line" class="size-5 text-red-400" aria-hidden="true" />
+						<Icon name="ri:file-code-line" class="size-5 text-red-400" aria-hidden="true" />
 						Structure initiale
 					</h3>
 					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
@@ -81,7 +81,7 @@ const lessons = [
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
 					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-						<Icon name="ri/bug-line" class="size-5 text-red-400" aria-hidden="true" />
+						<Icon name="ri:bug-line" class="size-5 text-red-400" aria-hidden="true" />
 						Anti-patterns présents
 					</h3>
 					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
@@ -143,7 +143,7 @@ const lessons = [
 						</div>
 					)}
 
-					<Icon name="ri/arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-purple-400 transition-colors shrink-0" aria-hidden="true" />
+					<Icon name="ri:arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-purple-400 transition-colors shrink-0" aria-hidden="true" />
 				</a>
 			))}
 		</div>
@@ -238,7 +238,7 @@ const lessons = [
 					Toutes les études de cas
 				</Link>
 				<Link href="/contact/" class="secondary">
-					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
 					<span>Parlons de votre projet</span>
 				</Link>
 			</div>

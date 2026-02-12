@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import MainLayout from '~/layouts/MainLayout.astro';
@@ -8,6 +9,9 @@ import IntroPoint from '../_components/IntroPoint.astro';
 import GemIcon from '~/components/GemIcon.astro';
 import Insight from '~/components/Insight.astro';
 import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
+import inventoryGridScreenshot from '~/assets/screenshots/audit-inventory-grid.png';
+import orderAggregateScreenshot from '~/assets/screenshots/livingdoc-order-aggregate.png';
 
 const yamlConfig = `classification:
   # Exclure les classes utilitaires et de configuration
@@ -53,11 +57,24 @@ const yamlConfig = `classification:
 		</div>
 	</section>
 
+	<!-- Section : Compilateur d'architecture -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Concept"
+			title="Un compilateur d'architecture"
+			gradient="bg-blue-green-gradient"
+		>
+			Un compilateur de code transforme du texte en instructions exécutables. HexaGlue fait la même chose pour l'architecture : il parse le code source de votre application, en extrait une représentation intermédiaire, puis la transforme en un modèle sémantique où chaque classe porte un rôle architectural précis.<br>
+			<br>
+			Le résultat : une vision complète et fidèle de votre application. Classes, relations entre elles, arborescence des packages, signatures de méthodes, typage des attributs : HexaGlue sait exactement comment votre code est structuré.
+		</SectionCopy>
+	</section>
+
 	<!-- Section 1 : Ce que HexaGlue classifie -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy
 			label="Rôles détectés"
-			title="10 rôles architecturaux identifiés automatiquement"
+			title="11 rôles architecturaux identifiés automatiquement"
 		>
 			HexaGlue analyse la structure de vos classes Java et leur attribue un rôle architectural. Voici les rôles détectés, regroupés par couche.
 		</SectionCopy>
@@ -118,10 +135,15 @@ const yamlConfig = `classification:
 							<td class="py-3 pr-4 whitespace-nowrap">Application Service</td>
 							<td class="py-3">Classe implémentant un driving port</td>
 						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Application</td>
+							<td class="py-3 pr-4 whitespace-nowrap">Command Handler</td>
+							<td class="py-3">Classe traitant une commande spécifique</td>
+						</tr>
 						<tr>
 							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Application</td>
-							<td class="py-3 pr-4 whitespace-nowrap">Command/Query Handler</td>
-							<td class="py-3">Classe traitant une commande ou requête spécifique</td>
+							<td class="py-3 pr-4 whitespace-nowrap">Query Handler</td>
+							<td class="py-3">Classe traitant une requête spécifique</td>
 						</tr>
 					</tbody>
 				</table>
@@ -133,6 +155,26 @@ const yamlConfig = `classification:
 				<p>Chaque classification est traçable : HexaGlue enregistre la règle qui a déclenché la décision et le niveau de confiance. Vous pouvez inspecter chaque choix dans le rapport d'audit ou la living documentation.</p>
 			</Insight>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Extrait d'un rapport d'audit HexaGlue : exemple d'un inventaire architectural d'une application bancaire">
+			<Image
+				src={inventoryGridScreenshot}
+				alt="Inventaire architectural généré par HexaGlue : 11 cartes compteurs montrant les rôles classifiés (Aggregate Roots, Entities, Value Objects, Identifiers, Driving Ports, Driven Ports)"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Extrait d'une living documentation HexaGlue : le diagramme de classes d'un agrégat">
+			<Image
+				src={orderAggregateScreenshot}
+				alt="Diagramme de l'agrégat Order généré par HexaGlue : Aggregate Root avec OrderId, OrderLine, OrderStatus et relations vers CustomerId et InventoryItem"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 2 : Comment ça fonctionne -->
@@ -146,21 +188,21 @@ const yamlConfig = `classification:
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="green" title="Conventions de nommage et de packages">
-				<GemIcon slot="icon" icon="ri/stack-line" gradient="blue-green" />
+				<GemIcon slot="icon" icon="ri:stack-line" gradient="blue-green" />
 				<Fragment slot="description">
 					La position d'une classe dans l'arborescence des packages et ses suffixes orientent la classification. Une interface dans <code>ports/out/</code> est un driven port. Un record nommé <code>OrderId</code> est un identifiant.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="green" title="Heuristiques structurelles">
-				<GemIcon slot="icon" icon="ri/search-eye-line" gradient="red-pink" />
+				<GemIcon slot="icon" icon="ph:tree-structure-duotone" gradient="red-pink" />
 				<Fragment slot="description">
 					La structure interne de la classe affine la détection. Une classe avec un champ d'identité typé est un agrégat. Un record immuable sans identité est un value object. Une interface avec des méthodes <code>save</code>/<code>findById</code> est un repository.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="green" title="Configuration explicite">
-				<GemIcon slot="icon" icon="ri/settings-3-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:settings-3-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Quand les conventions ne suffisent pas, deux options : les annotations jMolecules directement dans le code, ou la surcharge dans <code>hexaglue.yaml</code> pour les réfractaires aux modèles enrichis (voir ci-dessous).
 				</Fragment>
@@ -179,21 +221,21 @@ const yamlConfig = `classification:
 			title="Quand le domaine est mis en défaut"
 			gradient="bg-blue-green-gradient"
 		>
-			Martin Fowler décrit le <a href="https://martinfowler.com/bliki/AnemicDomainModel.html" title="Modèle de domaine anémique (Martin Fowler)" target="_blank" rel="noopener noreferrer">modèle de domaine anémique<Icon name="ri/external-link-line" class="inline size-3.5 ml-0.5" aria-hidden="true" /></a> comme un anti-pattern
+			Martin Fowler décrit le <a href="https://martinfowler.com/bliki/AnemicDomainModel.html" title="Modèle de domaine anémique (Martin Fowler)" target="_blank" rel="noopener noreferrer">modèle de domaine anémique<Icon name="ri:external-link-line" class="inline size-3.5 ml-0.5" aria-hidden="true" /></a> comme un anti-pattern
 			où les objets métier ne contiennent que des données, sans comportement.
 			La logique métier est déportée dans des services, et les classes se ressemblent toutes : getters, setters, types primitifs.<br>
 			<br>
 			HexaGlue s'adapte aux deux situations :
 			<ul>
 				<li><strong>Domaine riche</strong> : les conventions et heuristiques suffisent, aucune annotation nécessaire</li>
-				<li><strong>Domaine anémique</strong> : les annotations <a href="https://github.com/xmolecules/jmolecules" title="jMolecules sur GitHub" target="_blank" rel="noopener noreferrer">jMolecules<Icon name="ri/external-link-line" class="inline size-3.5 ml-0.5" aria-hidden="true" /></a> lèvent l'ambiguïté là où la structure manque</li>
+				<li><strong>Domaine anémique</strong> : les annotations <a href="https://github.com/xmolecules/jmolecules" title="jMolecules sur GitHub" target="_blank" rel="noopener noreferrer">jMolecules<Icon name="ri:external-link-line" class="inline size-3.5 ml-0.5" aria-hidden="true" /></a> lèvent l'ambiguïté là où la structure manque</li>
 			</ul>
 		</SectionCopy>
 
 		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
 			<div class="p-6 bg-astro-dark-800/40 border border-astro-green/15 rounded-2xl">
 				<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-					<Icon name="ri/sparkling-2-line" class="size-5 text-astro-green" aria-hidden="true" />
+					<Icon name="ri:sparkling-2-line" class="size-5 text-astro-green" aria-hidden="true" />
 					Domaine riche
 				</h3>
 				<p class="text-sm text-astro-gray-200 font-light mb-4">
@@ -208,7 +250,7 @@ const yamlConfig = `classification:
 			</div>
 			<div class="p-6 bg-astro-dark-800/40 border border-amber-400/15 rounded-2xl">
 				<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-					<Icon name="ri/error-warning-line" class="size-5 text-amber-400" aria-hidden="true" />
+					<Icon name="ri:error-warning-line" class="size-5 text-amber-400" aria-hidden="true" />
 					Domaine anémique
 				</h3>
 				<p class="text-sm text-astro-gray-200 font-light mb-4">
@@ -384,7 +426,7 @@ const yamlConfig = `classification:
 					Voir la classification en action
 				</Link>
 				<Link href="/docs/getting-started/" class="secondary">
-					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
 					<span>Démarrer en 5 minutes</span>
 				</Link>
 			</div>

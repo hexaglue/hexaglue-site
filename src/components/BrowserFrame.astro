@@ -1,0 +1,90 @@
+---
+interface Props {
+	caption?: string;
+	class?: string;
+}
+
+const { caption, class: className } = Astro.props;
+---
+
+<figure class:list={['browser-frame', className]}>
+	<div class="frame-panel">
+		<div class="frame-panel-inner">
+			{caption && (
+				<figcaption class="frame-caption">
+					{caption}
+				</figcaption>
+			)}
+			<div class="frame-window">
+				<div class="frame-chrome">
+					<span class="dot dot-red"></span>
+					<span class="dot dot-yellow"></span>
+					<span class="dot dot-green"></span>
+				</div>
+				<div class="frame-content">
+					<slot />
+				</div>
+			</div>
+		</div>
+	</div>
+</figure>
+
+<style>
+	.frame-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(56, 189, 126, 0.07);
+		border-bottom: 1px solid rgba(56, 189, 126, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(56, 189, 126, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
+	}
+	.frame-panel-inner {
+		max-width: 56rem; /* max-w-4xl */
+		margin-inline: auto;
+	}
+	.frame-window {
+		background-color: #0e0d12;
+		border: 1px solid rgba(56, 189, 126, 0.1);
+		border-radius: 0.75rem;
+		box-shadow:
+			0 0 20px rgba(56, 189, 126, 0.12),
+			0 0 50px rgba(56, 189, 126, 0.07),
+			0 0 80px rgba(56, 189, 126, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+	.frame-chrome {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 10px 14px;
+	}
+	.dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+	}
+	.dot-red { background: #ff5f57; }
+	.dot-yellow { background: #febc2e; }
+	.dot-green { background: #28c840; }
+	.frame-content {
+		overflow: hidden;
+		border-radius: 0 0 0.65rem 0.65rem;
+	}
+	.frame-content :global(img) {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+	.frame-caption {
+		margin-bottom: 1.25rem;
+		font-size: 1.125rem;
+		text-align: center;
+		font-weight: 500;
+		color: white;
+	}
+</style>

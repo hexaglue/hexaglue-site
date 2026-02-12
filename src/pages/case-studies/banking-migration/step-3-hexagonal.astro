@@ -175,7 +175,7 @@ const remediationRows: RemediationRow[] = [
                 <p>Cette inversion de dépendance permet au domaine de ne dépendre que d'abstractions, pas d'implémentations concrètes.</p>
             </Insight>
 
-            <Insight title="Pourquoi les doublons de repositories ?" variant="green" icon="ri/question-line">
+            <Insight title="Pourquoi les doublons de repositories ?" variant="green" icon="ri:question-line">
                 <p>Les 6 driven ports domaine (<code>AccountRepository</code>, etc.) coexistent avec les 5 JPA repositories Spring Data (<code>JpaAccountRepository</code>, etc.).<br>
                 Cela crée des doublons : les JPA repositories ne sont pas encore reliés aux ports domaine par un adaptateur.</p>
                 <ul>

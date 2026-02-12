@@ -6,7 +6,14 @@ import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import auditScreenshot from '~/assets/screenshots/audit.png';
+import auditVerdict13fScreenshot from '~/assets/screenshots/audit-verdict-13f.png';
+import auditKpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
+import auditRadarChartScreenshot from '~/assets/screenshots/audit-radar-chart.png';
+import auditViolationBlockerScreenshot from '~/assets/screenshots/audit-violation-blocker.png';
+import auditViolationCriticalScreenshot from '~/assets/screenshots/audit-violation-critical.png';
+import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remediation-effort.png';
 ---
 
 <MainLayout
@@ -97,6 +104,36 @@ import auditScreenshot from '~/assets/screenshots/audit.png';
 				<p>Le score n'est pas une note scolaire : c'est un indicateur objectif et reproductible qui permet de suivre l'évolution de votre architecture dans le temps.<br>Un projet legacy démarre typiquement entre 10 et 20/100. Un projet correctement structuré atteint 60 à 80/100. L'objectif n'est pas 100 : c'est la progression qui compte.</p>
 			</Insight>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Extrait d'un rapport d'audit : verdict d'un projet legacy avant refactoring">
+			<Image
+				src={auditVerdict13fScreenshot}
+				alt="Verdict d'audit HexaGlue : score 13/100, grade F, statut Failed sur fond rouge"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Extrait d'un rapport d'audit : décomposition du score par dimension">
+			<Image
+				src={auditKpiTableScreenshot}
+				alt="Tableau KPI du rapport d'audit HexaGlue : 5 dimensions avec statuts On Target, At Risk et Below Target"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Extrait d'un rapport d'audit : radar de conformité par dimension">
+			<Image
+				src={auditRadarChartScreenshot}
+				alt="Radar chart du rapport d'audit HexaGlue : superposition du seuil cible et du score actuel sur 5 axes"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 2 : Les violations détectées -->
@@ -174,6 +211,26 @@ import auditScreenshot from '~/assets/screenshots/audit.png';
 				</div>
 			</div>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Extrait d'un rapport d'audit : violation BLOCKER avec impact et correctif proposé">
+			<Image
+				src={auditViolationBlockerScreenshot}
+				alt="Violation BLOCKER dans un rapport d'audit HexaGlue : cycle entre agrégats avec localisation, impact et correctif via domain events"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Extrait d'un rapport d'audit : violation CRITICAL avec exemple de correctif">
+			<Image
+				src={auditViolationCriticalScreenshot}
+				alt="Violation CRITICAL dans un rapport d'audit HexaGlue : Mutable Value Object avec correctif proposé en record Java"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 3 : Le rapport complet -->
@@ -184,6 +241,17 @@ import auditScreenshot from '~/assets/screenshots/audit.png';
 		>
 			Le rapport d'audit contient 7 sections qui donnent une vision complète de l'état de votre architecture.
 		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Image
+				src={auditScreenshot}
+				alt="Vue d'ensemble d'un rapport d'audit HexaGlue : verdict, inventaire, violations, métriques et estimation de remédiation"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				class="w-full rounded-xl border border-astro-dark-100/15 shadow-2xl"
+				loading="lazy"
+			/>
+		</div>
 
 		<div class="mt-10 max-w-4xl mx-auto">
 			<ol class="space-y-4">
@@ -238,19 +306,18 @@ import auditScreenshot from '~/assets/screenshots/audit.png';
 				</li>
 			</ol>
 
-			<div class="mt-10">
+			<BrowserFrame class="mt-10" caption="Extrait d'un rapport d'audit : estimation de l'effort de remédiation">
 				<Image
-					src={auditScreenshot}
-					alt="Capture d'écran du rapport d'audit HexaGlue montrant le score, les violations et les métriques"
+					src={auditRemediationEffortScreenshot}
+					alt="Bandeau estimation de remédiation HexaGlue : comparaison effort manuel vs automatisable avec coûts en EUR"
 					widths={[400, 600, 800, 1200]}
-					sizes="(max-width: 1024px) 100vw, 800px"
-					class="w-full rounded-xl border border-astro-dark-100/15 shadow-2xl"
+					sizes="(max-width: 768px) 100vw, 56rem"
 					loading="lazy"
 				/>
-			</div>
+			</BrowserFrame>
 
 			<Insight variant="green">
-				<p>L'estimation de remédiation distingue l'effort manuel de l'effort automatisable par HexaGlue. Par exemple, les violations <code>ddd:domain-purity</code> nécessitent une correction manuelle (retirer les annotations JPA du domaine), mais la couche persistence sera régénérée automatiquement par le plugin JPA.</p>
+				<p>L'estimation de remédiation distingue l'effort manuel de l'effort automatisable par HexaGlue. Par exemple, les violations <code>ddd:domain-purity</code> nécessitent une correction manuelle (retirer les annotations JPA du domaine), tandis que la couche persistence peut être régénérée automatiquement par le plugin JPA.</p>
 			</Insight>
 		</div>
 	</section>
@@ -272,7 +339,7 @@ import auditScreenshot from '~/assets/screenshots/audit.png';
 					Voir un rapport réel
 				</Link>
 				<Link href="/docs/plugin-audit/" class="secondary">
-					<Icon name="ri/settings-3-line" class="size-5" aria-hidden="true" />
+					<Icon name="ri:settings-3-line" class="size-5" aria-hidden="true" />
 					<span>Configurer l'audit</span>
 				</Link>
 			</div>

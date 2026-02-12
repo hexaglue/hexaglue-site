@@ -5,7 +5,11 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+import { Image } from 'astro:assets';
+import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
+import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
 import versions from '~/data/versions';
 
 const pomPlugin = `<plugin>
@@ -97,6 +101,16 @@ const yamlRestrictive = `plugins:
 				<li>Le plugin d'audit est déclaré comme <code>&lt;dependency&gt;</code> du plugin Maven, pas du projet. HexaGlue découvre automatiquement les plugins via le mécanisme Java <code>ServiceLoader</code> : il suffit de les ajouter ici pour qu'ils soient actifs.</li>
 			</ul>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Vue d'ensemble d'un rapport d'audit HexaGlue (sample-basic, score 76/C)">
+			<Image
+				src={overviewScreenshot}
+				alt="Rapport d'audit HexaGlue : vue d'ensemble du rapport HTML généré pour sample-basic avec verdict 76/100, grade C, inventaire architectural et métriques"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Options de configuration -->
@@ -438,6 +452,16 @@ const yamlRestrictive = `plugins:
 				<p>La métrique <code>domain.purity</code> détecte les imports d'infrastructure dans le domaine : JPA (<code>javax.persistence</code>, <code>jakarta.persistence</code>), Spring (<code>org.springframework</code>), Hibernate, Jackson, JDBC, SDKs cloud (AWS, Azure, GCP), messaging (Kafka, RabbitMQ), et les frameworks web/validation.</p>
 			</Insight>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="KPI Table : les 5 dimensions du score avec statuts On Target / At Risk / Below Target">
+			<Image
+				src={kpiTableScreenshot}
+				alt="Rapport d'audit HexaGlue : tableau KPI montrant les 5 dimensions (DDD, hexagonal, dépendances, couplage, cohésion) avec poids, scores et seuils colorés"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Formats de rapport -->
@@ -505,7 +529,7 @@ const yamlRestrictive = `plugins:
 					Comprendre les résultats de l'audit
 				</Link>
 				<Link href="/case-studies/ecommerce-migration/step-1-discovery/" class="secondary">
-					<Icon name="ri/eye-line" class="size-5" aria-hidden="true" />
+					<Icon name="ri:eye-line" class="size-5" aria-hidden="true" />
 					<span>Voir un rapport réel</span>
 				</Link>
 			</div>

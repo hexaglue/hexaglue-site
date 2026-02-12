@@ -8,25 +8,25 @@ const nav: Nav = [
 		label: 'Produit',
 		theme: 'green',
 		items: [
-			{ href: '/features/', label: 'Fonctionnalités', icon: 'ri/search-eye-line', prefetch: true },
-			{ href: '/features/classification/', label: 'Classification', icon: 'ri/node-tree', prefetch: true },
-			{ href: '/features/audit/', label: 'Audit d\'architecture', icon: 'ri/shield-check-line', prefetch: true },
-			{ href: '/features/jpa-generation/', label: 'Génération JPA', icon: 'ri/database-2-line', prefetch: true },
-			{ href: '/features/living-documentation/', label: 'Living Documentation', icon: 'ri/file-text-line', prefetch: true },
-			{ href: '/for/architects/', label: 'Pour les architectes', icon: 'ri/layout-grid-line', prefetch: true },
-			{ href: '/for/tech-leads/', label: 'Pour les tech leads', icon: 'ri/code-s-slash-line', prefetch: true },
-			{ href: '/for/decision-makers/', label: 'Pour les décideurs', icon: 'ri/building-4-line', prefetch: true },
+			{ href: '/features/', label: 'Fonctionnalités', icon: 'ph:tree-structure-duotone', prefetch: true },
+			{ href: '/features/classification/', label: 'Classification', icon: 'ri:node-tree', prefetch: true },
+			{ href: '/features/audit/', label: 'Audit d\'architecture', icon: 'ri:shield-check-line', prefetch: true },
+			{ href: '/features/jpa-generation/', label: 'Génération JPA', icon: 'ri:database-2-line', prefetch: true },
+			{ href: '/features/living-documentation/', label: 'Living Documentation', icon: 'ri:file-text-line', prefetch: true },
+			{ href: '/for/architects/', label: 'Pour les architectes', icon: 'ph:blueprint', prefetch: true },
+			{ href: '/for/tech-leads/', label: 'Pour les tech leads', icon: 'ph:code', prefetch: true },
+			{ href: '/for/decision-makers/', label: 'Pour les décideurs', icon: 'ph:chart-line-up', prefetch: true },
 		],
 	},
 	{
 		label: 'Documentation',
 		theme: 'orange',
 		items: [
-			{ href: '/guides/', label: 'Guides', icon: 'ri/book-open-line', prefetch: true },
-			{ href: '/docs/getting-started/', label: 'Démarrage rapide', icon: 'ri/rocket-line', prefetch: true },
-			{ href: '/docs/plugin-audit/', label: 'Plugin Audit', icon: 'ri/shield-check-line', prefetch: true },
-			{ href: '/docs/plugin-jpa/', label: 'Plugin JPA', icon: 'ri/database-2-line', prefetch: true },
-			{ href: '/docs/plugin-living-doc/', label: 'Plugin Living Doc', icon: 'ri/file-text-line', prefetch: true },
+			{ href: '/guides/', label: 'Guides', icon: 'ri:book-open-line', prefetch: true },
+			{ href: '/docs/getting-started/', label: 'Démarrage rapide', icon: 'ph:rocket-launch-duotone', prefetch: true },
+			{ href: '/docs/plugin-audit/', label: 'Plugin Audit', icon: 'ri:shield-check-line', prefetch: true },
+			{ href: '/docs/plugin-jpa/', label: 'Plugin JPA', icon: 'ri:database-2-line', prefetch: true },
+			{ href: '/docs/plugin-living-doc/', label: 'Plugin Living Doc', icon: 'ri:file-text-line', prefetch: true },
 			{ href: 'https://github.com/hexaglue/hexaglue', label: 'GitHub', icon: 'logos/github' },
 		],
 	},
@@ -35,16 +35,16 @@ const nav: Nav = [
 		theme: 'purple',
 		items: [
 			{ href: '/case-studies/', label: 'Vue d\'ensemble', icon: 'file-alt', prefetch: true },
-			{ href: '/case-studies/ecommerce-migration/', label: 'Migration E-Commerce', icon: 'ri/shopping-cart-2-line', prefetch: true },
-			{ href: '/case-studies/banking-migration/', label: 'Migration Bancaire', icon: 'ri/bank-line', prefetch: true },
-			{ href: 'https://github.com/hexaglue/hexaglue/tree/main/examples', label: 'Exemples de code', icon: 'ri/code-box-line' },
+			{ href: '/case-studies/ecommerce-migration/', label: 'Migration E-Commerce', icon: 'ri:shopping-cart-2-line', prefetch: true },
+			{ href: '/case-studies/banking-migration/', label: 'Migration Bancaire', icon: 'ri:bank-line', prefetch: true },
+			{ href: 'https://github.com/hexaglue/hexaglue/tree/main/examples', label: 'Exemples de code', icon: 'ri:code-box-line' },
 		],
 	},
 	{
 		label: 'Entreprise',
 		theme: 'blue',
 		items: [
-			{ href: '/services/', label: 'Services', icon: 'ri/building-4-line', prefetch: true },
+			{ href: '/services/', label: 'Services', icon: 'ph:building-office', prefetch: true },
 			{ href: '/contact/', label: 'Contact', icon: 'email', prefetch: true },
 		],
 	},
@@ -130,7 +130,7 @@ const themeAccents: Record<string, { border: string; bg: string }> = {
 									class="link flex items-center gap-4"
 								>
 									<Icon name={link.icon} size="24" aria-hidden="true" /> {link.label}
-									{isExternal && <Icon name="ri/external-link-line" size="18" class="shrink-0 opacity-50" aria-hidden="true" />}
+									{isExternal && <Icon name="ri:external-link-line" size="18" class="shrink-0 opacity-50" aria-hidden="true" />}
 									{link.badge && (
 										<span class="text-sm leading-none font-mono py-1 px-1.5 rounded bg-astro-blue/40 border border-astro-blue">
 											{link.badge}

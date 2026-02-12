@@ -42,6 +42,10 @@ export default defineConfig({
 			},
 		}),
 		icon({
+			include: {
+				ri: ['*'],
+				ph: ['*'],
+			},
 			svgoOptions: {
 				plugins: [
 					{ name: 'preset-default' },

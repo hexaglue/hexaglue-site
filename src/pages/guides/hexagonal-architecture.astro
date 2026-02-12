@@ -7,7 +7,12 @@ import Link from '../_components/Link.astro';
 import IntroPoint from '../_components/IntroPoint.astro';
 import GemIcon from '~/components/GemIcon.astro';
 import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+import { Image } from 'astro:assets';
+import c4ComponentDrivenScreenshot from '~/assets/screenshots/c4-component-driven.png';
+import dependenciesScreenshot from '~/assets/screenshots/livingdoc-dependencies.png';
+import portsScreenshot from '~/assets/screenshots/livingdoc-ports.png';
 
 const drivingPortCode = `/** Port entrant : cas d'usage "passer une commande". */
 public interface PlaceOrderUseCase {
@@ -168,14 +173,14 @@ public class JpaOrderRepository implements OrderRepository {
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Les ports">
-				<GemIcon slot="icon" icon="ri/git-branch-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:git-branch-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Les ports sont les interfaces que le domaine expose (ports entrants) ou dont il dépend (ports sortants). Un port entrant définit un cas d'usage : <code>PlaceOrderUseCase</code>. Un port sortant définit un besoin : <code>OrderRepository</code>. Le domaine ne connaît que ces interfaces.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Les adapters">
-				<GemIcon slot="icon" icon="ri/plug-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:plug-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Les adapters sont les implémentations concrètes des ports. Un adapter REST appelle un port entrant. Un adapter JPA implémente un port sortant. Ils traduisent entre le monde technique et le domaine. On peut les remplacer sans toucher au domaine.
 				</Fragment>
@@ -187,6 +192,16 @@ public class JpaOrderRepository implements OrderRepository {
 				<p>Le domaine ne sait pas QUI l'appelle (un contrôleur REST ? un test ? une CLI ?) ni OÙ il persiste (PostgreSQL ? MongoDB ? un fichier ?). Cette ignorance est précisément ce qui le rend testable, portable et maintenable.</p>
 			</Insight>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Diagramme C4 Component : Driven Side et Infrastructure Layer d'une application bancaire">
+			<Image
+				src={c4ComponentDrivenScreenshot}
+				alt="Diagramme C4 Component montrant les driven ports et l'infrastructure layer avec les liens d'implémentation entre ports et adapters"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 3 : Driving vs Driven -->
@@ -246,6 +261,16 @@ public class JpaOrderRepository implements OrderRepository {
 			</p>
 			<Code code={drivenPortCode} lang="java" title="OrderRepository.java & PaymentGateway.java" />
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Flux de dépendances : Driving Adapters → Ports → Application Services → Domain ← Driven Ports ← Driven Adapters">
+			<Image
+				src={dependenciesScreenshot}
+				alt="Living documentation HexaGlue : diagramme de dépendances montrant le flux depuis les Driving Adapters vers le Domain et les Driven Adapters vers les Driven Ports"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 4 : Inversion de dépendances -->
@@ -343,21 +368,21 @@ public class JpaOrderRepository implements OrderRepository {
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="amber" title="Tests du domaine">
-				<GemIcon slot="icon" icon="ri/shield-check-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:shield-check-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Le domaine se teste en logique pure. Les ports sortants sont mockés ou stubés. Pas de base de données, pas de framework : les tests vérifient les invariants métier, les transitions d'état et les événements émis. Ils s'exécutent en millisecondes.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Tests d'intégration">
-				<GemIcon slot="icon" icon="ri/database-2-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:database-2-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Chaque adapter se teste séparément. Un test d'intégration pour <code>JpaOrderRepository</code> utilise une base de données réelle (H2 ou Testcontainers). Un test pour le contrôleur REST utilise MockMvc. Un adapter à la fois, avec son infrastructure réelle.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Tests end-to-end">
-				<GemIcon slot="icon" icon="ri/route-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:route-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Les tests end-to-end traversent le pipeline complet : un appel via le driving adapter (REST), à travers le domaine, jusqu'aux driven adapters (JPA, messaging). Ils sont peu nombreux, ciblent les scénarios critiques et valident l'assemblage des composants.
 				</Fragment>
@@ -417,6 +442,16 @@ public class JpaOrderRepository implements OrderRepository {
 			</Insight>
 		</div>
 
+		<BrowserFrame class="mt-10" caption="Living documentation : Driving Port (ManagingAccounts) et Driven Ports (AccountRepository, AccountNotifier)">
+			<Image
+				src={portsScreenshot}
+				alt="Living documentation HexaGlue : ports entrants (ManagingAccounts avec méthodes deposit, withdraw) et ports sortants (AccountRepository, AccountNotifier) avec signatures"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
 		<div class="mt-6 max-w-4xl mx-auto">
 			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
 				L'architecture hexagonale protège le modèle <a href="/guides/ddd-principles/" title="Principes du Domain-Driven Design" class="text-[#FF7D54] hover:text-white transition-colors underline">DDD</a> des détails d'infrastructure. HexaGlue automatise la partie technique : vous écrivez le domaine, il génère l'infrastructure et vérifie que les frontières architecturales sont respectées.
@@ -442,7 +477,7 @@ public class JpaOrderRepository implements OrderRepository {
 					Voir l'étude de cas
 				</Link>
 				<Link href="/docs/getting-started/" class="secondary">
-					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
 					<span>Commencer</span>
 				</Link>
 			</div>

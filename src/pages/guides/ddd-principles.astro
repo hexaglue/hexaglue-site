@@ -7,7 +7,12 @@ import Link from '../_components/Link.astro';
 import IntroPoint from '../_components/IntroPoint.astro';
 import GemIcon from '~/components/GemIcon.astro';
 import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+import { Image } from 'astro:assets';
+import inventoryGridScreenshot from '~/assets/screenshots/audit-inventory-grid.png';
+import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
+import customerAggregateScreenshot from '~/assets/screenshots/livingdoc-customer-aggregate.png';
 
 const aggregateRootCode = `public class Order {
 
@@ -176,6 +181,16 @@ public record OrderPlaced(
 			<Insight variant="green" title="Règle d'or de l'agrégat">
 				<p>Un agrégat protège ses invariants métier. Dans l'exemple ci-dessus, <code>Order</code> empêche l'ajout de lignes après confirmation et interdit la confirmation d'une commande vide. Ces règles sont garanties à chaque appel, quel que soit le code appelant.</p>
 			</Insight>
+
+			<BrowserFrame class="mt-10" caption="classDiagram : agrégat Customer avec ses Value Objects (Email, Address) et son identifier (CustomerId)">
+				<Image
+					src={customerAggregateScreenshot}
+					alt="Living documentation HexaGlue : diagramme de classes de l'agrégat Customer montrant les relations avec Email, Address et CustomerId"
+					widths={[400, 600, 800, 1200]}
+					sizes="(max-width: 768px) 100vw, 56rem"
+					loading="lazy"
+				/>
+			</BrowserFrame>
 		</div>
 
 		<!-- Entity -->
@@ -294,21 +309,21 @@ public record OrderPlaced(
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="amber" title="Bounded Context">
-				<GemIcon slot="icon" icon="ri/layout-masonry-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:layout-masonry-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Un Bounded Context est une frontière logique et linguistique autour d'un modèle. À l'intérieur d'un contexte, chaque terme a un sens précis et unique. Le mot "Commande" peut désigner une chose différente dans le contexte "Vente" et dans le contexte "Logistique" : chaque contexte a son propre modèle.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Ubiquitous Language">
-				<GemIcon slot="icon" icon="ri/chat-quote-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:chat-quote-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					L'Ubiquitous Language est le vocabulaire partagé entre les développeurs et les experts métier, dans un Bounded Context donné. Chaque concept du code utilise les mêmes termes que le métier. Si l'expert dit "confirmer une commande", la méthode s'appelle <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">confirm()</code>, pas <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">processOrder()</code>.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Context Mapping">
-				<GemIcon slot="icon" icon="ri/mind-map" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:mind-map" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Le Context Mapping décrit les relations entre Bounded Contexts. Chaque relation suit un pattern : Anti-Corruption Layer (ACL) pour isoler un contexte d'un autre, Shared Kernel pour partager un modèle commun, ou Open Host Service pour exposer une API publique. Ces patterns explicites évitent le couplage accidentel entre équipes.
 				</Fragment>
@@ -328,21 +343,21 @@ public record OrderPlaced(
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="amber" title="Anemic Domain Model">
-				<GemIcon slot="icon" icon="ri/ghost-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:ghost-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Le modèle anémique est le piège le plus courant : les entités ne contiennent que des getters/setters, et toute la logique métier se retrouve dans des services. Résultat : le domaine n'est qu'un conteneur de données passif. Si votre classe <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Order</code> ne contient aucune règle métier, c'est un modèle anémique.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="God Aggregate">
-				<GemIcon slot="icon" icon="ri/stack-line" gradient="red-pink" />
+				<GemIcon slot="icon" icon="ri:stack-line" gradient="red-pink" />
 				<Fragment slot="description">
 					Le God Aggregate est un agrégat qui englobe trop d'entités et de responsabilités. Un agrégat <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Customer</code> qui contient les commandes, les paiements, les adresses et les préférences est trop gros : il crée des conflits de concurrence et rend le système difficile à faire évoluer. Chaque agrégat doit avoir une frontière transactionnelle minimale.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Primitive Obsession">
-				<GemIcon slot="icon" icon="ri/error-warning-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:error-warning-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					La Primitive Obsession consiste à utiliser des types primitifs (<code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Long</code>, <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">String</code>) là où un type métier serait plus expressif. Un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Long orderId</code> peut être confondu avec un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">Long customerId</code> : le compilateur ne protège rien. Un <code class="font-mono text-xs px-1.5 py-0.5 bg-astro-dark-600 rounded text-astro-gray-100">OrderId</code> typé élimine cette classe d'erreurs.
 				</Fragment>
@@ -412,6 +427,26 @@ public record OrderPlaced(
 			</Insight>
 		</div>
 
+		<BrowserFrame class="mt-10" caption="Inventaire architectural : les 11 rôles DDD détectés par HexaGlue">
+			<Image
+				src={inventoryGridScreenshot}
+				alt="Rapport d'audit HexaGlue : grille d'inventaire montrant les 11 rôles DDD classifiés avec compteurs (Aggregates, Value Objects, Identifiers, Ports)"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Living documentation : détail de l'agrégat Account avec identité et propriétés">
+			<Image
+				src={accountAggregateScreenshot}
+				alt="Living documentation HexaGlue : agrégat Account avec identity details, properties (id, ownerName, balance, transactions) et niveau de confiance"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
 		<div class="mt-6 max-w-4xl mx-auto">
 			<p class="text-base text-astro-gray-200 font-light leading-relaxed">
 				Le DDD s'applique naturellement dans une <a href="/guides/hexagonal-architecture/" title="Guide de l'architecture hexagonale" class="text-[#FF7D54] hover:text-white transition-colors underline">architecture hexagonale</a> : le domaine est au centre, protégé des détails d'infrastructure par les ports et les adapters. HexaGlue détecte les deux : les building blocks DDD et la structure hexagonale.
@@ -437,7 +472,7 @@ public record OrderPlaced(
 					Voir l'étude de cas
 				</Link>
 				<Link href="/docs/getting-started/" class="secondary">
-					<Icon name="ri/rocket-line" class="size-5" aria-hidden="true" />
+					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
 					<span>Commencer</span>
 				</Link>
 			</div>

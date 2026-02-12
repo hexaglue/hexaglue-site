@@ -1,13 +1,18 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
+import { Image } from 'astro:assets';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
 import IntroPoint from '../_components/IntroPoint.astro';
 import GemIcon from '~/components/GemIcon.astro';
 import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import violationCriticalScreenshot from '~/assets/screenshots/audit-violation-critical.png';
+import violationBlockerScreenshot from '~/assets/screenshots/audit-violation-blocker.png';
+import inventoryGridScreenshot from '~/assets/screenshots/audit-inventory-grid.png';
 
 const yamlConfig = `# Configuration minimale pour démarrer
 classification:
@@ -51,7 +56,7 @@ plugins:
 			</p>
 
 			<div class="mt-8 flex justify-center">
-				<Icon name="ri/code-s-slash-line" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
+				<Icon name="ri:code-s-slash-line" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
 			</div>
 		</div>
 	</section>
@@ -67,21 +72,21 @@ plugins:
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="amber" title="Le code d'infrastructure est répétitif">
-				<GemIcon slot="icon" icon="ri/file-copy-line" gradient="red-pink" />
+				<GemIcon slot="icon" icon="ri:file-copy-line" gradient="red-pink" />
 				<Fragment slot="description">
 					Pour chaque agrégat, il faut écrire l'entité JPA, le repository Spring Data, le mapper, l'adapter. Ce code est mécanique : il suit les mêmes patterns, avec les mêmes erreurs possibles. Il représente parfois plus de la moitié du code total d'un projet.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Les régressions architecturales passent inaperçues">
-				<GemIcon slot="icon" icon="ri/bug-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:bug-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Un développeur pressé importe JPA dans le domaine. Un autre contourne un port pour appeler un repository directement. Ces raccourcis passent en revue parce qu'ils sont petits. Mais ils cassent l'isolation des couches et rendent le domaine difficile à tester.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="La documentation est toujours en retard">
-				<GemIcon slot="icon" icon="ri/draft-line" gradient="blue-purple" />
+				<GemIcon slot="icon" icon="ri:draft-line" gradient="blue-purple" />
 				<Fragment slot="description">
 					Le wiki décrit l'architecture d'il y a 3 mois. Les nouveaux développeurs passent des jours à comprendre les agrégats, les ports et le câblage. Personne ne met à jour la documentation parce que tout le monde écrit du code.
 				</Fragment>
@@ -130,6 +135,26 @@ plugins:
 				<p>HexaGlue s'exécute uniquement à la compilation. Il ne modifie pas le runtime, ne crée aucune dépendance transitive et ne change pas le comportement de l'application. Vous pouvez le retirer du <code>pom.xml</code> à tout moment : le code généré reste, le domaine n'est pas impacté.</p>
 			</Insight>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Violation CRITICAL détectée par l'audit : Value Object mutable avec correctif">
+			<Image
+				src={violationCriticalScreenshot}
+				alt="Rapport d'audit HexaGlue : violation CRITICAL Mutable Value Object avec bloc fix montrant la conversion en record Java"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Violation BLOCKER détectée par l'audit : cycle entre agrégats avec correctif">
+			<Image
+				src={violationBlockerScreenshot}
+				alt="Rapport d'audit HexaGlue : violation BLOCKER dépendance circulaire entre agrégats avec correctif via domain events"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 3 : Intégration concrète -->
@@ -143,21 +168,21 @@ plugins:
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="green" title="1. Ajouter le plugin Maven">
-				<GemIcon slot="icon" icon="ri/add-circle-line" gradient="blue-green" />
+				<GemIcon slot="icon" icon="ri:add-circle-line" gradient="blue-green" />
 				<Fragment slot="description">
 					Une section <code>&lt;plugin&gt;</code> dans le <code>pom.xml</code> avec les dépendances des plugins souhaités (audit, living-doc, JPA). HexaGlue détecte automatiquement le domaine.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="green" title="2. Compiler">
-				<GemIcon slot="icon" icon="ri/terminal-box-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:terminal-box-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					<code>mvn clean compile</code> : HexaGlue classifie le domaine, génère l'infrastructure et produit la documentation. <code>mvn verify</code> : l'audit vérifie les règles d'architecture.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="green" title="3. Intégrer en CI">
-				<GemIcon slot="icon" icon="ri/git-merge-line" gradient="blue-purple" />
+				<GemIcon slot="icon" icon="ri:git-merge-line" gradient="blue-purple" />
 				<Fragment slot="description">
 					Ajouter <code>failOnError: true</code> dans <code>hexaglue.yaml</code> pour bloquer les builds avec des violations critiques. Le rapport d'audit est disponible dans <code>target/hexaglue/reports/</code>.
 				</Fragment>
@@ -168,17 +193,27 @@ plugins:
 			<Code code={yamlConfig} lang="yaml" title="hexaglue.yaml" />
 		</div>
 
+		<BrowserFrame class="mt-10" caption="Inventaire architectural généré par l'audit : les 11 rôles classifiés">
+			<Image
+				src={inventoryGridScreenshot}
+				alt="Rapport d'audit HexaGlue : grille d'inventaire montrant les 11 rôles architecturaux classifiés avec compteurs"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
 		<div class="max-w-4xl mx-auto">
 			<Insight variant="amber">
 				<p>L'étude de cas e-commerce part d'un monolithe Spring Boot de 50 classes avec 10 anti-patterns. En 7 étapes, l'architecture passe de 13/100 à 63/100. Le code source est sur GitHub, chaque étape est reproductible.</p>
 			</Insight>
 		</div>
 
-		<div class="mt-6 max-w-4xl mx-auto">
-			<a href="/docs/getting-started/" title="Reproduire le tutoriel" class="inline-flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors">
-				<Icon name="ri/arrow-right-line" class="size-4" aria-hidden="true" />
-				<span>Reproduire le tutoriel</span>
-			</a>
+		<div class="mt-10 max-w-4xl mx-auto text-center">
+			<Link href="/case-studies/banking-migration/" class="secondary">
+				<Icon name="ri:arrow-right-line" class="size-5" aria-hidden="true" />
+				<span>Parcourir l'étude de cas bancaire</span>
+			</Link>
 		</div>
 	</section>
 
@@ -199,7 +234,7 @@ plugins:
 					Démarrer en 5 minutes
 				</Link>
 				<Link href="/case-studies/ecommerce-migration/" class="secondary">
-					<Icon name="ri/book-open-line" class="size-5" aria-hidden="true" />
+					<Icon name="ri:book-open-line" class="size-5" aria-hidden="true" />
 					<span>Voir une migration complète</span>
 				</Link>
 			</div>

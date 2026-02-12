@@ -1,12 +1,18 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
 import IntroPoint from '../_components/IntroPoint.astro';
 import GemIcon from '~/components/GemIcon.astro';
 import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
 import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import verdict13fScreenshot from '~/assets/screenshots/audit-verdict-13f.png';
+import verdict66dScreenshot from '~/assets/screenshots/audit-verdict-66d.png';
+import remediationScreenshot from '~/assets/screenshots/audit-remediation-effort-2.png';
+import c4ContextScreenshot from '~/assets/screenshots/c4-context-banking.png';
 ---
 
 <MainLayout
@@ -36,7 +42,7 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 			</p>
 
 			<div class="mt-8 flex justify-center">
-				<Icon name="ri/building-4-line" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
+				<Icon name="ri:building-4-line" class="size-12 text-astro-gray-300/30" aria-hidden="true" />
 			</div>
 		</div>
 	</section>
@@ -52,21 +58,21 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 
 		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
 			<IntroPoint tint="amber" title="La visibilité sur l'architecture est limitée">
-				<GemIcon slot="icon" icon="ri/eye-off-line" gradient="red-pink" />
+				<GemIcon slot="icon" icon="ri:eye-off-line" gradient="red-pink" />
 				<Fragment slot="description">
 					Vous pilotez un patrimoine de dizaines de services Java. Mais quand on vous demande l'état réel de l'architecture, la réponse dépend de qui vous posez la question. Il n'y a pas de mesure objectivée, pas d'indicateur partagé, pas de baseline fiable.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="Le coût des migrations est imprévisible">
-				<GemIcon slot="icon" icon="ri/money-dollar-circle-line" gradient="orange-yellow" />
+				<GemIcon slot="icon" icon="ri:money-dollar-circle-line" gradient="orange-yellow" />
 				<Fragment slot="description">
 					Chaque projet de modernisation commence par la même question : combien ça va coûter ? Sans cartographie précise des dépendances et des violations, les estimations sont des approximations. Les surprises arrivent en cours de route, quand il est trop tard pour ajuster.
 				</Fragment>
 			</IntroPoint>
 
 			<IntroPoint tint="amber" title="La gouvernance ne passe pas à l'échelle">
-				<GemIcon slot="icon" icon="ri/team-line" gradient="blue-purple" />
+				<GemIcon slot="icon" icon="ri:team-line" gradient="blue-purple" />
 				<Fragment slot="description">
 					Les revues d'architecture manuelles fonctionnent pour une équipe. Pour cinq ou dix équipes, elles deviennent un goulot d'étranglement. Les règles sont documentées mais pas vérifiées. Les écarts s'accumulent silencieusement.
 				</Fragment>
@@ -115,6 +121,36 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 				<p>HexaGlue est un outil de compilation, pas un service cloud. Il s'exécute dans votre pipeline CI/CD existant (Maven). Aucune donnée ne sort de votre infrastructure. Aucune dépendance runtime. Aucun vendor lock-in.</p>
 			</Insight>
 		</div>
+
+		<BrowserFrame class="mt-10" caption="Verdict d'audit d'un monolithe legacy : score 13/100, grade F">
+			<Image
+				src={verdict13fScreenshot}
+				alt="Rapport d'audit HexaGlue : verdict 13/100, grade F, status Failed sur un monolithe legacy"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Après migration hexagonale : score 66/100, grade D, Passed">
+			<Image
+				src={verdict66dScreenshot}
+				alt="Rapport d'audit HexaGlue : verdict 66/100, grade D, status Passed après migration hexagonale"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<BrowserFrame class="mt-10" caption="Estimation de remédiation : coût manuel vs automatisé par HexaGlue">
+			<Image
+				src={remediationScreenshot}
+				alt="Rapport d'audit HexaGlue : bandeau estimation de remédiation avec coûts en euros, comparaison effort manuel et automatisé"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
 	</section>
 
 	<!-- Section 3 : Résultats concrets -->
@@ -123,12 +159,12 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 			label="Preuve"
 			title="Ce que montrent nos études de cas"
 		>
-			L'étude de cas e-commerce illustre la progression d'un monolithe Spring Boot vers une architecture hexagonale, avec des indicateurs mesurables à chaque étape.
+			L'étude de cas bancaire illustre la progression d'une application Spring Boot vers une architecture hexagonale, avec des indicateurs mesurables à chaque étape.
 		</SectionCopy>
 
 		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
 			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl text-center">
-				<p class="text-3xl font-bold text-white">13 → 63</p>
+				<p class="text-3xl font-bold text-white">14 → 66</p>
 				<p class="text-sm text-astro-gray-300 mt-1">/100</p>
 				<p class="text-sm text-astro-gray-200 mt-2 font-light">Progression du score d'architecture en 7 étapes</p>
 			</div>
@@ -151,15 +187,25 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 
 		<div class="max-w-4xl mx-auto">
 			<Insight variant="amber">
-				<p>Ces résultats sont issus d'applications réelles de 50 classes. Le code source est disponible sur GitHub, les rapports d'audit sont reproduits étape par étape dans les études de cas.</p>
+				<p>Ces résultats sont issus d'une application bancaire réelle de 38 types. Le code source est disponible sur GitHub, les rapports d'audit sont reproduits étape par étape dans l'étude de cas.</p>
 			</Insight>
 		</div>
 
-		<div class="mt-6 max-w-4xl mx-auto">
-			<a href="/case-studies/ecommerce-migration/" title="Parcourir l'étude de cas e-commerce" class="inline-flex items-center gap-2 text-astro-gray-200 hover:text-white transition-colors">
-				<Icon name="ri/arrow-right-line" class="size-4" aria-hidden="true" />
-				<span>Parcourir l'étude de cas e-commerce</span>
-			</a>
+		<BrowserFrame class="mt-10" caption="Diagramme C4 Context généré automatiquement par l'audit HexaGlue">
+			<Image
+				src={c4ContextScreenshot}
+				alt="Rapport d'audit HexaGlue : diagramme C4 System Context montrant l'application bancaire, ses utilisateurs et ses dépendances externes"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<div class="mt-10 max-w-4xl mx-auto text-center">
+			<Link href="/case-studies/banking-migration/" class="secondary">
+				<Icon name="ri:arrow-right-line" class="size-5" aria-hidden="true" />
+				<span>Parcourir l'étude de cas bancaire</span>
+			</Link>
 		</div>
 	</section>
 
@@ -180,7 +226,7 @@ import GreenishStardust from '../_components/landing-page/GreenishStardust.astro
 					Discuter de votre projet
 				</Link>
 				<Link href="/services/" class="secondary">
-					<Icon name="ri/service-line" class="size-5" aria-hidden="true" />
+					<Icon name="ri:shake-hands-line" class="size-5" aria-hidden="true" />
 					<span>Découvrir nos services</span>
 				</Link>
 			</div>

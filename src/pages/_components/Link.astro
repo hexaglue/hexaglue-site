@@ -8,13 +8,11 @@ interface Props {
 
 const { href, class: className = 'primary', gradient, title } = Astro.props;
 const style = gradient ? `--cta-gradient: ${gradient}` : undefined;
-const slotContent = await Astro.slots.render('default');
-const resolvedTitle = title ?? slotContent?.replace(/<[^>]*>/g, '').trim();
 ---
 
 <a
 	href={href}
-	title={resolvedTitle}
+	title={title}
 	class:list={[
 		className,
 		'px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border text-base font-normal hover:cursor-pointer',

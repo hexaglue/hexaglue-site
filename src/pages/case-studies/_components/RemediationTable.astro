@@ -92,7 +92,7 @@ const severityColors: Record<RemediationRow['severity'], string> = {
                         <td class="py-2 px-3 text-center bg-astro-green/5 border-l border-r border-b border-astro-green/20">
                             {isFullySaved ? (
                                 <span class="inline-flex items-center gap-1 text-astro-green font-medium">
-                                    <Icon name="ri/sparkling-2-line" class="size-4" />
+                                    <Icon name="ri:sparkling-2-line" class="size-4" />
                                     {formatDays(row.hexaglueEffort)}
                                 </span>
                             ) : isSaved ? (
@@ -122,7 +122,7 @@ const severityColors: Record<RemediationRow['severity'], string> = {
                 <tr>
                     <td colspan="4" class="pt-2">
                         <div class="flex items-center justify-end gap-2 text-astro-green">
-                            <Icon name="ri/sparkling-2-line" class="size-5" />
+                            <Icon name="ri:sparkling-2-line" class="size-5" />
                             <span class="font-semibold">
                                 Économie : {formatDays(totalSavings)} ({savingsPercentage} %)
                             </span>
@@ -142,7 +142,7 @@ const severityColors: Record<RemediationRow['severity'], string> = {
         <span class="text-yellow-400">●</span> MAJOR
     </div>
     <div class="flex items-center gap-1.5">
-        <Icon name="ri/sparkling-2-line" class="size-4 text-astro-green" />
+        <Icon name="ri:sparkling-2-line" class="size-4 text-astro-green" />
         <span>Automatisé par HexaGlue</span>
     </div>
 </div>
