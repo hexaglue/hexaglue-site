@@ -35,7 +35,7 @@ const themes: Record<string, { glow: string; border: string }> = {
 const { label, items, theme } = Astro.props;
 const t = theme ? themes[theme] : undefined;
 const panelStyle = t
-	? `background: radial-gradient(ellipse at top center, ${t.glow} 0%, #0D0F14 80%); border-color: ${t.border};`
+	? `background-image: radial-gradient(ellipse at top center, ${t.glow} 0%, #0D0F14 80%); border-color: ${t.border};`
 	: undefined;
 ---
 
@@ -81,7 +81,7 @@ const panelStyle = t
 								data-astro-prefetch={prefetch ? '' : undefined}
 								aria-label={label}
 								title={label}
-								class="flex items-center gap-2 rounded-md p-3 leading-none transition hover:bg-astro-gray-700 hover:text-white"
+								class="flex items-center gap-2 rounded-md p-3 leading-none transition hover:bg-astro-gray-600 hover:text-white"
 							>
 								<Icon name={icon} size="16" aria-hidden="true" /> {label}
 								{isExternal && <Icon name="ri/external-link-line" size="14" class="shrink-0 opacity-50" aria-hidden="true" />}

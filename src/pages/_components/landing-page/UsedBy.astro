@@ -22,7 +22,7 @@ const technologies = [
 		>
 			{
 				technologies.map((tech) => (
-					<div class="flex flex-col items-center gap-2 opacity-70 hover:opacity-100 transition-opacity duration-300">
+					<div class="flex flex-col items-center gap-2">
 						<Icon name={tech.icon} class:list={['w-auto', tech.classes]} aria-label={tech.label} />
 						<span class="text-xs text-astro-gray-300">{tech.label}</span>
 					</div>
