@@ -12,28 +12,105 @@ cd hexaglue-demo`;
 
 const codeStep2 = `mvn clean compile`;
 
+const codeStep2Output = `[INFO] --- hexaglue:5.0.0:generate (default-hexaglue-generate) @ hexaglue-demo ---
+[INFO] HexaGlue analyzing: io.hexaglue.demo
+.../...
+[INFO] Executing plugin: io.hexaglue.plugin.livingdoc
+[INFO] [io.hexaglue.plugin.livingdoc] Generating living documentation in: living-doc
+[INFO] [io.hexaglue.plugin.livingdoc] Generated architecture overview
+[INFO] [io.hexaglue.plugin.livingdoc] Generated domain model documentation
+[INFO] [io.hexaglue.plugin.livingdoc] Generated ports documentation
+[INFO] [io.hexaglue.plugin.livingdoc] Generated architecture diagrams
+[INFO] [io.hexaglue.plugin.livingdoc] Living documentation complete: 0 aggregate roots, 1 entities, 1 value objects, 1 driving ports, 1 driven ports
+[INFO] [io.hexaglue.plugin.livingdoc] Additional types: 1 identifiers, 0 domain events, 0 domain services
+[WARNING] [io.hexaglue.plugin.livingdoc] Classification quality: 85,7% (1 types may need review)
+[INFO] Plugin io.hexaglue.plugin.livingdoc completed in 20ms, generated 4 files
+.../...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------`;
+
 const codeStep3 = `mvn clean verify -DskipTests`;
 
-const codeStep3Output = `[ERROR] Audit failed with 1 ERROR violations
-[ERROR] CRITICAL - ddd:domain-purity
-[ERROR]   Domain type 'Task' has 1 forbidden infrastructure import(s)
-BUILD FAILURE`;
+const codeStep3Output = `[INFO] --- hexaglue:5.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
+[INFO] HexaGlue auditing: io.hexaglue.demo
+.../...
+[INFO] Executing plugin: io.hexaglue.plugin.audit.ddd
+[ERROR] [io.hexaglue.plugin.audit.ddd] Audit FAILED: 0 blocker, 1 critical violations
+
+  Score:  76/100  |  Grade: C  |  Status: FAILED
+
+  ISSUES
+    [CRITICAL]  Domain purity violation
+    [MAJOR]     Driven port without adapter
+
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] AUDIT SUMMARY
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] Total Violations: 2
+[INFO]   Errors:   1
+[INFO]   Warnings: 1
+[INFO] Status: FAILED
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[ERROR] Audit failed with 1 ERROR violations`;
 
 const codeStep4 = `mvn clean verify -DskipTests`;
 
-const codeStep4Output = `Audit: PASSED
-BUILD SUCCESS`;
+const codeStep4Output = `[INFO] --- hexaglue:5.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
+[INFO] HexaGlue auditing: io.hexaglue.demo
+.../...
+[INFO] Executing plugin: io.hexaglue.plugin.audit.ddd
+
+  Score:  77/100  |  Grade: C  |  Status: PASSED (with warnings)
+
+  ISSUES
+    [MAJOR]     Driven port without adapter
+
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] AUDIT SUMMARY
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] Total Violations: 1
+[INFO]   Errors:   0
+[INFO]   Warnings: 1
+[INFO] Status: PASSED
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] Audit completed: PASSED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------`;
 
 const codeStep5 = `mvn clean verify`;
 
-const codeStep5Output = `[INFO] Generated entity: TaskEntity
-[INFO] Generated repository: TaskJpaRepository
-[INFO] Generated mapper: TaskMapper
-[INFO] Generated adapter: TaskRepositoryAdapter
+const codeStep5Output = `[INFO] --- hexaglue:5.0.0:generate (default-hexaglue-generate) @ hexaglue-demo ---
+[INFO] HexaGlue analyzing: io.hexaglue.demo
+.../...
+[INFO] Executing plugin: io.hexaglue.plugin.jpa
+[INFO] [io.hexaglue.plugin.jpa] Generated entity: TaskEntity
+[INFO] [io.hexaglue.plugin.jpa] Generated repository: TaskJpaRepository
+[INFO] [io.hexaglue.plugin.jpa] Generated mapper: TaskMapper
+[INFO] [io.hexaglue.plugin.jpa] Generated adapter: TaskRepositoryAdapter implementing TaskRepository
+[INFO] [io.hexaglue.plugin.jpa] JPA generation complete: 1 entities, 0 embeddables, 1 repositories, 1 mappers, 1 adapters
+.../...
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+.../...
+[INFO] --- hexaglue:5.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
 
-Tests run: 4, Failures: 0, Errors: 0
-Audit: PASSED
-BUILD SUCCESS`;
+  Score:  71/100  |  Grade: C  |  Status: PASSED
+  ✓ No issues detected!
+
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] AUDIT SUMMARY
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] Total Violations: 0
+[INFO] Status: PASSED
+[INFO] ────────────────────────────────────────────────────────────────────────────────
+[INFO] Audit completed: PASSED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------`;
 
 const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 <plugin>
@@ -117,7 +194,7 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 				"@type": "HowToStep",
 				position: 5,
 				name: "Générer l'infrastructure JPA",
-				text: "Décommentez hexaglue-plugin-jpa et build-helper-maven-plugin. HexaGlue génère entités, repositories, mappers et adapters automatiquement.",
+				text: "Décommentez hexaglue-plugin-jpa. HexaGlue génère entités, repositories, mappers et adapters automatiquement.",
 				url: "https://hexaglue.io/docs/getting-started/#etapes",
 			},
 		],
@@ -223,9 +300,12 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 						Décommentez le plugin HexaGlue et <code class="text-astro-blue">hexaglue-plugin-living-doc</code> dans le <code>pom.xml</code>, puis compilez.
 					</p>
 					<Code code={codeStep2} lang="bash" />
-					<h4 class="text-base font-medium text-white mt-6 mb-2">Fichiers générés</h4>
-					<p class="text-astro-gray-200 font-light">
-						Consultez le dossier <code>target/hexaglue/reports/living-doc/</code> pour voir la documentation générée.
+
+					<h4 class="text-base font-medium text-white mt-6 mb-2">Résultat attendu</h4>
+					<Code code={codeStep2Output} lang="log" />
+					<p class="text-astro-gray-200 font-light mt-3">
+						Consultez les fichiers Markdown générés dans <code>target/hexaglue/reports/living-doc/</code> :
+						<code>README.md</code>, <code>domain.md</code>, <code>ports.md</code> et <code>diagrams.md</code>.
 					</p>
 				</div>
 			</div>
@@ -250,6 +330,10 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 
 					<h4 class="text-base font-medium text-white mt-6 mb-2">Résultat attendu</h4>
 					<Code code={codeStep3Output} lang="log" />
+					<p class="text-astro-gray-200 font-light mt-3">
+						Le rapport d'audit est généré dans <code>target/hexaglue/reports/audit/</code> en 3 formats :
+						<code>audit-report.json</code>, <code>AUDIT-REPORT.md</code> et <code>audit-report.html</code>.
+					</p>
 				</div>
 			</div>
 
@@ -286,8 +370,8 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-purple/30 transition-all duration-300">
 					<h3 class="text-xl font-semibold text-white mb-4">Générer l'infrastructure JPA</h3>
 					<p class="text-astro-gray-200 font-light mb-4">
-						Décommentez <code class="text-astro-blue">hexaglue-plugin-jpa</code> et <code class="text-astro-blue">build-helper-maven-plugin</code> dans le <code>pom.xml</code>.
-						MapStruct et Jakarta Persistence sont configurés automatiquement par HexaGlue.
+						Décommentez <code class="text-astro-blue">hexaglue-plugin-jpa</code> dans le <code>pom.xml</code>.
+						Les sources générées sont ajoutées automatiquement au classpath grâce à <code>&lt;extensions&gt;true&lt;/extensions&gt;</code>.
 					</p>
 
 					<h4 class="text-base font-medium text-white mt-6 mb-2">Commande</h4>
