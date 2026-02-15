@@ -88,20 +88,19 @@ const hexaglueConfig = `classification:
 
 plugins:
   io.hexaglue.plugin.jpa:
-    entitySuffix: "JpaEntity"
-    repositorySuffix: "JpaRepository"
-    adapterSuffix: "RepositoryAdapter"
-    generateRepositories: true
-    generateAdapters: true
-    generateEmbeddables: true
-    enableAuditing: false
+    entitySuffix: "JpaEntity"           # personnalisé (défaut: "Entity")
+    repositorySuffix: "JpaRepository"   # défaut
+    adapterSuffix: "RepositoryAdapter"  # personnalisé (défaut: "Adapter")
+    generateRepositories: true          # défaut
+    generateAdapters: true              # défaut
+    generateEmbeddables: true           # défaut
+    enableAuditing: false               # défaut
 
   io.hexaglue.plugin.livingdoc:
-    outputFormat: "markdown"
-    includeMetrics: true
+    outputDir: "living-doc"             # défaut
 
   io.hexaglue.plugin.audit.ddd:
-    failOnBlocker: false`;
+    audit.allowCriticalViolations: true # personnalisé (défaut: false)`;
 
 const kpiRows: KpiRow[] = [
     { dimension: 'DDD Compliance', value: '95%', weight: '25%', contribution: '23.75', threshold: '≥ 90%', status: 'OK', delta: '-5' },
@@ -302,7 +301,7 @@ const remediationRows: RemediationRow[] = [
       <Insight>
         <ul>
           <li><strong>ApplicationServiceConfig</strong> : chaque service applicatif est déclaré comme <code>@Bean</code>, avec ses dépendances injectées via les ports</li>
-          <li><strong>hexaglue.yaml</strong> : configure les suffixes de nommage (<code>JpaEntity</code>, <code>JpaRepository</code>, <code>RepositoryAdapter</code>) et les options de génération</li>
+          <li><strong>hexaglue.yaml</strong> : seuls 3 paramètres sont personnalisés (<code>entitySuffix</code>, <code>adapterSuffix</code>, <code>audit.allowCriticalViolations</code>). Les autres sont affichés pour référence mais peuvent être omis : HexaGlue utilise des défauts raisonnables</li>
           <li>Le câblage Spring est entièrement isolé dans la couche infrastructure</li>
         </ul>
       </Insight>
@@ -333,7 +332,12 @@ const remediationRows: RemediationRow[] = [
       </div>
 
       <Insight>
-        <p>Le score progresse de 11 points grâce à deux actions combinées : la purification des services applicatifs et la génération automatique des adaptateurs. Les 3 violations Major restantes relèvent de choix de conception, pas de défauts structurels : elles sont détaillées dans les sections suivantes.</p>
+        <p>Le score progresse de 11 points grâce à deux actions combinées : la purification des services applicatifs et la génération automatique des adaptateurs.</p>
+        <ul>
+          <li><strong>Statut PASSED (warnings)</strong> : l'audit passe car il n'y a aucune violation Blocker ou Critical. Les 3 violations Major restantes sont des avertissements, pas des bloquants</li>
+          <li><strong>Grade D (score &ge; 60)</strong> : le grade reflète la qualité globale (F &lt; D &lt; C &lt; B &lt; A), indépendamment du statut pass/fail. Le score est plafonné par les dimensions Dependencies (0%) et Coupling (31%), qui ne relèvent pas de l'architecture hexagonale</li>
+        </ul>
+        <p>Les 3 violations Major sont détaillées dans les sections suivantes.</p>
       </Insight>
     </div>
   </section>

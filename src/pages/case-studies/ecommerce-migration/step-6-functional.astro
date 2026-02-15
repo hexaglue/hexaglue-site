@@ -284,7 +284,11 @@ const violationRows: ViolationRow[] = [
       </div>
 
       <Insight>
-        <p>Le score progresse de 3 points grâce au refactoring de <code>InventoryUseCases</code> qui résout les 2 violations <code>layer-isolation</code>. La seule violation restante (<code>aggregate-boundary</code>) relève d'une limitation du classificateur, pas d'un défaut d'architecture.</p>
+        <p>Le score progresse de 3 points grâce au refactoring de <code>InventoryUseCases</code> qui résout les 2 violations <code>layer-isolation</code>.</p>
+        <ul>
+          <li><strong>Statut PASSED (warnings)</strong> : aucune violation Blocker ou Critical. La seule violation restante (<code>aggregate-boundary</code>) est de sévérité Major : elle relève d'une limitation du classificateur, pas d'un défaut d'architecture</li>
+          <li><strong>Score plafonné à 63</strong> : les dimensions DDD (95%) et Hexagonal (100%) sont proches de la perfection, mais Dependencies (0%) et Coupling (31%) captent 35% du score total et restent hors périmètre hexagonal</li>
+        </ul>
       </Insight>
     </div>
   </section>
@@ -308,7 +312,7 @@ const violationRows: ViolationRow[] = [
       <Insight>
         <ul>
           <li><strong>Hexagonal Architecture passe à 100%</strong> (+10) : le refactoring de <code>InventoryUseCases</code> élimine la dernière dépendance non classifiée. Tous les services applicatifs sont des POJOs purs</li>
-          <li><strong>Dependencies (0%) et Coupling (31%)</strong> restent inchangés : ces dimensions mesurent les dépendances Maven et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
+          <li><strong>Dependencies (0%) et Coupling (31%)</strong> restent inchangés : ces dimensions mesurent les cycles de dépendances et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
           <li><strong>Cohesion monte à 64%</strong> (+1) : légère amélioration due à la simplification de <code>InventoryUseCases</code></li>
         </ul>
       </Insight>
@@ -527,16 +531,97 @@ const violationRows: ViolationRow[] = [
     </div>
   </section>
 
+  <!-- Axes d'amélioration -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy label="Perspectives" title="Axes d'amélioration" gradient="bg-blue-purple-gradient">
+        Le score de 63/100 (grade D) reflète fidèlement l'état du projet : l'architecture hexagonale est en place, mais des dimensions structurelles restent à travailler.<br>
+        Voici les leviers identifiés par HexaGlue pour progresser vers les grades supérieurs.
+      </SectionCopy>
+
+      <div class="mt-10 space-y-6">
+        <!-- Dependencies -->
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri:git-branch-line" class="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Dependencies : 0% &rarr; cycles de dépendances</h3>
+              <p class="text-sm text-astro-gray-200">
+                Cette dimension pénalise les cycles de dépendances entre packages
+                et les violations du principe de dépendances stables (SDP).
+                Un score de 0% indique de nombreux cycles inter-packages dans le code classifié.
+              </p>
+              <p class="text-sm text-astro-gray-200 mt-2">
+                <strong class="text-white">Levier</strong> : restructurer les packages pour éliminer
+                les cycles de dépendances. Isoler chaque bounded context (Order, Customer, Product)
+                dans des packages indépendants, ou migrer vers une structure multi-module
+                pour forcer la séparation physique via <code>reactor-generate</code> et <code>reactor-audit</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coupling -->
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri:links-line" class="w-6 h-6 text-orange-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Coupling : 31% &rarr; restructuration</h3>
+              <p class="text-sm text-astro-gray-200">
+                Cette dimension mesure le couplage afférent entre packages.
+                Plusieurs bounded contexts partagent des types, ce qui augmente le couplage.
+              </p>
+              <p class="text-sm text-astro-gray-200 mt-2">
+                <strong class="text-white">Levier</strong> : réduire les dépendances croisées entre
+                bounded contexts (Order, Customer, Product) en isolant davantage les packages.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Violation résiduelle -->
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri:error-warning-line" class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Violation aggregate-boundary</h3>
+              <p class="text-sm text-astro-gray-200">
+                <code>OrderLine</code> est accessible hors de l'agrégat <code>Order</code>
+                car il n'a pas d'identifiant explicite.
+                Ajouter un <code>OrderLineId</code> permettrait au classificateur de reconnaître
+                <code>OrderLine</code> comme Entity membre de l'agrégat et d'éliminer cette violation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Insight variant="green" class="mt-10">
+        <p><strong>Projection</strong> : en corrigeant Dependencies (multi-module) et Coupling (restructuration),
+        le score pourrait atteindre 80+ (grade B).</p>
+        <ul>
+          <li><strong>Multi-module</strong> : HexaGlue supporte nativement les projets multi-modules
+          via <code>reactor-generate</code> et <code>reactor-audit</code>.
+          L'étude de cas Banking illustre cette approche</li>
+          <li><strong>Boilerplate (81%)</strong> : ce ratio élevé reflète le volume de code généré
+          (entités JPA, mappers), technique par nature. Il n'est pas un indicateur de dette</li>
+          <li><strong>Plugins futurs</strong> : un plugin REST pourrait générer les contrôleurs,
+          actuellement écrits manuellement</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
   <!-- CTA Section -->
   <section class="py-16 md:py-24 mb-12 relative">
     <div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
       <h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
-        <span class="text-astro-gray-300">Une architecture propre.</span><br/>
-        <span class="bg-clip-text text-transparent bg-blue-purple-gradient">Une dette technique résorbée.</span>
+        <span class="text-astro-gray-300">Une architecture hexagonale opérationnelle.</span><br/>
+        <span class="bg-clip-text text-transparent bg-blue-purple-gradient">Un socle solide pour aller plus loin.</span>
       </h2>
 
       <p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
-        Un domaine testable sans infrastructure, des adaptateurs générés, une maintenance simplifiée. Découvrez comment HexaGlue peut transformer votre projet Java.
+        Un domaine pur, des adaptateurs générés, et une feuille de route claire vers un grade B.
       </p>
 
       <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">

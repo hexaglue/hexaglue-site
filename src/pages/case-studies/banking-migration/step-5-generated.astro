@@ -18,8 +18,7 @@ import ModificationList from '../_components/ModificationList.astro';
 import ModificationGroup from '../_components/ModificationGroup.astro';
 import ModificationItem from '../_components/ModificationItem.astro';
 
-const hexaglueConfig = `# hexaglue.yaml
-classification:
+const hexaglueConfig = `classification:
   exclude:
     - "com.acme.banking.core.exception.*"
     - "com.acme.banking.api.dto.*"
@@ -27,16 +26,22 @@ classification:
     - "com.acme.banking.api.exception.*"
 
 plugins:
-  jpa:
-    entitySuffix: JpaEntity
-    repositorySuffix: JpaRepository
-    adapterSuffix: RepositoryAdapter
-    targetModule: banking-persistence
-  audit:
-    aggregateReport: true
-  living-doc:
-    outputFormat: markdown
-    includeMetrics: true
+  io.hexaglue.plugin.jpa:
+    entitySuffix: "JpaEntity"           # personnalisé (défaut: "Entity")
+    repositorySuffix: "JpaRepository"   # défaut
+    adapterSuffix: "RepositoryAdapter"  # personnalisé (défaut: "Adapter")
+    generateRepositories: true          # défaut
+    generateAdapters: true              # défaut
+    generateEmbeddables: true           # défaut
+    enableAuditing: false               # défaut
+    targetModule: banking-persistence   # routage multi-module
+
+  io.hexaglue.plugin.livingdoc:
+    outputDir: "living-doc"             # défaut
+
+  io.hexaglue.plugin.audit.ddd:
+    audit.allowCriticalViolations: true # personnalisé (défaut: false)
+    aggregateReport: true               # rapport agrégé multi-module
 
 modules:
   banking-core:
@@ -161,9 +166,9 @@ const inventoryRows: InventoryRow[] = [
 
       <Insight>
         <ul>
-          <li><strong><code>targetModule: banking-persistence</code></strong> : tout le code JPA généré est routé vers le module <code>banking-persistence</code>, dans <code>banking-persistence/src/main/java/com/acme/banking/infrastructure/persistence/</code></li>
+          <li><strong>Configuration minimale</strong> : seuls 3 paramètres sont personnalisés (<code>entitySuffix</code>, <code>adapterSuffix</code>, <code>audit.allowCriticalViolations</code>). Les autres sont affichés pour référence mais peuvent être omis : HexaGlue utilise des défauts raisonnables</li>
+          <li><strong><code>targetModule: banking-persistence</code></strong> : tout le code JPA généré est routé vers le module <code>banking-persistence</code></li>
           <li><strong>~32 fichiers générés</strong> : entités, repositories, mappers, adapters et embeddables, sans écrire une seule ligne à la main</li>
-          <li><strong>Exclusions simplifiées</strong> : les exclusions pour <code>service.service</code> et <code>service.event</code> ne sont plus nécessaires car les services ont été correctement restructurés</li>
           <li><strong>Rôles des modules</strong> : chaque module Maven déclare son rôle architectural (DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY)</li>
         </ul>
       </Insight>
@@ -274,7 +279,11 @@ const inventoryRows: InventoryRow[] = [
       </div>
 
       <Insight>
-        <p>Le score progresse de 43 points grâce à la combinaison de la génération automatique et de la suppression du code JPA manuel. Les dimensions DDD Compliance et Hexagonal Architecture atteignent toutes deux 100%. Zéro violation : les détails sont dans les sections suivantes.</p>
+        <p>Le score progresse de 43 points grâce à la combinaison de la génération automatique et de la suppression du code JPA manuel. Les dimensions DDD Compliance et Hexagonal Architecture atteignent toutes deux 100%.</p>
+        <ul>
+          <li><strong>Statut PASSED</strong> : l'audit passe car il n'y a aucune violation (ni Blocker, ni Critical, ni Major)</li>
+          <li><strong>Grade D (score &ge; 60)</strong> : le grade reflète la qualité globale. Le score est plafonné par les dimensions Dependencies (0%) et Coupling (44%), qui mesurent les cycles de dépendances et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
+        </ul>
       </Insight>
     </div>
   </section>
@@ -299,7 +308,7 @@ const inventoryRows: InventoryRow[] = [
           <li><strong>DDD Compliance bondit à 100%</strong> (+84) : tous les agrégats, value objects et identifiants sont correctement classifiés et respectent les conventions DDD</li>
           <li><strong>Hexagonal Architecture atteint 100%</strong> (+85) : les services applicatifs sont des POJOs purs, chaque port dispose d'un adaptateur généré, les couches sont isolées</li>
           <li><strong>Coupling progresse à 44%</strong> (+6) : la suppression des dépendances JPA manuelles réduit le couplage entre packages</li>
-          <li><strong>Dependencies (0%) et Coupling (44%)</strong> restent les points faibles : ces dimensions mesurent les dépendances Maven et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
+          <li><strong>Dependencies (0%) et Coupling (44%)</strong> restent les points faibles : ces dimensions mesurent les cycles de dépendances et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
         </ul>
       </Insight>
     </div>

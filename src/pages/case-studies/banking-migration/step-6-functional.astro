@@ -194,7 +194,11 @@ const inventoryRows: InventoryRow[] = [
       </div>
 
       <Insight>
-        <p>Le score est stable car les changements sont fonctionnels : ajout de <code>reconstitute()</code> et câblage des driven ports. L'architecture hexagonale reste à 100%, le DDD à 100%, et aucune violation n'apparaît.</p>
+        <p>Le score est stable car les changements sont fonctionnels : ajout de <code>reconstitute()</code> et câblage des driven ports.</p>
+        <ul>
+          <li><strong>Statut PASSED</strong> : aucune violation. L'architecture hexagonale et le DDD sont tous deux à 100%</li>
+          <li><strong>Score plafonné à 66</strong> : Dependencies (0%) et Coupling (44%) représentent 35% du score total. Ces dimensions mesurent les cycles de dépendances et le couplage entre packages, pas la conformité hexagonale</li>
+        </ul>
       </Insight>
     </div>
   </section>
@@ -208,7 +212,7 @@ const inventoryRows: InventoryRow[] = [
         gradient="bg-orange-yellow-gradient"
       >
         Le score final de 66/100 reflète l'état de chaque dimension architecturale.<br>
-        Les dimensions DDD et Hexagonal sont au maximum. Les dimensions Dependencies et Coupling, qui mesurent les dépendances Maven, plafonnent le score.
+        Les dimensions DDD et Hexagonal sont au maximum. Les dimensions Dependencies et Coupling, qui mesurent les cycles de dépendances et le couplage entre packages, plafonnent le score.
       </SectionCopy>
 
       <div class="mt-10">
@@ -219,7 +223,7 @@ const inventoryRows: InventoryRow[] = [
         <ul>
           <li><strong>DDD Compliance et Hexagonal Architecture à 100%</strong> : inchangés, les deux piliers fondamentaux sont au maximum depuis l'étape 5</li>
           <li><strong>Cohesion recule légèrement à 63%</strong> (-1) : le reclassement de <code>FraudDetection</code> et <code>NotificationSender</code> en driven ports modifie marginalement le ratio</li>
-          <li><strong>Dependencies (0%) et Coupling (44%)</strong> restent inchangés : ces dimensions mesurent les dépendances Maven et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
+          <li><strong>Dependencies (0%) et Coupling (44%)</strong> restent inchangés : ces dimensions mesurent les cycles de dépendances et le couplage entre packages, indépendamment de l'architecture hexagonale</li>
         </ul>
       </Insight>
     </div>
@@ -464,16 +468,99 @@ const inventoryRows: InventoryRow[] = [
     </div>
   </section>
 
+  <!-- Axes d'amélioration -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy label="Perspectives" title="Axes d'amélioration" gradient="bg-blue-purple-gradient">
+        Le score de 66/100 (grade D) reflète fidèlement l'état du projet : les dimensions DDD et Hexagonal sont au maximum, mais des dimensions structurelles restent à travailler.<br>
+        Voici les leviers identifiés par HexaGlue pour progresser vers les grades supérieurs.
+      </SectionCopy>
+
+      <div class="mt-10 space-y-6">
+        <!-- Dependencies -->
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri:git-branch-line" class="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Dependencies : 0% &rarr; cycles de dépendances</h3>
+              <p class="text-sm text-astro-gray-200">
+                Cette dimension pénalise les cycles de dépendances entre packages
+                et les violations du principe de dépendances stables (SDP).
+                Un score de 0% indique de nombreux cycles inter-packages dans le code classifié.
+              </p>
+              <p class="text-sm text-astro-gray-200 mt-2">
+                <strong class="text-white">Levier</strong> : restructurer les packages pour éliminer
+                les cycles de dépendances. Isoler chaque bounded context (Account, Customer, Transaction)
+                dans des packages indépendants réduit les références croisées et les violations de stabilité.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coupling -->
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri:links-line" class="w-6 h-6 text-orange-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Coupling : 44% &rarr; isolation des packages</h3>
+              <p class="text-sm text-astro-gray-200">
+                Le couplage inter-packages reste élevé car plusieurs bounded contexts
+                partagent des types entre eux.
+              </p>
+              <p class="text-sm text-astro-gray-200 mt-2">
+                <strong class="text-white">Levier</strong> : réduire les dépendances croisées
+                entre bounded contexts (Account, Customer, Transaction) et utiliser
+                des identifiants typés plutôt que des références directes entre agrégats.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cohesion -->
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <Icon name="ri:pie-chart-line" class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
+            <div>
+              <h3 class="text-lg font-semibold text-white mb-2">Cohesion : 63% &rarr; packages ciblés</h3>
+              <p class="text-sm text-astro-gray-200">
+                La cohésion mesure la concentration fonctionnelle des packages.
+                Certains packages mélangent des responsabilités distinctes.
+              </p>
+              <p class="text-sm text-astro-gray-200 mt-2">
+                <strong class="text-white">Levier</strong> : regrouper les types
+                par bounded context dans des sous-packages dédiés
+                pour améliorer la cohésion fonctionnelle.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Insight variant="green" class="mt-10">
+        <p><strong>Projection</strong> : en améliorant Dependencies et Coupling,
+        le score pourrait atteindre 80+ (grade B).</p>
+        <ul>
+          <li><strong>Cycles de dépendances</strong> : restructurer les packages
+          pour éliminer les dépendances circulaires entre bounded contexts</li>
+          <li><strong>Boilerplate à 43%</strong> : un ratio sain pour un projet multi-module.
+          Le code généré est technique par nature, pas de la dette</li>
+          <li><strong>Plugins futurs</strong> : un plugin REST pourrait générer les contrôleurs
+          du module <code>banking-api</code>, actuellement écrits manuellement</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
   <!-- CTA Section -->
   <section class="py-16 md:py-24 mb-12 relative">
     <div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
       <h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
-        <span class="text-astro-gray-300">Une architecture propre.</span><br/>
-        <span class="bg-clip-text text-transparent bg-blue-purple-gradient">Une dette technique résorbée.</span>
+        <span class="text-astro-gray-300">Une architecture hexagonale opérationnelle.</span><br/>
+        <span class="bg-clip-text text-transparent bg-blue-purple-gradient">Un socle solide pour aller plus loin.</span>
       </h2>
 
       <p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
-        La migration est terminée. L'application bancaire multi-modules est passée de 14/100 à 66/100, avec 0 violation et une architecture hexagonale complète. L'infrastructure JPA est entièrement générée et routée vers le module banking-persistence.
+        L'application bancaire multi-modules est passée de 14/100 à 66/100, avec 0 violation et DDD + Hexagonal à 100%. Les axes d'amélioration identifiés ouvrent la voie vers un grade B.
       </p>
 
       <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
