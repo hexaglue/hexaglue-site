@@ -33,8 +33,7 @@ const yamlConfig = `plugins:
   io.hexaglue.plugin.livingdoc:
     outputDir: "living-doc"
     generateDiagrams: true
-    maxPropertiesInDiagram: 5
-    includeDebugSections: false`;
+    maxPropertiesInDiagram: 5`;
 ---
 
 <MainLayout
@@ -130,17 +129,11 @@ const yamlConfig = `plugins:
 						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
 						<td class="py-3 hidden md:table-cell">Active la génération de diagrammes Mermaid dans un fichier <code>diagrams.md</code> dédié</td>
 					</tr>
-					<tr class="border-b border-astro-dark-100/10">
+					<tr>
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">maxPropertiesInDiagram</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">integer</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>5</code></td>
 						<td class="py-3 hidden md:table-cell">Nombre maximum de propriétés affichées par classe dans les diagrammes</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">includeDebugSections</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Inclut les sections de debug dans la documentation générée</td>
 					</tr>
 				</tbody>
 			</table>

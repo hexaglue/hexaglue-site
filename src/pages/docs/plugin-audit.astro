@@ -29,21 +29,27 @@ const pomPlugin = `<plugin>
     </dependencies>
 </plugin>`;
 
-const yamlComplete = `plugins:
-  io.hexaglue.plugin.audit:
-    audit.allowCriticalViolations: false
-    audit.enabledConstraints: ""                    # Vide = toutes les contraintes
-    audit.enabledMetrics: ""                        # Vide = toutes les métriques
-    audit.reportFormats: "json,html,markdown"
-    generateDocs: false`;
+const pomConfig = `<plugin>
+    <groupId>${versions.groupId}</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>${versions.hexaglue}</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.shop</basePackage>
+        <failOnError>true</failOnError>
+        <failOnWarning>false</failOnWarning>
+        <reportDirectory>\${project.build.directory}/hexaglue/reports</reportDirectory>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-audit</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
 
-const yamlRestrictive = `plugins:
-  io.hexaglue.plugin.audit:
-    audit.allowCriticalViolations: false
-    audit.enabledConstraints: "ddd:entity-identity,ddd:domain-purity,hexagonal:dependency-direction"
-    audit.enabledMetrics: "domain.coverage,domain.purity,aggregate.avgSize"
-    audit.reportFormats: "html"
-    generateDocs: true`;
+const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 ---
 
 <MainLayout
@@ -90,7 +96,7 @@ const yamlRestrictive = `plugins:
 		<div class="mt-10 max-w-4xl mx-auto space-y-4">
 			<Code code={pomPlugin} lang="xml" title="pom.xml" />
 			<p class="text-base text-astro-gray-300 font-light">
-				L'audit s'exécute automatiquement lors de la phase <code>verify</code> (<code>mvn verify</code>). Le rapport est généré dans <code>target/audit/</code>.
+				L'audit s'exécute automatiquement lors de la phase <code>verify</code> (<code>mvn verify</code>). Le rapport est généré dans <code>target/hexaglue/reports/audit/</code>.
 			</p>
 			<p class="text-base text-astro-gray-200 font-light">
 				Trois éléments clés dans cette configuration :
@@ -117,12 +123,12 @@ const yamlRestrictive = `plugins:
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy
 			label="Configuration"
-			title="Options YAML"
+			title="Options Maven"
 			gradient="bg-orange-yellow-gradient"
 		>
-			Le fichier <code>hexaglue.yaml</code>, placé à la racine du projet (à côté du <code>pom.xml</code>), centralise la configuration de HexaGlue et de tous ses plugins.<br>
-			Les options ci-dessous se configurent dans la section <code>plugins.io.hexaglue.plugin.audit:</code> du fichier YAML.<br>
-			Les paramètres Maven (<code>&lt;configuration&gt;</code>) sont prioritaires sur les valeurs YAML.
+			La configuration de l'audit se fait via les paramètres <code>&lt;configuration&gt;</code> du plugin Maven dans le <code>pom.xml</code>.<br>
+			Ces paramètres contrôlent le comportement du build (échec sur violations) et l'emplacement des rapports générés.<br>
+			Le paramètre <code>skip</code> peut aussi être passé en ligne de commande via <code>-Dhexaglue.skip=true</code>.
 		</SectionCopy>
 
 		<div class="table-panel mt-10">
@@ -138,34 +144,28 @@ const yamlRestrictive = `plugins:
 				</thead>
 				<tbody class="text-astro-gray-200">
 					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">audit.allowCriticalViolations</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnError</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des violations ERROR ou BLOCKER sont détectées</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnWarning</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Autorise les violations CRITICAL sans bloquer le build. Les violations BLOCKER bloquent toujours.</td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des violations WARNING sont détectées</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">audit.enabledConstraints</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string (CSV)</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>(vide = toutes)</code></td>
-						<td class="py-3 hidden md:table-cell">Liste des contraintes à exécuter, séparées par des virgules. Si vide, toutes les contraintes sont actives.</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">audit.enabledMetrics</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string (CSV)</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>(vide = toutes)</code></td>
-						<td class="py-3 hidden md:table-cell">Liste des métriques à calculer, séparées par des virgules. Si vide, toutes les métriques sont actives.</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">audit.reportFormats</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string (CSV)</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"json,html,markdown"</code></td>
-						<td class="py-3 hidden md:table-cell">Formats de rapport à générer. Valeurs possibles : <code>json</code>, <code>html</code>, <code>markdown</code>. La sortie console est toujours active.</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">reportDirectory</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>$&#123;project.build.directory&#125;/hexaglue/reports</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie pour les rapports d'audit</td>
 					</tr>
 					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDocs</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Génère des fichiers de documentation architecturale individuels (diagrammes Mermaid dans <code>audit/docs/</code>).</td>
+						<td class="py-3 hidden md:table-cell">Désactive complètement l'audit (configurable via <code>-Dhexaglue.skip=true</code>)</td>
 					</tr>
 				</tbody>
 			</table>
@@ -173,8 +173,8 @@ const yamlRestrictive = `plugins:
 		</div>
 
 		<div class="mt-8 max-w-4xl mx-auto space-y-4">
-			<Code code={yamlComplete} lang="yaml" title="hexaglue.yaml : configuration complète" />
-			<Code code={yamlRestrictive} lang="yaml" title="hexaglue.yaml : configuration restrictive" />
+			<Code code={pomConfig} lang="xml" title="pom.xml : configuration de l'audit" />
+			<Code code={pomSkip} lang="bash" title="Désactiver l'audit en ligne de commande" />
 		</div>
 	</section>
 
@@ -353,7 +353,7 @@ const yamlRestrictive = `plugins:
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-400 font-medium">CRITICAL</span></td>
-						<td class="py-3 pr-4">Build échoue sauf si <code>allowCriticalViolations: true</code></td>
+						<td class="py-3 pr-4">Build échoue sauf si <code>failOnError: false</code></td>
 						<td class="py-3 hidden md:table-cell">Violations DDD sérieuses (VO mutables, entités sans identité)</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
@@ -471,8 +471,8 @@ const yamlRestrictive = `plugins:
 			title="Formats de sortie"
 			gradient="bg-orange-yellow-gradient"
 		>
-			L'audit produit un rapport dans un ou plusieurs formats, selon la valeur de <code>audit.reportFormats</code>.<br>
-			La sortie console (avec couleurs ANSI) est toujours active, quel que soit le paramétrage. Les autres formats génèrent un fichier dans <code>target/audit/</code>.
+			L'audit produit un rapport dans 3 formats de fichier, générés par défaut à chaque exécution.<br>
+			La sortie console (avec couleurs ANSI) est toujours active en complément. Les fichiers sont générés dans <code>target/hexaglue/reports/audit/</code>.
 		</SectionCopy>
 
 		<div class="table-panel mt-10">
@@ -488,17 +488,17 @@ const yamlRestrictive = `plugins:
 				<tbody class="text-astro-gray-200">
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium whitespace-nowrap">JSON</td>
-						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/audit/audit-report.json</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/hexaglue/reports/audit/audit-report.json</code></td>
 						<td class="py-3">Consommation programmatique, intégration avec des outils CI/CD</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium whitespace-nowrap">HTML</td>
-						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/audit/audit-report.html</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/hexaglue/reports/audit/audit-report.html</code></td>
 						<td class="py-3">Consultation web, rapport partageable avec CSS intégré</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 font-medium whitespace-nowrap">Markdown</td>
-						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/audit/AUDIT-REPORT.md</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/hexaglue/reports/audit/AUDIT-REPORT.md</code></td>
 						<td class="py-3">Versionnage Git, intégration GitHub, documentation</td>
 					</tr>
 					<tr>
