@@ -64,7 +64,7 @@ import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remedia
 					<thead>
 						<tr class="border-b border-astro-dark-100/20">
 							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Dimension</th>
-							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Poids</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap w-20">Poids</th>
 							<th class="py-3 text-astro-gray-300 font-medium">Ce qu'elle évalue</th>
 						</tr>
 					</thead>
@@ -154,20 +154,44 @@ import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remedia
 				</h3>
 				<ul class="space-y-3 text-sm text-astro-gray-200">
 					<li>
+						<code class="accent">ddd:aggregate-cycle</code>
+						<span class="severity blocker">BLOCKER</span>
+						<p class="mt-1 font-light">Dépendance circulaire entre agrégats (<code>Order</code> → <code>Customer</code> → <code>Order</code>)</p>
+					</li>
+					<li>
 						<code class="accent">ddd:entity-identity</code>
-						<p class="mt-1 font-light">Entité sans identifiant typé (un champ <code>Long id</code> au lieu d'un <code>OrderId</code>)</p>
+						<span class="severity critical">CRITICAL</span>
+						<p class="mt-1 font-light">Entité sans identifiant typé (<code>Long id</code> au lieu d'un <code>OrderId</code>)</p>
+					</li>
+					<li>
+						<code class="accent">ddd:value-object-immutable</code>
+						<span class="severity critical">CRITICAL</span>
+						<p class="mt-1 font-light">Value object avec état mutable (setters, champs non-final)</p>
 					</li>
 					<li>
 						<code class="accent">ddd:domain-purity</code>
+						<span class="severity major">MAJOR</span>
 						<p class="mt-1 font-light">Import d'infrastructure dans le domaine (<code>javax.persistence</code>, <code>org.springframework</code>)</p>
 					</li>
 					<li>
 						<code class="accent">ddd:aggregate-boundary</code>
+						<span class="severity major">MAJOR</span>
 						<p class="mt-1 font-light">Entité exposée en dehors de son agrégat</p>
 					</li>
 					<li>
-						<code class="accent">ddd:value-object-mutability</code>
-						<p class="mt-1 font-light">Value object avec état mutable</p>
+						<code class="accent">ddd:aggregate-repository</code>
+						<span class="severity major">MAJOR</span>
+						<p class="mt-1 font-light">Agrégat sans port repository dédié</p>
+					</li>
+					<li>
+						<code class="accent">ddd:aggregate-consistency</code>
+						<span class="severity major">MAJOR</span>
+						<p class="mt-1 font-light">Agrégat trop large ou dont les entités internes sont accessibles directement</p>
+					</li>
+					<li>
+						<code class="accent">ddd:event-naming</code>
+						<span class="severity minor">MINOR</span>
+						<p class="mt-1 font-light">Événement domaine nommé au présent au lieu du passé (<code>CreateOrder</code> → <code>OrderCreated</code>)</p>
 					</li>
 				</ul>
 			</div>
@@ -180,19 +204,38 @@ import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remedia
 				</h3>
 				<ul class="space-y-3 text-sm text-astro-gray-200">
 					<li>
+						<code class="accent">hexagonal:dependency-direction</code>
+						<span class="severity blocker">BLOCKER</span>
+						<p class="mt-1 font-light">Le domaine dépend de l'infrastructure (dépendance dans le mauvais sens)</p>
+					</li>
+					<li>
+						<code class="accent">hexagonal:port-interface</code>
+						<span class="severity critical">CRITICAL</span>
+						<p class="mt-1 font-light">Port déclaré comme classe concrète au lieu d'une interface</p>
+					</li>
+					<li>
+						<code class="accent">hexagonal:dependency-inversion</code>
+						<span class="severity critical">CRITICAL</span>
+						<p class="mt-1 font-light">Service applicatif dépendant d'une classe concrète d'infrastructure au lieu d'une abstraction</p>
+					</li>
+					<li>
 						<code class="accent">hexagonal:layer-isolation</code>
+						<span class="severity major">MAJOR</span>
 						<p class="mt-1 font-light">Service accédant directement à un repository sans passer par un port</p>
 					</li>
 					<li>
 						<code class="accent">hexagonal:port-coverage</code>
+						<span class="severity major">MAJOR</span>
 						<p class="mt-1 font-light">Port driven sans implémentation d'adapter</p>
 					</li>
 					<li>
 						<code class="accent">hexagonal:port-direction</code>
+						<span class="severity major">MAJOR</span>
 						<p class="mt-1 font-light">Port appelé dans le mauvais sens (driven utilisé comme driving)</p>
 					</li>
 					<li>
 						<code class="accent">hexagonal:application-purity</code>
+						<span class="severity major">MAJOR</span>
 						<p class="mt-1 font-light">Service applicatif avec annotations de framework</p>
 					</li>
 				</ul>
@@ -201,6 +244,10 @@ import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remedia
 
 		<div class="mt-8 max-w-4xl mx-auto">
 			<div class="flex flex-wrap gap-4">
+				<div class="flex items-center gap-2 px-4 py-2 bg-astro-dark-800/40 border border-purple-400/20 rounded-lg">
+					<span class="text-purple-400 font-medium text-sm">BLOCKER</span>
+					<span class="text-astro-gray-200 text-sm font-light">Bloque le build systématiquement. Violation structurelle non négociable.</span>
+				</div>
 				<div class="flex items-center gap-2 px-4 py-2 bg-astro-dark-800/40 border border-red-400/20 rounded-lg">
 					<span class="text-red-400 font-medium text-sm">CRITICAL</span>
 					<span class="text-astro-gray-200 text-sm font-light">Bloque le build en CI (configurable). Violation d'un principe fondamental.</span>
@@ -208,6 +255,10 @@ import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remedia
 				<div class="flex items-center gap-2 px-4 py-2 bg-astro-dark-800/40 border border-yellow-400/20 rounded-lg">
 					<span class="text-yellow-400 font-medium text-sm">MAJOR</span>
 					<span class="text-astro-gray-200 text-sm font-light">Avertissement. Écart significatif mais non bloquant par défaut.</span>
+				</div>
+				<div class="flex items-center gap-2 px-4 py-2 bg-astro-dark-800/40 border border-blue-400/20 rounded-lg">
+					<span class="text-blue-400 font-medium text-sm">MINOR</span>
+					<span class="text-astro-gray-200 text-sm font-light">Suggestion. Bonne pratique recommandée, priorité basse.</span>
 				</div>
 			</div>
 		</div>
@@ -233,7 +284,322 @@ import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remedia
 		</BrowserFrame>
 	</section>
 
-	<!-- Section 3 : Le rapport complet -->
+	<!-- Section 3 : Les 21 métriques mesurées -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Métriques"
+			title="21 métriques, 6 catégories, des seuils actionnables"
+		>
+			Chaque métrique est calculée automatiquement à chaque build. Son résultat est comparé à un seuil d'alerte : si la valeur dépasse le seuil, la métrique apparaît en warning dans le rapport.<br>
+			Les identifiants techniques correspondent aux clés affichées dans le rapport d'audit et utilisables dans la configuration Maven du plugin.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-8">
+
+			<!-- DDD -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4">Domain-Driven Design</h3>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm text-left">
+						<thead>
+							<tr class="border-b border-astro-dark-100/20">
+								<th class="py-2 pr-4 text-astro-gray-300 font-medium">Métrique</th>
+								<th class="py-2 text-astro-gray-300 font-medium whitespace-nowrap">Seuil d'alerte</th>
+							</tr>
+						</thead>
+						<tbody class="text-astro-gray-200">
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">domain.coverage</code>
+									<p class="mt-1 font-light">Pourcentage de types classifiés comme domaine</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 30%</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">domain.purity</code>
+									<p class="mt-1 font-light">Pourcentage de types domaine sans imports d'infrastructure</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 100%</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">ddd.value.object.ratio</code>
+									<p class="mt-1 font-light">Ratio Value Objects / (Entités + Value Objects)</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 40%</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">ddd.event.coverage</code>
+									<p class="mt-1 font-light">Pourcentage d'agrégats émettant au moins un Domain Event</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 50%</td>
+							</tr>
+							<tr>
+								<td class="py-3 pr-4">
+									<code class="accent">ddd.aggregate.coupling</code>
+									<p class="mt-1 font-light">Dépendances directes moyennes entre agrégats</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 3.0</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Design des agrégats -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4">Design des agrégats</h3>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm text-left">
+						<thead>
+							<tr class="border-b border-astro-dark-100/20">
+								<th class="py-2 pr-4 text-astro-gray-300 font-medium">Métrique</th>
+								<th class="py-2 text-astro-gray-300 font-medium whitespace-nowrap">Seuil d'alerte</th>
+							</tr>
+						</thead>
+						<tbody class="text-astro-gray-200">
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">aggregate.avgSize</code>
+									<p class="mt-1 font-light">Nombre moyen de méthodes par agrégat</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 20</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">aggregate.boundary</code>
+									<p class="mt-1 font-light">Pourcentage d'entités encapsulées dans leur agrégat</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 80%</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">aggregate.cohesion.lcom4</code>
+									<p class="mt-1 font-light">LCOM4 moyen : nombre de composants connexes dans les agrégats (1 = cohésif)</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 2</td>
+							</tr>
+							<tr>
+								<td class="py-3 pr-4">
+									<code class="accent">aggregate.coupling.efferent</code>
+									<p class="mt-1 font-light">Instabilité moyenne des packages : Ce / (Ca + Ce)</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 0.7</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Architecture hexagonale -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4">Architecture hexagonale</h3>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm text-left">
+						<thead>
+							<tr class="border-b border-astro-dark-100/20">
+								<th class="py-2 pr-4 text-astro-gray-300 font-medium">Métrique</th>
+								<th class="py-2 text-astro-gray-300 font-medium whitespace-nowrap">Seuil d'alerte</th>
+							</tr>
+						</thead>
+						<tbody class="text-astro-gray-200">
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">aggregate.repository.coverage</code>
+									<p class="mt-1 font-light">Pourcentage d'agrégats avec un port repository</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 100%</td>
+							</tr>
+							<tr>
+								<td class="py-3 pr-4">
+									<code class="accent">hexagonal.adapter.independence</code>
+									<p class="mt-1 font-light">Pourcentage de dépendances adapter qui ne sont pas inter-adapter</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 80%</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Qualité du code -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4">Qualité du code</h3>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm text-left">
+						<thead>
+							<tr class="border-b border-astro-dark-100/20">
+								<th class="py-2 pr-4 text-astro-gray-300 font-medium">Métrique</th>
+								<th class="py-2 text-astro-gray-300 font-medium whitespace-nowrap">Seuil d'alerte</th>
+							</tr>
+						</thead>
+						<tbody class="text-astro-gray-200">
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">code.complexity.average</code>
+									<p class="mt-1 font-light">Complexité cyclomatique moyenne des méthodes domaine</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 10</td>
+							</tr>
+							<tr>
+								<td class="py-3 pr-4">
+									<code class="accent">code.boilerplate.ratio</code>
+									<p class="mt-1 font-light">Pourcentage de méthodes boilerplate (getters, setters, equals, hashCode)</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 50%</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Modularité et dépendances -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4">Modularité et dépendances</h3>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm text-left">
+						<thead>
+							<tr class="border-b border-astro-dark-100/20">
+								<th class="py-2 pr-4 text-astro-gray-300 font-medium">Métrique</th>
+								<th class="py-2 text-astro-gray-300 font-medium whitespace-nowrap">Seuil d'alerte</th>
+							</tr>
+						</thead>
+						<tbody class="text-astro-gray-200">
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.propagation.cost</code>
+									<p class="mt-1 font-light">Pourcentage du système impacté par une modification quelconque</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 35%</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.cyclicity.relative</code>
+									<p class="mt-1 font-light">Pourcentage de types impliqués dans des cycles de dépendances</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 5%</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.dependency.depth</code>
+									<p class="mt-1 font-light">Plus long chemin dans le graphe de dépendances</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 7 niveaux</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.fan.out.max</code>
+									<p class="mt-1 font-light">Fan-out maximum : type avec le plus de dépendances sortantes</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 20</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.visibility.average</code>
+									<p class="mt-1 font-light">Visibilité relative moyenne (types publics / total par package)</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&gt; 70%</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.modularity.q</code>
+									<p class="mt-1 font-light">Modularité de Newman-Girvan : qualité du partitionnement en packages</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 0.3</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.cohesion.relational</code>
+									<p class="mt-1 font-light">Cohésion relationnelle H : densité de connexions internes aux packages</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">hors [1.5, 4.0]</td>
+							</tr>
+							<tr>
+								<td class="py-3 pr-4">
+									<code class="accent">architecture.mmi</code>
+									<p class="mt-1 font-light">Modularity Maturity Index (Lilienthal) : modularité, hiérarchie et patterns</p>
+								</td>
+								<td class="py-3 whitespace-nowrap">&lt; 50 / 100</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Stabilité des packages -->
+			<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-lg font-semibold text-white mb-4">Stabilité des packages</h3>
+				<p class="text-sm text-astro-gray-200 font-light mb-4">
+					Calculées par package d'après les métriques de Robert C. Martin. Le rapport affiche un tableau avec une ligne par package.
+				</p>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm text-left">
+						<thead>
+							<tr class="border-b border-astro-dark-100/20">
+								<th class="py-2 pr-4 text-astro-gray-300 font-medium">Métrique</th>
+								<th class="py-2 text-astro-gray-300 font-medium">Interprétation</th>
+							</tr>
+						</thead>
+						<tbody class="text-astro-gray-200">
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">Ca</code>
+									<p class="mt-1 font-light">Afferent Coupling : types externes qui dépendent du package</p>
+								</td>
+								<td class="py-3 font-light">Élevé = package très utilisé, difficile à modifier</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">Ce</code>
+									<p class="mt-1 font-light">Efferent Coupling : types externes dont dépend le package</p>
+								</td>
+								<td class="py-3 font-light">Élevé = package fragile, sensible aux changements externes</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">I</code>
+									<p class="mt-1 font-light">Instability : Ce / (Ca + Ce)</p>
+								</td>
+								<td class="py-3 font-light">0 = maximalement stable, 1 = maximalement instable</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">A</code>
+									<p class="mt-1 font-light">Abstractness : ratio interfaces et abstractions / total types</p>
+								</td>
+								<td class="py-3 font-light">0 = tout concret, 1 = tout abstrait</td>
+							</tr>
+							<tr class="border-b border-astro-dark-100/10">
+								<td class="py-3 pr-4">
+									<code class="accent">D</code>
+									<p class="mt-1 font-light">Distance : |A + I - 1| (distance à la Main Sequence)</p>
+								</td>
+								<td class="py-3 font-light">0 = équilibre idéal, proche de 1 = déséquilibre</td>
+							</tr>
+							<tr>
+								<td class="py-3 pr-4">
+									<code class="accent">Zone</code>
+									<p class="mt-1 font-light">Classification par position sur le plan A/I</p>
+								</td>
+								<td class="py-3 font-light">Main Sequence (idéal), Zone of Pain (trop concret et stable), Zone of Uselessness (trop abstrait et instable)</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="mt-8 max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Tous les seuils sont personnalisables via la configuration Maven du plugin audit. Vous pouvez adapter chaque valeur limite au contexte de votre projet : un monolithe legacy et un microservice greenfield n'ont pas les mêmes exigences.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 4 : Le rapport complet -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy
 			label="Rapport"
@@ -357,6 +723,21 @@ import auditRemediationEffortScreenshot from '~/assets/screenshots/audit-remedia
 	}
 	code.accent {
 		@apply bg-transparent px-0 py-0 text-astro-green;
+	}
+	.severity {
+		@apply ml-2 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide;
+	}
+	.severity.blocker {
+		@apply text-purple-400 bg-purple-400/10;
+	}
+	.severity.critical {
+		@apply text-red-400 bg-red-400/10;
+	}
+	.severity.major {
+		@apply text-yellow-400 bg-yellow-400/10;
+	}
+	.severity.minor {
+		@apply text-blue-400 bg-blue-400/10;
 	}
 	.table-panel {
 		position: relative;
