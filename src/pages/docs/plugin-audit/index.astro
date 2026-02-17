@@ -1,0 +1,673 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import Link from '../../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import { Image } from 'astro:assets';
+import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
+import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
+import versions from '~/data/versions';
+
+const pomPlugin = `<plugin>
+    <groupId>${versions.groupId}</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>${versions.hexaglue}</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.shop</basePackage>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-audit</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const pomConfig = `<plugin>
+    <groupId>${versions.groupId}</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>${versions.hexaglue}</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.shop</basePackage>
+        <failOnError>true</failOnError>
+        <errorOnBlocker>true</errorOnBlocker>
+        <errorOnCritical>false</errorOnCritical>
+        <reportDirectory>\${project.build.directory}/hexaglue/reports</reportDirectory>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-audit</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
+
+const yamlConfig = `plugins:
+  io.hexaglue.plugin.audit:
+    errorOnBlocker: true         # Défaut
+    errorOnCritical: false       # Défaut
+    generateDocs: false          # Défaut`;
+---
+
+<MainLayout
+	title="Plugin Audit v2.1.0 : Référence"
+	description="Référence complète du plugin d'audit HexaGlue v2.1.0 : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport."
+	pluginSlug="plugin-audit"
+	currentVersion="2.1.0"
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		version: "2.1.0",
+		about: [
+			{ "@type": "Thing", name: "Audit d'architecture logicielle" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Documentation
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Plugin Audit<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Contraintes, métriques et formats de rapport.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Référence complète du plugin d'audit HexaGlue : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport.
+			</p>
+		</div>
+	</section>
+
+	<!-- Prérequis Maven -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Installation"
+			title="Ajouter le plugin d'audit"
+			gradient="bg-orange-yellow-gradient"
+		/>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-4">
+			<Code code={pomPlugin} lang="xml" title="pom.xml" />
+			<p class="text-base text-astro-gray-300 font-light">
+				L'audit s'exécute automatiquement lors de la phase <code>verify</code> (<code>mvn verify</code>). Le rapport est généré dans <code>target/hexaglue/reports/audit/</code>.
+			</p>
+			<p class="text-base text-astro-gray-200 font-light">
+				Trois éléments clés dans cette configuration :
+			</p>
+			<ul class="text-base text-astro-gray-200 font-light list-disc list-inside space-y-1.5">
+				<li><code>&lt;extensions&gt;true&lt;/extensions&gt;</code> : active le binding automatique aux phases Maven. Les goals HexaGlue se déclenchent sans configuration supplémentaire lors de <code>mvn compile</code> ou <code>mvn verify</code>.</li>
+				<li><code>&lt;basePackage&gt;</code> : package racine à analyser. Seules les classes de ce package et de ses sous-packages sont classifiées par HexaGlue.</li>
+				<li>Le plugin d'audit est déclaré comme <code>&lt;dependency&gt;</code> du plugin Maven, pas du projet. HexaGlue découvre automatiquement les plugins via le mécanisme Java <code>ServiceLoader</code> : il suffit de les ajouter ici pour qu'ils soient actifs.</li>
+			</ul>
+		</div>
+
+		<BrowserFrame class="mt-10" caption="Vue d'ensemble d'un rapport d'audit HexaGlue (sample-basic, score 76/C)">
+			<Image
+				src={overviewScreenshot}
+				alt="Rapport d'audit HexaGlue : vue d'ensemble du rapport HTML généré pour sample-basic avec verdict 76/100, grade C, inventaire architectural et métriques"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+	</section>
+
+	<!-- Options de configuration -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Options Maven"
+			gradient="bg-orange-yellow-gradient"
+		>
+			La configuration de l'audit se fait via les paramètres <code>&lt;configuration&gt;</code> du plugin Maven dans le <code>pom.xml</code>.<br>
+			Ces paramètres contrôlent le comportement du build (échec sur violations) et l'emplacement des rapports générés.<br>
+			Le paramètre <code>skip</code> peut aussi être passé en ligne de commande via <code>-Dhexaglue.skip=true</code>.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Type</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
+						<td class="py-3 hidden md:table-cell">Package racine à analyser pour les violations DDD et hexagonales</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnError</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build Maven quand des erreurs d'audit existent</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnBlocker</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Les violations BLOCKER comptent comme erreurs d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnCritical</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">reportDirectory</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>$&#123;project.build.directory&#125;/hexaglue/reports</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie pour les rapports d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Désactive complètement l'audit (configurable via <code>-Dhexaglue.skip=true</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types restent non classifiés après l'analyse</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">validationReportPath</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4"><code>$&#123;project.build.directory&#125;/hexaglue/reports/validation/validation-report.md</code></td>
+						<td class="py-3 hidden md:table-cell">Chemin du rapport de validation Markdown (goal <code>validate</code> uniquement)</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="mt-8 max-w-4xl mx-auto space-y-4">
+			<Code code={pomConfig} lang="xml" title="pom.xml : configuration de l'audit" />
+			<Code code={pomSkip} lang="bash" title="Désactiver l'audit en ligne de commande" />
+		</div>
+	</section>
+
+	<!-- Options YAML -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Options YAML"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le fichier <code>hexaglue.yaml</code>, placé à la racine du projet (à côté du <code>pom.xml</code>), centralise la configuration de HexaGlue et de tous ses plugins.<br>
+			Les options ci-dessous se configurent dans la section <code>plugins.io.hexaglue.plugin.audit:</code> du fichier YAML.<br>
+			Les 3 propriétés de failure (<code>failOnError</code>, <code>errorOnBlocker</code>, <code>errorOnCritical</code>) sont unifiées entre Maven et YAML. Précédence : <strong>Maven POM / -D &gt; YAML &gt; defaults</strong>.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Type</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnError</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build Maven quand des erreurs d'audit existent</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnBlocker</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Les violations BLOCKER comptent comme erreurs d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnCritical</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDocs</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Active la génération des diagrammes Mermaid dans un répertoire séparé</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">severityOverrides</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">map</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>&#123;&#125;</code></td>
+						<td class="py-3 hidden md:table-cell">Surcharge de sévérité par contrainte (ex : <code>"ddd:aggregate-repository": "MINOR"</code>). Permet de rétrograder ou promouvoir la sévérité de contraintes individuelles. <em>(Prévu : API prête, lecture YAML pas encore câblée)</em></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="mt-8 max-w-4xl mx-auto">
+			<Code code={yamlConfig} lang="yaml" title="hexaglue.yaml" />
+		</div>
+	</section>
+
+	<!-- Contraintes DDD -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Contraintes"
+			title="Contraintes DDD"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Ces contraintes vérifient la conformité de votre modèle de domaine aux principes DDD.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">ID</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Nom</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Sévérité</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:entity-identity</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Identité des entités</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-400 font-medium">CRITICAL</span></td>
+						<td class="py-3 hidden md:table-cell">Les entités doivent avoir un champ d'identité stable qui les distingue des autres instances.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:value-object-immutable</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Immuabilité des VO</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-400 font-medium">CRITICAL</span></td>
+						<td class="py-3 hidden md:table-cell">Les value objects doivent être immuables pour garantir la thread-safety et la sémantique de valeur.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:aggregate-cycle</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Cycles entre agrégats</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-500 font-bold">BLOCKER</span></td>
+						<td class="py-3 hidden md:table-cell">Les agrégats doivent être des unités indépendantes. Les dépendances circulaires indiquent un mauvais découpage.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:aggregate-repository</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Repository par agrégat</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Chaque agrégat doit avoir une interface repository dédiée pour les opérations de persistence.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:aggregate-boundary</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Frontières d'agrégat</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Les entités d'un agrégat ne doivent être accessibles que via la racine, jamais directement de l'extérieur.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:aggregate-consistency</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Cohérence d'agrégat</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Frontières claires : chaque entité appartient à un seul agrégat, maximum 7 entités par agrégat.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:domain-purity</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Pureté du domaine</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Les types du domaine ne doivent pas dépendre de frameworks, bases de données ou détails d'infrastructure.</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ddd:event-naming</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Nommage des événements</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-astro-gray-400 font-medium">MINOR</span></td>
+						<td class="py-3 hidden md:table-cell">Les événements de domaine doivent utiliser le passé (ex: <code>OrderPlaced</code>, <code>UserCreated</code>).</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Contraintes hexagonales -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Contraintes"
+			title="Contraintes d'architecture hexagonale"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Ces contraintes vérifient l'isolation des couches et le respect des patterns hexagonaux.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">ID</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Nom</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Sévérité</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>hexagonal:dependency-direction</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Direction des dépendances</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-500 font-bold">BLOCKER</span></td>
+						<td class="py-3 hidden md:table-cell">Les dépendances doivent pointer vers le domaine. Le domaine reste indépendant et testable.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>hexagonal:port-interface</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Ports = interfaces</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-400 font-medium">CRITICAL</span></td>
+						<td class="py-3 hidden md:table-cell">Les ports définissent des frontières et doivent être des interfaces pour respecter l'inversion de dépendance.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>hexagonal:dependency-inversion</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Inversion de dépendance</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-400 font-medium">CRITICAL</span></td>
+						<td class="py-3 hidden md:table-cell">L'application doit dépendre d'abstractions (interfaces) et non de classes concrètes d'infrastructure.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>hexagonal:layer-isolation</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Isolation des couches</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Le domaine ne dépend de rien, l'application dépend uniquement du domaine, l'infrastructure peut dépendre des deux.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>hexagonal:port-direction</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Direction des ports</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Les ports DRIVING (entrants) sont implémentés par les services applicatifs. Les ports DRIVEN (sortants) sont implémentés par les adapters.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>hexagonal:port-coverage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Couverture des ports</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Tous les ports doivent avoir au moins un adapter qui les implémente.</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>hexagonal:application-purity</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">Pureté applicative</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 hidden md:table-cell">Les services applicatifs ne doivent pas importer d'annotations de framework (<code>@Service</code>, <code>@Transactional</code>).</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Niveaux de sévérité -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Sévérités"
+			title="Niveaux de sévérité"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Chaque contrainte a un niveau de sévérité qui détermine son impact sur le build Maven.<br>
+			Les deux niveaux les plus élevés (<code>BLOCKER</code> et <code>CRITICAL</code>) peuvent faire échouer la compilation, ce qui garantit que les violations graves sont corrigées avant le déploiement.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Niveau</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Impact sur le build</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Usage</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-500 font-bold">BLOCKER</span></td>
+						<td class="py-3 pr-4">Build échoue immédiatement, non contournable</td>
+						<td class="py-3 hidden md:table-cell">Violations architecturales fondamentales (cycles, direction des dépendances)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-400 font-medium">CRITICAL</span></td>
+						<td class="py-3 pr-4">Build échoue si <code>errorOnCritical: true</code></td>
+						<td class="py-3 hidden md:table-cell">Violations DDD sérieuses (VO mutables, entités sans identité)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-yellow-400 font-medium">MAJOR</span></td>
+						<td class="py-3 pr-4">Avertissement, le build continue</td>
+						<td class="py-3 hidden md:table-cell">Problèmes architecturaux significatifs (agrégat sans repository)</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-astro-gray-400 font-medium">MINOR</span></td>
+						<td class="py-3 pr-4">Information, faible priorité</td>
+						<td class="py-3 hidden md:table-cell">Bonnes pratiques (nommage des événements, taille des agrégats)</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Métriques qualité -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Métriques"
+			title="Métriques calculées"
+			gradient="bg-orange-yellow-gradient"
+		>
+			L'audit calcule 8 métriques de qualité architecturale. Chaque métrique a un seuil d'alerte configurable.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Métrique</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium hidden md:table-cell">Unité</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium hidden md:table-cell">Seuil d'alerte</th>
+						<th class="py-3 text-astro-gray-300 font-medium">Ce qu'elle mesure</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">domain.coverage</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 30%</td>
+						<td class="py-3">Proportion des types classifiés dans la couche domaine</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">domain.purity</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 100%</td>
+						<td class="py-3">Proportion des types du domaine sans dépendance d'infrastructure</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.avgSize</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">méthodes</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 20</td>
+						<td class="py-3">Nombre moyen de méthodes par agrégat. Au-delà de 20, un refactoring est recommandé.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.boundary</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 80%</td>
+						<td class="py-3">Proportion des entités correctement encapsulées dans leur agrégat</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.repository.coverage</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 100%</td>
+						<td class="py-3">Proportion des agrégats ayant un port repository</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.coupling.efferent</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">ratio</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 0.7</td>
+						<td class="py-3">Couplage moyen entre agrégats. Plus il est bas, plus les agrégats sont indépendants.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">code.boilerplate.ratio</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 50%</td>
+						<td class="py-3">Proportion de code boilerplate (getters, setters, equals) dans les types du domaine</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">code.complexity.average</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">complexité</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 10</td>
+						<td class="py-3">Complexité cyclomatique moyenne des méthodes du domaine</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>La métrique <code>domain.purity</code> détecte les imports d'infrastructure dans le domaine : JPA (<code>javax.persistence</code>, <code>jakarta.persistence</code>), Spring (<code>org.springframework</code>), Hibernate, Jackson, JDBC, SDKs cloud (AWS, Azure, GCP), messaging (Kafka, RabbitMQ), et les frameworks web/validation.</p>
+			</Insight>
+		</div>
+
+		<BrowserFrame class="mt-10" caption="KPI Table : les 5 dimensions du score avec statuts On Target / At Risk / Below Target">
+			<Image
+				src={kpiTableScreenshot}
+				alt="Rapport d'audit HexaGlue : tableau KPI montrant les 5 dimensions (DDD, hexagonal, dépendances, couplage, cohésion) avec poids, scores et seuils colorés"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+	</section>
+
+	<!-- Formats de rapport -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Rapports"
+			title="Formats de sortie"
+			gradient="bg-orange-yellow-gradient"
+		>
+			L'audit produit un rapport dans 3 formats de fichier, générés par défaut à chaque exécution.<br>
+			La sortie console (avec couleurs ANSI) est toujours active en complément. Les fichiers sont générés dans <code>target/hexaglue/reports/audit/</code>.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Format</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium hidden md:table-cell">Fichier</th>
+						<th class="py-3 text-astro-gray-300 font-medium">Usage</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">JSON</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/hexaglue/reports/audit/audit-report.json</code></td>
+						<td class="py-3">Consommation programmatique, intégration avec des outils CI/CD</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">HTML</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/hexaglue/reports/audit/audit-report.html</code></td>
+						<td class="py-3">Consultation web, rapport partageable avec CSS intégré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Markdown</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap"><code>target/hexaglue/reports/audit/AUDIT-REPORT.md</code></td>
+						<td class="py-3">Versionnage Git, intégration GitHub, documentation</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Console</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">(sortie standard)</td>
+						<td class="py-3">Affichage terminal avec couleurs ANSI (toujours actif)</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">15 contraintes, 8 métriques, un rapport.</span><br/>
+				Configurez l'audit en quelques lignes.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez les résultats de l'audit sur un projet réel ou explorez les contraintes et métriques disponibles.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/features/audit/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Comprendre les résultats de l'audit
+				</Link>
+				<Link href="/case-studies/ecommerce-migration/step-1-discovery/" class="secondary">
+					<Icon name="ri:eye-line" class="size-5" aria-hidden="true" />
+					<span>Voir un rapport réel</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	code.accent {
+		@apply bg-transparent px-0 py-0 text-astro-green;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(255, 125, 84, 0.07);
+		border-bottom: 1px solid rgba(255, 125, 84, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(255, 125, 84, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(255, 125, 84, 0.04) 0%, rgba(255, 125, 84, 0.02) 50%, rgba(255, 125, 84, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(255, 125, 84, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(255, 125, 84, 0.12),
+			0 0 50px rgba(255, 125, 84, 0.07),
+			0 0 80px rgba(255, 125, 84, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

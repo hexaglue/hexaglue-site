@@ -2,37 +2,35 @@
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import MainLayout from '~/layouts/MainLayout.astro';
-import SectionCopy from '../_components/SectionCopy.astro';
-import Link from '../_components/Link.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import BrowserFrame from '~/components/BrowserFrame.astro';
-import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import { Image } from 'astro:assets';
 import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
 import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
-import versions from '~/data/versions';
-
 const pomPlugin = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>5.0.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-audit</artifactId>
-            <version>${versions.plugins}</version>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
 
 const pomConfig = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>5.0.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
@@ -42,9 +40,9 @@ const pomConfig = `<plugin>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-audit</artifactId>
-            <version>${versions.plugins}</version>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
@@ -53,11 +51,14 @@ const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 ---
 
 <MainLayout
-	title="Plugin Audit : Référence"
-	description="Référence complète du plugin d'audit HexaGlue : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport."
+	title="Plugin Audit v2.0.0 : Référence"
+	description="Référence du plugin d'audit HexaGlue v2.0.0 : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport."
+	pluginSlug="plugin-audit"
+	currentVersion="2.0.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
+		version: "2.0.0",
 		about: [
 			{ "@type": "Thing", name: "Audit d'architecture logicielle" },
 			{ "@type": "Thing", name: "Architecture hexagonale" },
@@ -65,6 +66,14 @@ const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 		],
 	}}
 >
+	<!-- Version banner -->
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8 pt-20">
+		<div class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+			Vous consultez la documentation de la version <strong>2.0.0</strong>.
+			<a href="/docs/plugin-audit/" class="underline hover:text-white">Voir la dernière version.</a>
+		</div>
+	</div>
+
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<AmberStardust height="h-64 md:h-80" />

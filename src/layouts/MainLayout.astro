@@ -11,9 +11,11 @@ import '~/styles/tailwind.css';
 interface Props extends HeadProps {
 	class?: string;
 	bgClass?: string;
+	pluginSlug?: string;
+	currentVersion?: string;
 }
 
-const { bgClass = 'bg-black', ...head } = Astro.props;
+const { bgClass = 'bg-black', pluginSlug, currentVersion, ...head } = Astro.props;
 const pageTitle = head.title ?? head.rawTitle;
 const is404 = head.canonicalURL === null;
 ---
@@ -45,7 +47,7 @@ const is404 = head.canonicalURL === null;
 			</Header>
 		</div>
 
-		<Breadcrumb pageTitle={pageTitle} is404={is404} />
+		<Breadcrumb pageTitle={pageTitle} is404={is404} pluginSlug={pluginSlug} currentVersion={currentVersion} />
 
 		<slot name="subnav" />
 

@@ -2,11 +2,11 @@
 import { Icon } from 'astro-icon/components';
 import { Code } from 'astro-expressive-code/components';
 import MainLayout from '~/layouts/MainLayout.astro';
-import SectionCopy from '../_components/SectionCopy.astro';
-import Link from '../_components/Link.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import BrowserFrame from '~/components/BrowserFrame.astro';
-import AmberStardust from '../_components/landing-page/AmberStardust.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import { Image } from 'astro:assets';
 import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
 import readmeOverviewScreenshot from '~/assets/screenshots/livingdoc-readme-overview.png';
@@ -33,15 +33,19 @@ const yamlConfig = `plugins:
   io.hexaglue.plugin.livingdoc:
     outputDir: "living-doc"
     generateDiagrams: true
-    maxPropertiesInDiagram: 5`;
+    maxPropertiesInDiagram: 5
+    includeDebugSections: true`;
 ---
 
 <MainLayout
-	title="Plugin Living Documentation : Référence"
-	description="Référence complète du plugin Living Documentation HexaGlue : options de configuration, fichiers générés, diagrammes et support multi-module."
+	title="Plugin Living Documentation v2.1.0 : Référence"
+	description="Référence complète du plugin Living Documentation HexaGlue v2.1.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
+	pluginSlug="plugin-living-doc"
+	currentVersion="2.1.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
+		version: "2.1.0",
 		about: [
 			{ "@type": "Thing", name: "Documentation logicielle" },
 			{ "@type": "Thing", name: "Domain-Driven Design" },
@@ -93,7 +97,61 @@ const yamlConfig = `plugins:
 		</div>
 	</section>
 
-	<!-- Options de configuration -->
+	<!-- Paramètres Maven -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Paramètres Maven"
+			gradient="bg-orange-yellow-gradient"
+		>
+			La configuration de la génération se fait via les paramètres <code>&lt;configuration&gt;</code> du plugin Maven dans le <code>pom.xml</code>.<br>
+			Ces paramètres contrôlent le package analysé, le comportement de validation et la gestion des fichiers obsolètes.<br>
+			Le paramètre <code>skip</code> peut aussi être passé en ligne de commande via <code>-Dhexaglue.skip=true</code>.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
+						<td class="py-3 hidden md:table-cell">Package racine à analyser. La documentation est générée à partir des types de domaine de ce package.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4"><code>target/hexaglue/generated-sources</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire de base pour les fichiers générés</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Désactive complètement l'exécution de HexaGlue (configurable via <code>-Dhexaglue.skip=true</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skipValidation</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Ignore la validation des classifications avant la génération de la documentation</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types du domaine ne peuvent pas être classifiés</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Options YAML -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy
 			label="Configuration"
@@ -129,11 +187,23 @@ const yamlConfig = `plugins:
 						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
 						<td class="py-3 hidden md:table-cell">Active la génération de diagrammes Mermaid dans un fichier <code>diagrams.md</code> dédié</td>
 					</tr>
-					<tr>
+					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">maxPropertiesInDiagram</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">integer</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>5</code></td>
 						<td class="py-3 hidden md:table-cell">Nombre maximum de propriétés affichées par classe dans les diagrammes</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">includeDebugSections</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Inclut les sections de debug (classification trace, source location) dans <code>domain.md</code> et <code>ports.md</code>. Mettre à <code>false</code> pour une documentation plus concise.</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4">(défaut global)</td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie spécifique au plugin, surchargeant le répertoire global</td>
 					</tr>
 				</tbody>
 			</table>

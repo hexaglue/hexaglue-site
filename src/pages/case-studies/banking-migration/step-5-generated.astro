@@ -39,8 +39,8 @@ plugins:
   io.hexaglue.plugin.livingdoc:
     outputDir: "living-doc"             # défaut
 
-  io.hexaglue.plugin.audit.ddd:
-    audit.allowCriticalViolations: true # personnalisé (défaut: false)
+  io.hexaglue.plugin.audit:
+    errorOnCritical: false              # défaut
     aggregateReport: true               # rapport agrégé multi-module
 
 modules:
@@ -166,7 +166,7 @@ const inventoryRows: InventoryRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>Configuration minimale</strong> : seuls 3 paramètres sont personnalisés (<code>entitySuffix</code>, <code>adapterSuffix</code>, <code>audit.allowCriticalViolations</code>). Les autres sont affichés pour référence mais peuvent être omis : HexaGlue utilise des défauts raisonnables</li>
+          <li><strong>Configuration minimale</strong> : seuls 2 paramètres sont personnalisés (<code>entitySuffix</code>, <code>adapterSuffix</code>). Les autres sont affichés pour référence mais peuvent être omis : HexaGlue utilise des défauts raisonnables</li>
           <li><strong><code>targetModule: banking-persistence</code></strong> : tout le code JPA généré est routé vers le module <code>banking-persistence</code></li>
           <li><strong>~32 fichiers générés</strong> : entités, repositories, mappers, adapters et embeddables, sans écrire une seule ligne à la main</li>
           <li><strong>Rôles des modules</strong> : chaque module Maven déclare son rôle architectural (DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY)</li>

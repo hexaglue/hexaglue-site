@@ -28,6 +28,7 @@ export const SEGMENT_LABELS: Record<string, string> = {
 	'guides': 'Guides',
 	'ddd-principles': 'Principes DDD',
 	'hexagonal-architecture': 'Architecture Hexagonale',
+	'2.0.0': 'v2.0.0',
 };
 
 export function inferSchemaType(pathname: string): SchemaType | undefined {

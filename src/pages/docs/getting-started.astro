@@ -35,8 +35,8 @@ const codeStep3 = `mvn clean verify -DskipTests`;
 const codeStep3Output = `[INFO] --- hexaglue:5.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
 [INFO] HexaGlue auditing: io.hexaglue.demo
 .../...
-[INFO] Executing plugin: io.hexaglue.plugin.audit.ddd
-[ERROR] [io.hexaglue.plugin.audit.ddd] Audit FAILED: 0 blocker, 1 critical violations
+[INFO] Executing plugin: io.hexaglue.plugin.audit
+[ERROR] [io.hexaglue.plugin.audit] Audit FAILED: 0 blocker, 1 critical violations
 
   Score:  76/100  |  Grade: C  |  Status: FAILED
 
@@ -62,7 +62,7 @@ const codeStep4 = `mvn clean verify -DskipTests`;
 const codeStep4Output = `[INFO] --- hexaglue:5.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
 [INFO] HexaGlue auditing: io.hexaglue.demo
 .../...
-[INFO] Executing plugin: io.hexaglue.plugin.audit.ddd
+[INFO] Executing plugin: io.hexaglue.plugin.audit
 
   Score:  77/100  |  Grade: C  |  Status: PASSED (with warnings)
 

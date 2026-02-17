@@ -1,0 +1,39 @@
+---
+import { pluginVersions, type PluginVersion } from '~/data/pluginVersions';
+
+interface Props {
+	pluginSlug: string;
+	currentVersion: string;
+}
+
+const { pluginSlug, currentVersion } = Astro.props;
+
+const versions: PluginVersion[] = pluginVersions[pluginSlug] ?? [];
+---
+
+{versions.length > 1 && (
+	<div class="version-wrapper relative inline-flex items-center mr-2">
+		<select
+			class="version-select appearance-none rounded-md border border-astro-dark-100/30 bg-astro-dark-200 pl-2.5 pr-6 py-1.5 text-xs text-astro-gray-200 hover:border-amber-500/50 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30 cursor-pointer"
+			aria-label="Sélectionner la version"
+		>
+			{versions.map((v) => (
+				<option value={v.url} selected={v.version === currentVersion}>
+					{v.label}
+				</option>
+			))}
+		</select>
+		<svg class="pointer-events-none absolute right-1.5 size-3 text-astro-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+			<path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+		</svg>
+	</div>
+)}
+
+<script>
+	document.querySelectorAll('.version-select').forEach((select) => {
+		select.addEventListener('change', (e) => {
+			const target = e.target as HTMLSelectElement;
+			window.location.href = target.value;
+		});
+	});
+</script>

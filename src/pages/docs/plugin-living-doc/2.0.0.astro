@@ -1,0 +1,426 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import Link from '../../_components/Link.astro';
+import BrowserFrame from '~/components/BrowserFrame.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import { Image } from 'astro:assets';
+import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
+import readmeOverviewScreenshot from '~/assets/screenshots/livingdoc-readme-overview.png';
+const pomPlugin = `<plugin>
+    <groupId>io.hexaglue</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>5.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.shop</basePackage>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>io.hexaglue.plugins</groupId>
+            <artifactId>hexaglue-plugin-living-doc</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const yamlConfig = `plugins:
+  io.hexaglue.plugin.livingdoc:
+    outputDir: "living-doc"
+    generateDiagrams: true
+    maxPropertiesInDiagram: 5`;
+---
+
+<MainLayout
+	title="Plugin Living Documentation v2.0.0 : Référence"
+	description="Référence du plugin Living Documentation HexaGlue v2.0.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
+	pluginSlug="plugin-living-doc"
+	currentVersion="2.0.0"
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		version: "2.0.0",
+		about: [
+			{ "@type": "Thing", name: "Documentation logicielle" },
+			{ "@type": "Thing", name: "Domain-Driven Design" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Version banner -->
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8 pt-20">
+		<div class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+			Vous consultez la documentation de la version <strong>2.0.0</strong>.
+			<a href="/docs/plugin-living-doc/" class="underline hover:text-white">Voir la dernière version.</a>
+		</div>
+	</div>
+
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Documentation
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Plugin Living Documentation<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Diagrammes, fichiers et topologie des modules.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Référence complète du plugin Living Documentation HexaGlue : options de configuration, fichiers générés, diagrammes et support multi-module.
+			</p>
+		</div>
+	</section>
+
+	<!-- Prérequis Maven -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Installation"
+			title="Ajouter le plugin Living Documentation"
+			gradient="bg-orange-yellow-gradient"
+		/>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-4">
+			<Code code={pomPlugin} lang="xml" title="pom.xml" />
+			<p class="text-base text-astro-gray-300 font-light">
+				La documentation est générée automatiquement lors de la phase <code>generate-sources</code> (<code>mvn compile</code>). Les fichiers sont écrits dans <code>target/hexaglue/reports/&#123;outputDir&#125;/</code>.
+			</p>
+			<p class="text-base text-astro-gray-200 font-light">
+				Trois éléments clés dans cette configuration :
+			</p>
+			<ul class="text-base text-astro-gray-200 font-light list-disc list-inside space-y-1.5">
+				<li><code>&lt;extensions&gt;true&lt;/extensions&gt;</code> : active le binding automatique aux phases Maven. Les goals HexaGlue se déclenchent sans configuration supplémentaire lors de <code>mvn compile</code>.</li>
+				<li><code>&lt;basePackage&gt;</code> : package racine à analyser. Seules les classes de ce package et de ses sous-packages sont classifiées par HexaGlue.</li>
+				<li>Le plugin Living Documentation est déclaré comme <code>&lt;dependency&gt;</code> du plugin Maven, pas du projet. HexaGlue découvre automatiquement les plugins via le mécanisme Java <code>ServiceLoader</code> : il suffit de les ajouter ici pour qu'ils soient actifs.</li>
+			</ul>
+		</div>
+	</section>
+
+	<!-- Options de configuration -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Options YAML"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le fichier <code>hexaglue.yaml</code>, placé à la racine du projet (à côté du <code>pom.xml</code>), centralise la configuration de HexaGlue et de tous ses plugins.<br>
+			Les options ci-dessous se configurent dans la section <code>plugins.io.hexaglue.plugin.livingdoc:</code> du fichier YAML.<br>
+			Les paramètres Maven (<code>&lt;configuration&gt;</code>) sont prioritaires sur les valeurs YAML.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Type</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDir</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"living-doc"</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie pour les fichiers de documentation (relatif à <code>target/hexaglue/reports/</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDiagrams</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Active la génération de diagrammes Mermaid dans un fichier <code>diagrams.md</code> dédié</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">maxPropertiesInDiagram</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">integer</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>5</code></td>
+						<td class="py-3 hidden md:table-cell">Nombre maximum de propriétés affichées par classe dans les diagrammes</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="mt-8 max-w-4xl mx-auto">
+			<Code code={yamlConfig} lang="yaml" title="hexaglue.yaml" />
+		</div>
+	</section>
+
+	<!-- Fichiers générés -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Sortie"
+			title="Structure des fichiers générés"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le plugin génère 4 à 5 fichiers Markdown selon la configuration et le type de projet (mono ou multi-module).
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Fichier</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Contenu</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Condition</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>README.md</code></td>
+						<td class="py-3 pr-4">Vue d'ensemble : métriques, résumé du domaine, résumé des ports, contextes bornés, glossaire, arbre de packages, index des types</td>
+						<td class="py-3 hidden md:table-cell whitespace-nowrap">Toujours généré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>domain.md</code></td>
+						<td class="py-3 pr-4">Modèle de domaine détaillé : agrégats (avec entités, VO, identifiants), services, événements, relations architecturales</td>
+						<td class="py-3 hidden md:table-cell whitespace-nowrap">Toujours généré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>ports.md</code></td>
+						<td class="py-3 pr-4">Documentation des ports : ports driving (entrants) et driven (sortants) avec signatures des méthodes et types</td>
+						<td class="py-3 hidden md:table-cell whitespace-nowrap">Toujours généré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code>diagrams.md</code></td>
+						<td class="py-3 pr-4">Diagrammes Mermaid : modèle de domaine (classes), agrégats individuels, flux hexagonal, graphe de dépendances</td>
+						<td class="py-3 hidden md:table-cell whitespace-nowrap">Seulement si <code>generateDiagrams: true</code></td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>modules.md</code></td>
+						<td class="py-3 pr-4">Topologie des modules : tableau récapitulatif (rôles, comptages), inventaire détaillé des types par module</td>
+						<td class="py-3 hidden md:table-cell whitespace-nowrap">Seulement en multi-module</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<BrowserFrame class="mt-10" caption="Exemple de sortie : agrégat Account avec identity, properties et niveau de confiance">
+			<Image
+				src={accountAggregateScreenshot}
+				alt="Living documentation HexaGlue : agrégat Account avec identity details, properties (id, ownerName, balance, transactions) et niveau de confiance"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+	</section>
+
+	<!-- Contenu du README.md -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Vue d'ensemble"
+			title="Ce que contient le fichier principal"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le <code>README.md</code> est le point d'entrée de la documentation. Il donne une vue synthétique de l'architecture.
+		</SectionCopy>
+
+		<BrowserFrame class="mt-10" caption="README.md généré : table des matières, métriques et liens de navigation">
+			<Image
+				src={readmeOverviewScreenshot}
+				alt="Living documentation HexaGlue : README.md généré avec table des matières, tableau récapitulatif des types et liens vers domain.md, ports.md, diagrams.md"
+				widths={[400, 600, 800, 1200]}
+				sizes="(max-width: 768px) 100vw, 56rem"
+				loading="lazy"
+			/>
+		</BrowserFrame>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<ul class="space-y-3 text-astro-gray-200">
+				<li class="flex items-start gap-3">
+					<Icon name="ri:file-list-3-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Tableau récapitulatif</strong> : comptage des agrégats, entités, value objects, identifiants, services applicatifs, ports driving et driven</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:link" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Liens de navigation</strong> : vers <code>domain.md</code>, <code>ports.md</code>, <code>diagrams.md</code>, <code>modules.md</code></div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:organization-chart" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Diagramme d'architecture</strong> : diagramme Mermaid de vue d'ensemble (si diagrammes activés)</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:box-3-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Résumé du domaine</strong> : tableaux des agrégats, value objects, identifiants</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:arrow-right-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Résumé des ports</strong> : tableaux des ports driving et driven</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:layout-grid-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Contextes bornés</strong> : analyse de la structure des packages (si détectés)</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:stack-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Topologie des modules</strong> : rôles et distribution des types par module (si multi-module)</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:book-open-line" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Glossaire</strong> : terminologie du domaine avec types et packages</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:node-tree" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Arbre des packages</strong> : visualisation de l'arborescence</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<Icon name="ri:list-check" class="size-5 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+					<div><strong class="text-white">Index</strong> : index alphabétique des types avec références croisées</div>
+				</li>
+			</ul>
+		</div>
+	</section>
+
+	<!-- Diagrammes Mermaid -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Diagrammes"
+			title="4 types de diagrammes générés"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Les diagrammes sont au format Mermaid, directement lisibles sur GitHub, GitLab et la plupart des outils de documentation.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<div class="flex items-center gap-3 mb-3">
+						<div class="p-1.5 rounded-lg bg-astro-green/10">
+							<Icon name="ri:organization-chart" class="size-4 text-astro-green" aria-hidden="true" />
+						</div>
+						<h3 class="text-base font-semibold text-white">Diagramme de classes du domaine</h3>
+					</div>
+					<p class="text-base text-astro-gray-200 font-light">Tous les types du domaine avec leurs propriétés (limitées à <code>maxPropertiesInDiagram</code>) et leurs relations.</p>
+				</div>
+
+				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<div class="flex items-center gap-3 mb-3">
+						<div class="p-1.5 rounded-lg bg-astro-green/10">
+							<Icon name="ri:box-3-line" class="size-4 text-astro-green" aria-hidden="true" />
+						</div>
+						<h3 class="text-base font-semibold text-white">Diagrammes d'agrégats</h3>
+					</div>
+					<p class="text-base text-astro-gray-200 font-light">Un diagramme par agrégat montrant la racine, les entités et les value objects associés.</p>
+				</div>
+
+				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<div class="flex items-center gap-3 mb-3">
+						<div class="p-1.5 rounded-lg bg-astro-green/10">
+							<Icon name="ri:arrow-right-line" class="size-4 text-astro-green" aria-hidden="true" />
+						</div>
+						<h3 class="text-base font-semibold text-white">Flux hexagonal</h3>
+					</div>
+					<p class="text-base text-astro-gray-200 font-light">Diagramme montrant les interactions entre ports driving, services applicatifs, ports driven et adapters.</p>
+				</div>
+
+				<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+					<div class="flex items-center gap-3 mb-3">
+						<div class="p-1.5 rounded-lg bg-astro-green/10">
+							<Icon name="ri:git-branch-line" class="size-4 text-astro-green" aria-hidden="true" />
+						</div>
+						<h3 class="text-base font-semibold text-white">Graphe de dépendances</h3>
+					</div>
+					<p class="text-base text-astro-gray-200 font-light">Graphe orienté des dépendances entre types, montrant la direction vers le domaine.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Multi-module -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Multi-module"
+			title="Topologie des modules"
+			gradient="bg-orange-yellow-gradient"
+		>
+			En multi-module, le plugin génère un fichier <code>modules.md</code> supplémentaire et ajoute une section topologie dans le <code>README.md</code>.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-4">
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<h3 class="text-base font-semibold text-white mb-3">Ce que contient <code>modules.md</code></h3>
+				<ul class="space-y-2 text-base text-astro-gray-200">
+					<li class="flex items-start gap-2">
+						<Icon name="ri:table-line" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+						<div><strong class="text-white">Tableau récapitulatif</strong> : pour chaque module, son identifiant, son rôle (<code>DOMAIN</code>, <code>INFRASTRUCTURE</code>, <code>APPLICATION</code>, <code>API</code>, <code>ASSEMBLY</code>, <code>SHARED</code>), le nombre de types et le package de base</div>
+					</li>
+					<li class="flex items-start gap-2">
+						<Icon name="ri:list-unordered" class="size-4 text-astro-green mt-0.5 shrink-0" aria-hidden="true" />
+						<div><strong class="text-white">Sections par module</strong> : inventaire détaillé de tous les types classifiés dans chaque module, organisés par rôle architectural</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Votre documentation d'architecture date de quand ?</span><br/>
+				Générez-la à chaque build.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez la documentation générée sur un projet réel ou explorez toutes les options du plugin.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/features/living-documentation/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Comprendre la living documentation
+				</Link>
+				<Link href="/case-studies/ecommerce-migration/step-2-configured/" class="secondary">
+					<Icon name="ri:eye-line" class="size-5" aria-hidden="true" />
+					<span>Voir la documentation en action</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	code.accent {
+		@apply bg-transparent px-0 py-0 text-astro-green;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(255, 125, 84, 0.07);
+		border-bottom: 1px solid rgba(255, 125, 84, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(255, 125, 84, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(255, 125, 84, 0.04) 0%, rgba(255, 125, 84, 0.02) 50%, rgba(255, 125, 84, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(255, 125, 84, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(255, 125, 84, 0.12),
+			0 0 50px rgba(255, 125, 84, 0.07),
+			0 0 80px rgba(255, 125, 84, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

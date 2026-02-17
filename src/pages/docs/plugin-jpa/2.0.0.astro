@@ -1,0 +1,484 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import Link from '../../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+const pomPlugin = `<plugin>
+    <groupId>io.hexaglue</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>5.0.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.shop</basePackage>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>io.hexaglue.plugins</groupId>
+            <artifactId>hexaglue-plugin-jpa</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const pomDeps = `<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>1.6.3</version>
+    </dependency>
+</dependencies>`;
+
+const codeAuditing = `@CreatedDate
+@Column(updatable = false)
+private Instant createdAt;
+
+@LastModifiedDate
+private Instant updatedAt;`;
+
+const codeLocking = `@Version
+private Long version;`;
+
+const yamlMultiModule = `modules:
+  banking-core:
+    role: DOMAIN
+  banking-persistence:
+    role: INFRASTRUCTURE
+  banking-service:
+    role: APPLICATION
+
+plugins:
+  io.hexaglue.plugin.jpa:
+    targetModule: "banking-persistence"
+    generateRepositories: true
+    generateAdapters: true`;
+
+const yamlComplete = `plugins:
+  io.hexaglue.plugin.jpa:
+    # Suffixes de nommage
+    entitySuffix: "JpaEntity"
+    embeddableSuffix: "Embeddable"
+    repositorySuffix: "JpaRepository"
+    adapterSuffix: "RepositoryAdapter"
+    mapperSuffix: "Mapper"
+
+    # Nommage des tables
+    tablePrefix: "app_"
+
+    # Package cible
+    infrastructurePackage: "com.acme.shop.infrastructure.persistence"
+
+    # Fonctionnalités JPA
+    enableAuditing: true
+    enableOptimisticLocking: true
+
+    # Contrôle de la génération
+    generateRepositories: true
+    generateMappers: true
+    generateAdapters: true
+    generateEmbeddables: true
+
+    # Multi-module (optionnel)
+    # targetModule: "banking-persistence"`;
+---
+
+<MainLayout
+	title="Plugin JPA v2.0.0 : Référence"
+	description="Référence du plugin JPA HexaGlue v2.0.0 : suffixes de nommage, artefacts générés, options d'auditing JPA et configuration multi-module."
+	pluginSlug="plugin-jpa"
+	currentVersion="2.0.0"
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		version: "2.0.0",
+		about: [
+			{ "@type": "Thing", name: "JPA" },
+			{ "@type": "Thing", name: "Génération de code" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Version banner -->
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8 pt-20">
+		<div class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+			Vous consultez la documentation de la version <strong>2.0.0</strong>.
+			<a href="/docs/plugin-jpa/" class="underline hover:text-white">Voir la dernière version.</a>
+		</div>
+	</div>
+
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Documentation
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Plugin JPA<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Suffixes, artefacts, options et routage multi-module.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Référence complète du plugin JPA HexaGlue : suffixes de nommage, artefacts générés, options d'auditing JPA et configuration multi-module.
+			</p>
+		</div>
+	</section>
+
+	<!-- Prérequis Maven -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Installation"
+			title="Ajouter le plugin JPA"
+			gradient="bg-orange-yellow-gradient"
+		/>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-6">
+			<Code code={pomPlugin} lang="xml" title="pom.xml" />
+			<p class="text-base text-astro-gray-300 font-light">
+				La génération s'exécute automatiquement lors de la phase <code>generate-sources</code> (<code>mvn compile</code>). Les artefacts sont générés dans <code>target/generated-sources/hexaglue/</code>.
+			</p>
+			<p class="text-base text-astro-gray-200 font-light">
+				Trois éléments clés dans cette configuration :
+			</p>
+			<ul class="text-base text-astro-gray-200 font-light list-disc list-inside space-y-1.5">
+				<li><code>&lt;extensions&gt;true&lt;/extensions&gt;</code> : active le binding automatique aux phases Maven. Les goals HexaGlue se déclenchent sans configuration supplémentaire lors de <code>mvn compile</code>.</li>
+				<li><code>&lt;basePackage&gt;</code> : package racine à analyser. Seules les classes de ce package et de ses sous-packages sont classifiées par HexaGlue.</li>
+				<li>Le plugin JPA est déclaré comme <code>&lt;dependency&gt;</code> du plugin Maven, pas du projet. HexaGlue découvre automatiquement les plugins via le mécanisme Java <code>ServiceLoader</code> : il suffit de les ajouter ici pour qu'ils soient actifs.</li>
+			</ul>
+
+			<p class="text-base text-astro-gray-200 font-light">
+				Le plugin génère du code qui utilise Spring Data JPA et MapStruct. Ajoutez ces dépendances à votre <code>pom.xml</code> :
+			</p>
+			<Code code={pomDeps} lang="xml" title="pom.xml : dépendances requises" />
+		</div>
+	</section>
+
+	<!-- Options de configuration -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Toutes les options"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le fichier <code>hexaglue.yaml</code>, placé à la racine du projet (à côté du <code>pom.xml</code>), centralise la configuration de HexaGlue et de tous ses plugins.<br>
+			Les options ci-dessous se configurent dans la section <code>plugins.io.hexaglue.plugin.jpa:</code> du fichier YAML.<br>
+			Les paramètres Maven (<code>&lt;configuration&gt;</code>) sont prioritaires sur les valeurs YAML.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Type</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">entitySuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Entity"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe ajouté aux noms de classes pour les entités JPA générées</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">embeddableSuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Embeddable"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les classes <code>@Embeddable</code> (value objects persistés)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">repositorySuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"JpaRepository"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les interfaces Spring Data Repository</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">adapterSuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Adapter"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les implémentations d'adapter de port</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">mapperSuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Mapper"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les interfaces MapStruct</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tablePrefix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>""</code> (vide)</td>
+						<td class="py-3 hidden md:table-cell">Préfixe ajouté à tous les noms de tables en base</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">enableAuditing</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les champs <code>@CreatedDate</code> et <code>@LastModifiedDate</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">enableOptimisticLocking</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Génère un champ <code>@Version</code> pour le verrouillage optimiste</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateRepositories</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les interfaces Spring Data JPA Repository</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateMappers</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les mappers MapStruct bidirectionnels</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateAdapters</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les implémentations d'adapter de port</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateEmbeddables</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les classes <code>@Embeddable</code> pour les value objects</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">infrastructurePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4"><code>"&#123;basePackage&#125;.infrastructure.persistence"</code></td>
+						<td class="py-3 hidden md:table-cell">Package cible pour les artefacts JPA générés</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">targetModule</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>null</code></td>
+						<td class="py-3 hidden md:table-cell">Multi-module : identifiant du module cible pour le routage des artefacts générés</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Artefacts générés -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Génération"
+			title="Ce qui est généré pour chaque agrégat"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Pour chaque agrégat détecté dans le domaine, le plugin produit jusqu'à 5 types d'artefacts. La génération de chaque type est contrôlable individuellement.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Artefact</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Exemple (<code>Order</code>)</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium hidden md:table-cell">Annotations</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Option</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Entité JPA</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>OrderEntity</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>@Entity</code>, <code>@Table</code>, <code>@Id</code>, <code>@Column</code></td>
+						<td class="py-3 hidden md:table-cell">Toujours généré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Embeddable</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>MoneyEmbeddable</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>@Embeddable</code></td>
+						<td class="py-3 hidden md:table-cell"><code>generateEmbeddables</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Repository</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>OrderJpaRepository</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>extends JpaRepository&lt;T, ID&gt;</code></td>
+						<td class="py-3 hidden md:table-cell"><code>generateRepositories</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Mapper</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>OrderMapper</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>@Mapper(componentModel = "spring")</code></td>
+						<td class="py-3 hidden md:table-cell"><code>generateMappers</code></td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Adapter</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>OrderAdapter</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>@Component</code>, <code>@Transactional</code></td>
+						<td class="py-3 hidden md:table-cell"><code>generateAdapters</code></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto space-y-6">
+			<Insight variant="amber">
+				<p>Les value objects simples (records à un seul champ comme <code>record Quantity(int value)</code>) ne génèrent pas d'embeddable. Ils sont automatiquement dépliés vers leur type primitif dans les entités JPA.</p>
+			</Insight>
+
+			<p class="text-base text-astro-gray-300 font-light">
+				Tous les artefacts sont générés dans le package <code>&#123;basePackage&#125;.infrastructure.persistence</code> par défaut. Ce package est configurable via l'option <code>infrastructurePackage</code>.
+			</p>
+		</div>
+	</section>
+
+	<!-- Auditing et locking -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Fonctionnalités JPA"
+			title="Auditing et verrouillage optimiste"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Ces deux options ajoutent des champs techniques aux entités JPA générées. Elles sont désactivées par défaut et s'activent dans <code>hexaglue.yaml</code>.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-8">
+			<div>
+				<h3 class="text-lg font-semibold text-white mb-3">Quand <code>enableAuditing: true</code></h3>
+				<p class="text-base text-astro-gray-200 font-light mb-4">
+					Chaque entité JPA générée inclut deux champs supplémentaires :
+				</p>
+				<Code code={codeAuditing} lang="java" />
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold text-white mb-3">Quand <code>enableOptimisticLocking: true</code></h3>
+				<p class="text-base text-astro-gray-200 font-light mb-4">
+					Chaque entité JPA générée inclut un champ version :
+				</p>
+				<Code code={codeLocking} lang="java" />
+			</div>
+		</div>
+	</section>
+
+	<!-- Multi-module -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Multi-module"
+			title="Routage des artefacts en multi-module"
+			gradient="bg-orange-yellow-gradient"
+		>
+			En multi-module, les artefacts JPA doivent être générés dans le module d'infrastructure, pas dans le module de domaine. Le plugin résout le module cible selon cette priorité :
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-6">
+			<ol class="space-y-3 text-astro-gray-200">
+				<li class="flex items-start gap-3">
+					<span class="flex items-center justify-center w-7 h-7 rounded-full bg-astro-green/10 border border-astro-green/30 text-astro-green text-sm font-bold shrink-0">1</span>
+					<div><strong class="text-white">Configuration explicite</strong> : <code>targetModule: "banking-persistence"</code> dans <code>hexaglue.yaml</code></div>
+				</li>
+				<li class="flex items-start gap-3">
+					<span class="flex items-center justify-center w-7 h-7 rounded-full bg-astro-green/10 border border-astro-green/30 text-astro-green text-sm font-bold shrink-0">2</span>
+					<div><strong class="text-white">Auto-routage par convention</strong> : si un seul module a le rôle <code>INFRASTRUCTURE</code>, les artefacts y sont routés automatiquement</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<span class="flex items-center justify-center w-7 h-7 rounded-full bg-astro-green/10 border border-astro-green/30 text-astro-green text-sm font-bold shrink-0">3</span>
+					<div><strong class="text-white">Défaut</strong> : si ni configuration ni convention ne s'appliquent, les artefacts sont écrits dans le répertoire de sortie par défaut</div>
+				</li>
+			</ol>
+
+			<Insight variant="amber">
+				<p>Si plusieurs modules ont le rôle <code>INFRASTRUCTURE</code> et qu'aucun <code>targetModule</code> n'est configuré, le plugin émet un avertissement et utilise le répertoire de sortie par défaut. Préférez la configuration explicite dans ce cas.</p>
+			</Insight>
+
+			<Code code={yamlMultiModule} lang="yaml" title="hexaglue.yaml : multi-module" />
+		</div>
+	</section>
+
+	<!-- Config complète -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Exemple"
+			title="Configuration complète"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Cet exemple regroupe toutes les options du plugin JPA dans un seul fichier <code>hexaglue.yaml</code>. En pratique, seules les options dont vous souhaitez modifier la valeur par défaut sont nécessaires.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Code code={yamlComplete} lang="yaml" title="hexaglue.yaml : toutes les options" />
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Votre domaine mérite mieux que des annotations JPA.</span><br/>
+				Configurez la génération en quelques lignes.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez la génération en action sur un projet réel ou explorez toutes les options du plugin.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/features/jpa-generation/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Comprendre la génération JPA
+				</Link>
+				<Link href="/case-studies/ecommerce-migration/step-5-generated/" class="secondary">
+					<Icon name="ri:eye-line" class="size-5" aria-hidden="true" />
+					<span>Voir la génération en action</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	code.accent {
+		@apply bg-transparent px-0 py-0 text-astro-green;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(255, 125, 84, 0.07);
+		border-bottom: 1px solid rgba(255, 125, 84, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(255, 125, 84, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(255, 125, 84, 0.04) 0%, rgba(255, 125, 84, 0.02) 50%, rgba(255, 125, 84, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(255, 125, 84, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(255, 125, 84, 0.12),
+			0 0 50px rgba(255, 125, 84, 0.07),
+			0 0 80px rgba(255, 125, 84, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

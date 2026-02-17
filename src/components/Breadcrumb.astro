@@ -1,12 +1,15 @@
 ---
 import { SEGMENT_LABELS } from '~/helpers/breadcrumbs';
+import VersionSelector from '~/components/VersionSelector.astro';
 
 interface Props {
 	pageTitle?: string;
 	is404?: boolean;
+	pluginSlug?: string;
+	currentVersion?: string;
 }
 
-const { pageTitle, is404 = false } = Astro.props;
+const { pageTitle, is404 = false, pluginSlug, currentVersion } = Astro.props;
 
 const pathname = Astro.url.pathname;
 const isHomepage = pathname === '/';
@@ -16,7 +19,15 @@ const show = !isHomepage && !is404 && pageTitle;
 const crumbs: Array<{ name: string; path: string }> = [];
 if (show) {
 	crumbs.push({ name: 'Accueil', path: '/' });
-	const segments = pathname.split('/').filter(Boolean);
+	let segments = pathname.split('/').filter(Boolean);
+	// When a version selector is active, strip the version segment (e.g. "2.0.0")
+	// so the breadcrumb stays: Home > Documentation > Plugin Name > [version dropdown]
+	if (pluginSlug && currentVersion && segments.length > 0) {
+		const lastSeg = segments[segments.length - 1];
+		if (/^\d+\.\d+\.\d+$/.test(lastSeg)) {
+			segments = segments.slice(0, -1);
+		}
+	}
 	let currentPath = '';
 	for (let i = 0; i < segments.length; i++) {
 		const seg = segments[i];
@@ -35,6 +46,7 @@ if (show) {
 				{crumbs.map((crumb, i) => {
 					const isFirst = i === 0;
 					const isLast = i === crumbs.length - 1;
+					const isLastWithoutVersion = isLast && pluginSlug && currentVersion;
 					return (
 						<li class="flex items-stretch">
 							{!isFirst && (
@@ -42,7 +54,11 @@ if (show) {
 									<path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" fill="currentColor" />
 								</svg>
 							)}
-							{isLast ? (
+							{isLastWithoutVersion ? (
+								<span class="flex items-center px-4 py-2.5 text-astro-gray-200" aria-current="page">
+									{crumb.name}
+								</span>
+							) : isLast ? (
 								<span class="flex items-center px-4 py-2.5 text-astro-gray-200" aria-current="page">
 									{isFirst ? (
 										<svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -63,6 +79,16 @@ if (show) {
 						</li>
 					);
 				})}
+				{pluginSlug && currentVersion && (
+					<li class="flex items-stretch">
+						<svg class="h-full w-5 shrink-0 text-astro-dark-100/15" viewBox="0 0 24 44" preserveAspectRatio="none" fill="none" aria-hidden="true">
+							<path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" fill="currentColor" />
+						</svg>
+						<span class="flex items-center pl-3 pr-1 py-1">
+							<VersionSelector pluginSlug={pluginSlug} currentVersion={currentVersion} />
+						</span>
+					</li>
+				)}
 			</ol>
 		</nav>
 	</div>

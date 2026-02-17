@@ -99,8 +99,8 @@ plugins:
   io.hexaglue.plugin.livingdoc:
     outputDir: "living-doc"             # défaut
 
-  io.hexaglue.plugin.audit.ddd:
-    audit.allowCriticalViolations: true # personnalisé (défaut: false)`;
+  io.hexaglue.plugin.audit:
+    errorOnCritical: false              # défaut`;
 
 const kpiRows: KpiRow[] = [
     { dimension: 'DDD Compliance', value: '95%', weight: '25%', contribution: '23.75', threshold: '≥ 90%', status: 'OK', delta: '-5' },
@@ -301,7 +301,7 @@ const remediationRows: RemediationRow[] = [
       <Insight>
         <ul>
           <li><strong>ApplicationServiceConfig</strong> : chaque service applicatif est déclaré comme <code>@Bean</code>, avec ses dépendances injectées via les ports</li>
-          <li><strong>hexaglue.yaml</strong> : seuls 3 paramètres sont personnalisés (<code>entitySuffix</code>, <code>adapterSuffix</code>, <code>audit.allowCriticalViolations</code>). Les autres sont affichés pour référence mais peuvent être omis : HexaGlue utilise des défauts raisonnables</li>
+          <li><strong>hexaglue.yaml</strong> : seuls 2 paramètres sont personnalisés (<code>entitySuffix</code>, <code>adapterSuffix</code>). Les autres sont affichés pour référence mais peuvent être omis : HexaGlue utilise des défauts raisonnables</li>
           <li>Le câblage Spring est entièrement isolé dans la couche infrastructure</li>
         </ul>
       </Insight>
