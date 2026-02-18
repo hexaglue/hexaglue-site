@@ -9,31 +9,116 @@ interface Props {
 const { pluginSlug, currentVersion } = Astro.props;
 
 const versions: PluginVersion[] = pluginVersions[pluginSlug] ?? [];
+const current = versions.find((v) => v.version === currentVersion);
 ---
 
 {versions.length > 1 && (
-	<div class="version-wrapper relative inline-flex items-center mr-2">
-		<select
-			class="version-select appearance-none rounded-md border border-astro-dark-100/30 bg-astro-dark-200 pl-2.5 pr-6 py-1.5 text-xs text-astro-gray-200 hover:border-amber-500/50 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30 cursor-pointer"
-			aria-label="Sélectionner la version"
-		>
-			{versions.map((v) => (
-				<option value={v.url} selected={v.version === currentVersion}>
-					{v.label}
-				</option>
-			))}
-		</select>
-		<svg class="pointer-events-none absolute right-1.5 size-3 text-astro-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-			<path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-		</svg>
-	</div>
+	<version-selector>
+		<details class="group relative">
+			<summary
+				class="flex cursor-pointer items-center gap-1.5 rounded-md border border-astro-dark-100/30 bg-astro-dark-200 px-2.5 py-1.5 text-xs text-astro-gray-200 transition-colors hover:border-amber-500/50 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500/30"
+				aria-label="Sélectionner la version"
+			>
+				<span>{current?.label ?? currentVersion}</span>
+				{current?.upcoming && (
+					<span class="inline-flex items-center rounded border border-indigo-500/40 bg-indigo-500/20 px-1.5 py-0.5 text-[10px] leading-none font-medium text-indigo-300">
+						next
+					</span>
+				)}
+				{current?.latest && (
+					<span class="inline-flex items-center rounded border border-emerald-500/40 bg-emerald-500/20 px-1.5 py-0.5 text-[10px] leading-none font-medium text-emerald-300">
+						latest
+					</span>
+				)}
+				<svg
+					class="size-3 shrink-0 text-astro-gray-400 transition-transform duration-300 group-open:rotate-180"
+					viewBox="0 0 20 20"
+					fill="currentColor"
+					aria-hidden="true"
+				>
+					<path
+						fill-rule="evenodd"
+						d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+						clip-rule="evenodd"
+					/>
+				</svg>
+			</summary>
+
+			<ul
+				class:list={[
+					'flex flex-col',
+					'absolute left-0 top-full z-50 translate-y-1',
+					'min-w-[10rem] rounded-lg bg-black p-1 shadow-lg border border-astro-dark-100/20',
+					'invisible group-open:visible',
+					'origin-top scale-95 group-open:scale-100',
+					'opacity-0 group-open:opacity-100',
+					'transition-all duration-300',
+				]}
+			>
+				{versions.map((v) => {
+					const isCurrent = v.version === currentVersion;
+					return (
+						<li>
+							<a
+								href={v.url}
+								class:list={[
+									'flex items-center gap-2 rounded-md px-3 py-2 text-xs leading-none transition-colors',
+									isCurrent
+										? 'bg-astro-dark-100/30 text-white'
+										: 'text-astro-gray-300 hover:bg-astro-dark-100/20 hover:text-white',
+								]}
+								aria-current={isCurrent ? 'page' : undefined}
+							>
+								<span>{v.label}</span>
+								{v.upcoming && (
+									<span class="inline-flex items-center rounded border border-indigo-500/40 bg-indigo-500/20 px-1.5 py-0.5 text-[10px] leading-none font-medium text-indigo-300">
+										next
+									</span>
+								)}
+								{v.latest && (
+									<span class="inline-flex items-center rounded border border-emerald-500/40 bg-emerald-500/20 px-1.5 py-0.5 text-[10px] leading-none font-medium text-emerald-300">
+										latest
+									</span>
+								)}
+								{isCurrent && (
+									<svg class="ml-auto size-3 shrink-0 text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+										<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+									</svg>
+								)}
+							</a>
+						</li>
+					);
+				})}
+			</ul>
+		</details>
+	</version-selector>
 )}
 
 <script>
-	document.querySelectorAll('.version-select').forEach((select) => {
-		select.addEventListener('change', (e) => {
-			const target = e.target as HTMLSelectElement;
-			window.location.href = target.value;
-		});
-	});
+	customElements.define(
+		'version-selector',
+		class VersionSelector extends HTMLElement {
+			connectedCallback() {
+				const details = this.querySelector('details');
+				if (!details) return;
+
+				// Close on click outside
+				details.addEventListener('focusout', () => {
+					if (!details.matches(':focus-within')) {
+						setTimeout(() => {
+							details.open = false;
+						}, 200);
+					}
+				});
+
+				// Close on Escape
+				details.addEventListener('keydown', (e: KeyboardEvent) => {
+					if (e.key === 'Escape') {
+						details.open = false;
+						details.querySelector('summary')?.focus();
+					}
+				});
+			}
+		},
+	);
 </script>

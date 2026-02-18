@@ -41,38 +41,39 @@ if (show) {
 
 {show && crumbs.length > 1 && (
 	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8 pt-4">
-		<nav aria-label="Fil d'Ariane" class="inline-flex rounded-lg border border-astro-dark-100/15 overflow-hidden">
+		<nav aria-label="Fil d'Ariane" class="inline-flex max-w-full rounded-lg border border-astro-dark-100/15">
 			<ol class="flex items-stretch text-sm">
 				{crumbs.map((crumb, i) => {
 					const isFirst = i === 0;
 					const isLast = i === crumbs.length - 1;
 					const isLastWithoutVersion = isLast && pluginSlug && currentVersion;
+					const isMiddle = !isFirst && !isLast;
 					return (
-						<li class="flex items-stretch">
+						<li class:list={['flex items-stretch min-w-0', isMiddle && 'hidden sm:flex']}>
 							{!isFirst && (
 								<svg class="h-full w-5 shrink-0 text-astro-dark-100/15" viewBox="0 0 24 44" preserveAspectRatio="none" fill="none" aria-hidden="true">
 									<path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" fill="currentColor" />
 								</svg>
 							)}
 							{isLastWithoutVersion ? (
-								<span class="flex items-center px-4 py-2.5 text-astro-gray-200" aria-current="page">
-									{crumb.name}
+								<span class="flex items-center px-3 sm:px-4 py-2.5 text-astro-gray-200 min-w-0" aria-current="page">
+									<span class="truncate">{crumb.name}</span>
 								</span>
 							) : isLast ? (
-								<span class="flex items-center px-4 py-2.5 text-astro-gray-200" aria-current="page">
+								<span class="flex items-center px-3 sm:px-4 py-2.5 text-astro-gray-200 min-w-0" aria-current="page">
 									{isFirst ? (
 										<svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 											<path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
 										</svg>
-									) : crumb.name}
+									) : <span class="truncate">{crumb.name}</span>}
 								</span>
 							) : (
-								<a href={crumb.path} title={isFirst ? 'Accueil' : crumb.name} class="flex items-center px-4 py-2.5 text-astro-gray-400 hover:text-white transition-colors">
+								<a href={crumb.path} title={isFirst ? 'Accueil' : crumb.name} class="flex items-center px-3 sm:px-4 py-2.5 text-astro-gray-400 hover:text-white transition-colors min-w-0">
 									{isFirst ? (
 										<svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 											<path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
 										</svg>
-									) : crumb.name}
+									) : <span class="truncate">{crumb.name}</span>}
 									{isFirst && <span class="sr-only">Accueil</span>}
 								</a>
 							)}

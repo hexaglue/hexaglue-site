@@ -1,0 +1,89 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+	variant: 'past' | 'upcoming';
+	version: string;
+	latestUrl: string;
+}
+
+const { variant, version, latestUrl } = Astro.props;
+
+const config = {
+	past: {
+		icon: 'ri:history-line',
+		borderAccent: 'border-l-amber-400',
+		border: 'border-amber-500/25',
+		bg: 'bg-gradient-to-r from-amber-500/[0.08] to-amber-500/[0.03]',
+		iconColor: 'text-amber-400',
+		badgeBg: 'bg-amber-400/15',
+		badgeBorder: 'border-amber-400/30',
+		badgeText: 'text-amber-300',
+		text: 'text-amber-100/80',
+		linkColor: 'text-amber-300 hover:text-white',
+		linkText: 'Voir la dernière version stable',
+	},
+	upcoming: {
+		icon: 'ri:flask-line',
+		borderAccent: 'border-l-indigo-400',
+		border: 'border-indigo-500/25',
+		bg: 'bg-gradient-to-r from-indigo-500/[0.08] to-indigo-500/[0.03]',
+		iconColor: 'text-indigo-400',
+		badgeBg: 'bg-indigo-400/15',
+		badgeBorder: 'border-indigo-400/30',
+		badgeText: 'text-indigo-300',
+		text: 'text-indigo-100/80',
+		linkColor: 'text-indigo-300 hover:text-white',
+		linkText: 'Voir la version stable',
+	},
+};
+
+const c = config[variant];
+---
+
+<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8 pt-20">
+	<div
+		class:list={[
+			'flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border-l-[3px] border px-4 py-3',
+			c.borderAccent,
+			c.border,
+			c.bg,
+		]}
+		role="status"
+	>
+		<Icon name={c.icon} class:list={['size-[18px] shrink-0', c.iconColor]} aria-hidden="true" />
+
+		<span class:list={['text-sm', c.text]}>
+			Vous consultez la documentation de la version
+		</span>
+
+		<span
+			class:list={[
+				'inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold tabular-nums',
+				c.badgeBg,
+				c.badgeBorder,
+				c.badgeText,
+			]}
+		>
+			v{version}
+		</span>
+
+		{variant === 'upcoming' && (
+			<span class:list={['text-sm', c.text]}>(bientôt disponible)</span>
+		)}
+		{variant === 'past' && (
+			<span class:list={['text-sm', c.text]}>(une nouvelle version existe)</span>
+		)}
+
+		<a
+			href={latestUrl}
+			class:list={[
+				'ml-auto inline-flex items-center gap-1 text-sm font-medium transition-colors',
+				c.linkColor,
+			]}
+		>
+			{c.linkText}
+			<Icon name="ri:arrow-right-line" class="size-3.5" aria-hidden="true" />
+		</a>
+	</div>
+</div>

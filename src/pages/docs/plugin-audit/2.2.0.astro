@@ -11,55 +11,64 @@ import VersionBanner from '~/components/VersionBanner.astro';
 import { Image } from 'astro:assets';
 import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
 import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
+import versions from '~/data/versions';
+
 const pomPlugin = `<plugin>
-    <groupId>io.hexaglue</groupId>
+    <groupId>${versions.groupId}</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>5.0.0</version>
+    <version>${versions.hexaglue}</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>io.hexaglue.plugins</groupId>
+            <groupId>${versions.pluginsGroupId}</groupId>
             <artifactId>hexaglue-plugin-audit</artifactId>
-            <version>2.0.0</version>
+            <version>${versions.plugins}</version>
         </dependency>
     </dependencies>
 </plugin>`;
 
 const pomConfig = `<plugin>
-    <groupId>io.hexaglue</groupId>
+    <groupId>${versions.groupId}</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>5.0.0</version>
+    <version>${versions.hexaglue}</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
         <failOnError>true</failOnError>
-        <failOnWarning>false</failOnWarning>
+        <errorOnBlocker>true</errorOnBlocker>
+        <errorOnCritical>false</errorOnCritical>
         <reportDirectory>\${project.build.directory}/hexaglue/reports</reportDirectory>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>io.hexaglue.plugins</groupId>
+            <groupId>${versions.pluginsGroupId}</groupId>
             <artifactId>hexaglue-plugin-audit</artifactId>
-            <version>2.0.0</version>
+            <version>${versions.plugins}</version>
         </dependency>
     </dependencies>
 </plugin>`;
 
 const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
+
+const yamlConfig = `plugins:
+  io.hexaglue.plugin.audit:
+    errorOnBlocker: true         # Défaut
+    errorOnCritical: false       # Défaut
+    generateDocs: false          # Défaut`;
 ---
 
 <MainLayout
-	title="Plugin Audit v2.0.0 : Référence"
-	description="Référence du plugin d'audit HexaGlue v2.0.0 : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport."
+	title="Plugin Audit v2.2.0 : Référence"
+	description="Référence complète du plugin d'audit HexaGlue v2.2.0 : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport."
 	pluginSlug="plugin-audit"
-	currentVersion="2.0.0"
+	currentVersion="2.2.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "2.0.0",
+		version: "2.2.0",
 		about: [
 			{ "@type": "Thing", name: "Audit d'architecture logicielle" },
 			{ "@type": "Thing", name: "Architecture hexagonale" },
@@ -67,8 +76,7 @@ const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 		],
 	}}
 >
-	<VersionBanner variant="past" version="2.0.0" latestUrl="/docs/plugin-audit/" />
-
+	<VersionBanner variant="upcoming" version="2.2.0" latestUrl="/docs/plugin-audit/" />
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<AmberStardust height="h-64 md:h-80" />
@@ -148,16 +156,28 @@ const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 				</thead>
 				<tbody class="text-astro-gray-200">
 					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
+						<td class="py-3 hidden md:table-cell">Package racine à analyser pour les violations DDD et hexagonales</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnError</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Fait échouer le build si des violations ERROR ou BLOCKER sont détectées</td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build Maven quand des erreurs d'audit existent</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnWarning</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnBlocker</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Les violations BLOCKER comptent comme erreurs d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnCritical</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Fait échouer le build si des violations WARNING sont détectées</td>
+						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">reportDirectory</code></td>
@@ -165,11 +185,23 @@ const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 						<td class="py-3 pr-4 whitespace-nowrap"><code>$&#123;project.build.directory&#125;/hexaglue/reports</code></td>
 						<td class="py-3 hidden md:table-cell">Répertoire de sortie pour les rapports d'audit</td>
 					</tr>
-					<tr>
+					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
 						<td class="py-3 hidden md:table-cell">Désactive complètement l'audit (configurable via <code>-Dhexaglue.skip=true</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types restent non classifiés après l'analyse</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">validationReportPath</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4"><code>$&#123;project.build.directory&#125;/hexaglue/reports/validation/validation-report.md</code></td>
+						<td class="py-3 hidden md:table-cell">Chemin du rapport de validation Markdown (goal <code>validate</code> uniquement)</td>
 					</tr>
 				</tbody>
 			</table>
@@ -179,6 +211,70 @@ const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 		<div class="mt-8 max-w-4xl mx-auto space-y-4">
 			<Code code={pomConfig} lang="xml" title="pom.xml : configuration de l'audit" />
 			<Code code={pomSkip} lang="bash" title="Désactiver l'audit en ligne de commande" />
+		</div>
+	</section>
+
+	<!-- Options YAML -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Options YAML"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le fichier <code>hexaglue.yaml</code>, placé à la racine du projet (à côté du <code>pom.xml</code>), centralise la configuration de HexaGlue et de tous ses plugins.<br>
+			Les options ci-dessous se configurent dans la section <code>plugins.io.hexaglue.plugin.audit:</code> du fichier YAML.<br>
+			Les 3 propriétés de failure (<code>failOnError</code>, <code>errorOnBlocker</code>, <code>errorOnCritical</code>) sont unifiées entre Maven et YAML. Précédence : <strong>Maven POM / -D &gt; YAML &gt; defaults</strong>.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Type</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnError</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build Maven quand des erreurs d'audit existent</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnBlocker</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Les violations BLOCKER comptent comme erreurs d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnCritical</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDocs</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Active la génération des diagrammes Mermaid dans un répertoire séparé</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">severityOverrides</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">map</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>&#123;&#125;</code></td>
+						<td class="py-3 hidden md:table-cell">Surcharge de sévérité par contrainte (ex : <code>"ddd:aggregate-repository": "MINOR"</code>). Permet de rétrograder ou promouvoir la sévérité de contraintes individuelles. <em>(Prévu : API prête, lecture YAML pas encore câblée)</em></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="mt-8 max-w-4xl mx-auto">
+			<Code code={yamlConfig} lang="yaml" title="hexaglue.yaml" />
 		</div>
 	</section>
 
@@ -357,7 +453,7 @@ const pomSkip = `mvn clean verify -Dhexaglue.skip=true`;
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><span class="text-red-400 font-medium">CRITICAL</span></td>
-						<td class="py-3 pr-4">Build échoue sauf si <code>failOnError: false</code></td>
+						<td class="py-3 pr-4">Build échoue si <code>errorOnCritical: true</code></td>
 						<td class="py-3 hidden md:table-cell">Violations DDD sérieuses (VO mutables, entités sans identité)</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">

@@ -7,19 +7,21 @@ import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import VersionBanner from '~/components/VersionBanner.astro';
+import versions from '~/data/versions';
+
 const pomPlugin = `<plugin>
-    <groupId>io.hexaglue</groupId>
+    <groupId>${versions.groupId}</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>5.0.0</version>
+    <version>${versions.hexaglue}</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>io.hexaglue.plugins</groupId>
+            <groupId>${versions.pluginsGroupId}</groupId>
             <artifactId>hexaglue-plugin-jpa</artifactId>
-            <version>2.0.0</version>
+            <version>${versions.plugins}</version>
         </dependency>
     </dependencies>
 </plugin>`;
@@ -90,14 +92,14 @@ const yamlComplete = `plugins:
 ---
 
 <MainLayout
-	title="Plugin JPA v2.0.0 : Référence"
-	description="Référence du plugin JPA HexaGlue v2.0.0 : suffixes de nommage, artefacts générés, options d'auditing JPA et configuration multi-module."
+	title="Plugin JPA v2.2.0 : Référence"
+	description="Référence complète du plugin JPA HexaGlue v2.2.0 : suffixes de nommage, artefacts générés, options d'auditing JPA et configuration multi-module."
 	pluginSlug="plugin-jpa"
-	currentVersion="2.0.0"
+	currentVersion="2.2.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "2.0.0",
+		version: "2.2.0",
 		about: [
 			{ "@type": "Thing", name: "JPA" },
 			{ "@type": "Thing", name: "Génération de code" },
@@ -105,7 +107,7 @@ const yamlComplete = `plugins:
 		],
 	}}
 >
-	<VersionBanner variant="past" version="2.0.0" latestUrl="/docs/plugin-jpa/" />
+	<VersionBanner variant="upcoming" version="2.2.0" latestUrl="/docs/plugin-jpa/" />
 
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -156,11 +158,65 @@ const yamlComplete = `plugins:
 		</div>
 	</section>
 
-	<!-- Options de configuration -->
+	<!-- Paramètres Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy
 			label="Configuration"
-			title="Toutes les options"
+			title="Paramètres Maven"
+			gradient="bg-orange-yellow-gradient"
+		>
+			La configuration de la génération se fait via les paramètres <code>&lt;configuration&gt;</code> du plugin Maven dans le <code>pom.xml</code>.<br>
+			Ces paramètres contrôlent le package analysé, le répertoire de sortie et le comportement en cas de types non classifiés.<br>
+			Le paramètre <code>skip</code> peut aussi être passé en ligne de commande via <code>-Dhexaglue.skip=true</code>.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
+						<td class="py-3 hidden md:table-cell">Package racine à analyser. Les artefacts JPA sont générés à partir des types de domaine de ce package.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4"><code>target/hexaglue/generated-sources</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire où les entités JPA, repositories et mappers sont écrits</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Désactive complètement l'exécution de HexaGlue (configurable via <code>-Dhexaglue.skip=true</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skipValidation</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Ignore la validation des classifications avant la génération JPA</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types du domaine ne peuvent pas être classifiés</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- Options YAML -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Options YAML"
 			gradient="bg-orange-yellow-gradient"
 		>
 			Le fichier <code>hexaglue.yaml</code>, placé à la racine du projet (à côté du <code>pom.xml</code>), centralise la configuration de HexaGlue et de tous ses plugins.<br>
@@ -258,6 +314,12 @@ const yamlComplete = `plugins:
 						<td class="py-3 pr-4"><code>"&#123;basePackage&#125;.infrastructure.persistence"</code></td>
 						<td class="py-3 hidden md:table-cell">Package cible pour les artefacts JPA générés</td>
 					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4">(défaut global)</td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie spécifique au plugin. Utilisez <code>src/main/java</code> pour écrire les artefacts JPA directement dans votre arbre source au lieu de <code>target/</code>. Les fichiers existants sont écrasés à chaque build (voir note ci-dessous).</td>
+					</tr>
 					<tr>
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">targetModule</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">string</td>
@@ -267,6 +329,13 @@ const yamlComplete = `plugins:
 				</tbody>
 			</table>
 			</div>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Les fichiers générés sont <strong>systématiquement écrasés</strong> à chaque build. Si vous redirigez la sortie vers <code>src/main/java</code> via <code>outputDirectory</code>, toute modification manuelle des fichiers générés sera perdue au prochain <code>mvn compile</code>.<br>
+				Un avertissement est émis dans les logs Maven lorsqu'un fichier existant est écrasé.</p>
+			</Insight>
 		</div>
 	</section>
 
