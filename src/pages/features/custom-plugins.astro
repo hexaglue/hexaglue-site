@@ -1,0 +1,401 @@
+---
+import { Icon } from 'astro-icon/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+---
+
+<MainLayout
+	title="Custom Plugins"
+	description="Créez des plugins HexaGlue pour générer API REST, persistence NoSQL, messaging, tests ou adaptations aux standards de votre entreprise."
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Intermediate",
+		about: [
+			{ "@type": "Thing", name: "Plugin" },
+			{ "@type": "Thing", name: "Génération de code" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Custom Plugins
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Votre architecture sait tout.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Faites-en un levier d'automatisation.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				HexaGlue classifie votre domaine et construit un modèle architectural exploitable. Les plugins transforment ce modèle en code, en documentation, en validations. Les trois plugins officiels ne sont qu'un point de départ.
+			</p>
+		</div>
+	</section>
+
+	<!-- Section 1 : Ce que les plugins peuvent faire -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Possibilités"
+			title="Neuf familles d'automatisation"
+		>
+			Un plugin HexaGlue reçoit le modèle architectural complet de votre application : agrégats, entités, value objects, ports, relations de composition, métriques de classification.<br>
+			Cette connaissance permet d'automatiser bien au-delà de la persistence JPA.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			<!-- Persistence -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-astro-green/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-astro-green/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:database-2-line" class="size-5 text-astro-green" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Persistence</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Au-delà de JPA : entités MongoDB, tables DynamoDB, documents Elasticsearch, repositories Cassandra. Chaque stratégie de persistence peut avoir son propre plugin, adapté aux spécificités du datastore.
+				</p>
+			</div>
+
+			<!-- API -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-astro-blue/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-astro-blue/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:global-line" class="size-5 text-astro-blue" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">API</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					REST controllers Spring, schémas GraphQL, stubs gRPC, spécifications OpenAPI. Les driving ports du domaine décrivent les contrats : un plugin peut générer les adaptateurs qui les exposent.
+				</p>
+			</div>
+
+			<!-- Messaging -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-astro-purple/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-astro-purple/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:mail-send-line" class="size-5 text-astro-purple" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Messaging</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Producers Kafka, listeners RabbitMQ, event bridges, schémas Avro. Les domain events et les driven ports de type EVENT_PUBLISHER fournissent le contrat : le plugin génère l'infrastructure de messaging.
+				</p>
+			</div>
+
+			<!-- Testing -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-orange-400/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-orange-400/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:test-tube-line" class="size-5 text-orange-400" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Testing</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Tests d'intégration, fixtures de données, builders de test, analyse de couverture par agrégat. Un plugin peut aussi exploiter les résultats de tests d'acceptance (Cucumber, ArchUnit) pour les croiser avec le modèle architectural.
+				</p>
+			</div>
+
+			<!-- Migration -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-red-400/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-red-400/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:swap-box-line" class="size-5 text-red-400" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Migration</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Changement de stack technique, migration de Spring MVC vers Spring WebFlux, de JDBC vers R2DBC. Le modèle architectural reste stable : seul le plugin de génération change. Une migration pilotée par l'architecture, pas par le refactoring manuel.
+				</p>
+			</div>
+
+			<!-- Gouvernance -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-cyan-400/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-cyan-400/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:shield-check-line" class="size-5 text-cyan-400" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Gouvernance</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Règles d'audit personnalisées, métriques métier spécifiques, rapports de conformité réglementaire, vérification des conventions de nommage ou des patterns d'entreprise. La gouvernance devient automatisée et intégrée au build.
+				</p>
+			</div>
+
+			<!-- Notifications -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-pink-400/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-pink-400/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:notification-3-line" class="size-5 text-pink-400" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Notifications</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Emails transactionnels, SMS (Twilio), push mobile (FCM/APNS), notifications Slack ou Teams. Les domain events identifiés par le modèle deviennent les déclencheurs de notifications multi-canal, générées avec les bons payloads.
+				</p>
+			</div>
+
+			<!-- Sécurité -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-yellow-400/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-yellow-400/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:lock-line" class="size-5 text-yellow-400" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Sécurité</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Filtres d'authentification OAuth2/SAML, validation API Key, contrôle d'accès par agrégat. Les driving ports décrivent les contrats exposés : un plugin peut générer les couches de sécurité adaptées à chaque point d'entrée.
+				</p>
+			</div>
+
+			<!-- Observabilité -->
+			<div class="plugin-family group p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl hover:border-emerald-400/30 transition-all duration-300">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-emerald-400/10 group-hover:scale-110 transition-transform duration-300">
+						<Icon name="ri:pulse-line" class="size-5 text-emerald-400" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Observabilité</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">
+					Tracing OpenTelemetry, health checks Kubernetes, audit logging pour la conformité (GDPR, SOC2). Le modèle architectural permet de générer l'instrumentation au bon niveau de granularité : par agrégat, par port, par service applicatif.
+				</p>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Ces neuf familles illustrent l'étendue des possibilités. Le SPI de HexaGlue est ouvert : tout ce qui peut se déduire de la structure et de la classification de votre domaine peut être automatisé par un plugin.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 2 : Pourquoi ça marche -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Le modèle classifié"
+			title="Les plugins ne génèrent pas à l'aveugle"
+		>
+			Ce qui rend les plugins HexaGlue puissants, c'est la richesse du modèle architectural qu'ils reçoivent. Chaque plugin accède à l'ensemble des informations classifiées, pas seulement à une liste de classes.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Information accessible</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Ce qu'elle permet</th>
+							<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Exemple concret</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Agrégats et entités enfants</td>
+							<td class="py-3 pr-4">Générer un repository par agrégat, pas par classe</td>
+							<td class="py-3 hidden md:table-cell"><code>Order</code> + <code>OrderLine</code> : un seul repository, une seule table racine</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Value Objects et champs wrappés</td>
+							<td class="py-3 pr-4">Déplier ou embarquer selon la structure</td>
+							<td class="py-3 hidden md:table-cell"><code>Money(amount, currency)</code> : embeddable. <code>Quantity(int)</code> : colonne primitive</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Ports driven et leur type</td>
+							<td class="py-3 pr-4">Générer l'adaptateur correspondant au contrat</td>
+							<td class="py-3 hidden md:table-cell">Port <code>REPOSITORY</code> : adapter JPA. Port <code>GATEWAY</code> : client HTTP</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Ports driving</td>
+							<td class="py-3 pr-4">Exposer les cas d'usage via une API</td>
+							<td class="py-3 hidden md:table-cell">Port <code>OrderService</code> : REST controller avec les endpoints correspondants</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Domain Events</td>
+							<td class="py-3 pr-4">Générer les producteurs et schémas de messages</td>
+							<td class="py-3 hidden md:table-cell"><code>OrderPlaced</code> : topic Kafka + schéma Avro</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Relations de composition</td>
+							<td class="py-3 pr-4">Structurer les jointures, les sous-documents ou les relations</td>
+							<td class="py-3 hidden md:table-cell"><code>Order</code> contient <code>List&lt;OrderLine&gt;</code> : <code>@OneToMany</code> ou sous-document MongoDB</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>C'est la différence fondamentale entre un générateur de code classique et un plugin HexaGlue. Un template Velocity ou Mustache travaille sur des classes. Un plugin HexaGlue travaille sur un <strong>modèle architectural typé</strong> : il sait qu'un <code>Order</code> est un agrégat avec un identifiant <code>OrderId</code> qui wrappe un <code>UUID</code>, pas juste une classe avec des champs.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 3 : Adapter à votre contexte -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Adaptation"
+			title="S'adapter à votre contexte, pas l'inverse"
+		>
+			Chaque organisation a ses conventions : nommage des classes, frameworks internes, contraintes de sécurité, patterns imposés par les équipes plateforme.<br>
+			Un plugin custom peut intégrer ces contraintes directement dans la génération, au lieu de les vérifier après coup.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:building-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Standards d'entreprise</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Conventions de nommage, patterns d'accès aux données, wrappers de sécurité, couche anti-corruption : le plugin génère du code conforme aux règles de votre organisation dès le premier build.</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:stack-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Stack technique spécifique</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Quarkus au lieu de Spring, jOOQ au lieu de JPA, Vert.x au lieu de Spring MVC : un plugin dédié génère les adaptateurs pour votre stack, sans compromis ni workaround.</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:git-merge-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Migration progressive</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Vous changez de datastore ou de framework ? Le modèle architectural reste stable. Créez un nouveau plugin pour la cible, désactivez l'ancien. La migration est pilotée par l'architecture, pas par le refactoring fichier par fichier.</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:bar-chart-grouped-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Métriques et conformité</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Règles d'audit spécifiques à votre secteur (finance, santé, réglementaire), indicateurs de qualité architecturale, rapports de conformité générés à chaque build et intégrés dans votre CI/CD.</p>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Le plugin JPA officiel couvre le cas le plus courant. Mais si votre projet utilise MongoDB, Cassandra ou un framework maison, un plugin custom produit exactement le code attendu par votre stack, sans couche d'abstraction supplémentaire.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 4 : Offre de service -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Service"
+			title="Un plugin sur mesure, conçu pour vous"
+			gradient="bg-blue-cyan-gradient"
+		>
+			Développer un plugin HexaGlue nécessite une connaissance du SPI, du modèle architectural et des bonnes pratiques de génération de code.<br>
+			Nous concevons et livrons des plugins dédiés à vos besoins, intégrés dans votre pipeline de build.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<div class="p-8 md:p-10 bg-gradient-to-br from-astro-blue/10 to-[#00C2FF]/10 rounded-3xl border border-astro-blue/20">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+					<div class="text-center">
+						<div class="p-3 w-fit mx-auto rounded-xl bg-astro-blue/10 mb-4">
+							<Icon name="ri:discuss-line" class="size-8 text-astro-blue" aria-hidden="true" />
+						</div>
+						<h3 class="text-lg font-semibold text-white mb-2">Cadrage</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Analyse de votre domaine, de votre stack cible et de vos conventions. Définition du périmètre de génération.</p>
+					</div>
+					<div class="text-center">
+						<div class="p-3 w-fit mx-auto rounded-xl bg-astro-blue/10 mb-4">
+							<Icon name="ri:code-box-line" class="size-8 text-astro-blue" aria-hidden="true" />
+						</div>
+						<h3 class="text-lg font-semibold text-white mb-2">Développement</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Implémentation du plugin avec tests, documentation et intégration dans votre build Maven.</p>
+					</div>
+					<div class="text-center">
+						<div class="p-3 w-fit mx-auto rounded-xl bg-astro-blue/10 mb-4">
+							<Icon name="ri:hand-heart-line" class="size-8 text-astro-blue" aria-hidden="true" />
+						</div>
+						<h3 class="text-lg font-semibold text-white mb-2">Livraison</h3>
+						<p class="text-sm text-astro-gray-200 font-light">Le plugin vous appartient. Code source livré, documenté, maintenable par vos équipes. Aucun verrouillage.</p>
+					</div>
+				</div>
+
+				<p class="mt-8 text-base text-astro-gray-200 text-center">
+					Le plugin est livré avec son code source et sa suite de tests. <strong class="text-white">Vous en êtes propriétaire, sans dépendance ni abonnement.</strong>
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">HexaGlue comprend votre architecture.</span><br/>
+				Exploitez-en tout le potentiel.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Explorez les possibilités ou parlons de votre projet.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/services/" class="primary" gradient="linear-gradient(247.23deg, #00C2FF 0%, #3245FF 100%)">
+					Découvrir nos services
+				</Link>
+				<Link href="/docs/getting-started/" class="secondary">
+					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
+					<span>Démarrer avec HexaGlue</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(56, 189, 126, 0.07);
+		border-bottom: 1px solid rgba(56, 189, 126, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(56, 189, 126, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(56, 189, 126, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(56, 189, 126, 0.12),
+			0 0 50px rgba(56, 189, 126, 0.07),
+			0 0 80px rgba(56, 189, 126, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

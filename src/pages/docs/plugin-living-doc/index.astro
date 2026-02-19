@@ -10,6 +10,7 @@ import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import { Image } from 'astro:assets';
 import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
 import readmeOverviewScreenshot from '~/assets/screenshots/livingdoc-readme-overview.png';
+import CompanionBanner from '~/components/CompanionBanner.astro';
 import versions from '~/data/versions';
 
 const pomPlugin = `<plugin>
@@ -72,6 +73,10 @@ const yamlConfig = `plugins:
 			</p>
 		</div>
 	</section>
+
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<CompanionBanner variant="docs" href="/features/living-documentation/" />
+	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -429,7 +434,7 @@ const yamlConfig = `plugins:
 	<section class="py-16 md:py-24 mb-12 relative">
 		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
 			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
-				<span class="text-astro-gray-300">Votre documentation d'architecture date de quand ?</span><br/>
+				<span class="text-astro-gray-300">Le code change. La documentation aussi.</span><br/>
 				Générez-la à chaque build.
 			</h2>
 

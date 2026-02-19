@@ -2,14 +2,16 @@
 interface Props {
 	caption?: string;
 	class?: string;
+	scale?: number;
 }
 
-const { caption, class: className } = Astro.props;
+const { caption, class: className, scale } = Astro.props;
+const panelStyle = scale ? `--frame-scale: ${scale}` : undefined;
 ---
 
 <figure class:list={['browser-frame', className]}>
 	<div class="frame-panel">
-		<div class="frame-panel-inner">
+		<div class="frame-panel-inner" style={panelStyle}>
 			{caption && (
 				<figcaption class="frame-caption">
 					{caption}
@@ -43,7 +45,7 @@ const { caption, class: className } = Astro.props;
 			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
 	}
 	.frame-panel-inner {
-		max-width: 56rem; /* max-w-4xl */
+		max-width: calc(56rem * var(--frame-scale, 100) / 100);
 		margin-inline: auto;
 	}
 	.frame-window {

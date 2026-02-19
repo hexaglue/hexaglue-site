@@ -7,6 +7,7 @@ import SectionCopy from '../_components/SectionCopy.astro';
 import Link from '../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+import CompanionBanner from '~/components/CompanionBanner.astro';
 import BrowserFrame from '~/components/BrowserFrame.astro';
 import livingDocScreenshot from '~/assets/screenshots/living-doc.png';
 import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
@@ -44,8 +45,8 @@ const yamlConfig = `plugins:
 			</span>
 
 			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
-				Une documentation, toujours à jour.<br/>
-				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Du code source à la documentation vivante.</span>
+				La documentation se périme.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Sauf quand elle se compile avec le code.</span>
 			</h1>
 
 			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
@@ -53,6 +54,10 @@ const yamlConfig = `plugins:
 			</p>
 		</div>
 	</section>
+
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<CompanionBanner variant="features" href="/docs/plugin-living-doc/" />
+	</div>
 
 	<!-- Section 1 : Ce qui est documenté -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -205,7 +210,7 @@ const yamlConfig = `plugins:
 			label="Sortie"
 			title="Markdown par défaut, intégrable partout"
 		>
-			La documentation est générée en Markdown et est enrichie de graphiques et de diagrammes. Ce format est lisible directement sur GitHub, GitLab et intégrable dans un site statique (Docusaurus, MkDocs, Astro), ou convertible en PDF.
+			La documentation est générée en Markdown et est enrichie de graphiques et de diagrammes. Ce format est lisible directement sur GitHub, GitLab et intégrable dans un site statique (Docusaurus, MkDocs, Astro), ou convertible en PDF. Les options de sortie sont décrites dans <a href="/docs/plugin-living-doc/">la documentation de configuration</a>.
 		</SectionCopy>
 
 		<div class="mt-10 max-w-4xl mx-auto">

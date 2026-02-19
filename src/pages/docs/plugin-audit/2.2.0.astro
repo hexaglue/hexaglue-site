@@ -8,6 +8,7 @@ import Insight from '~/components/Insight.astro';
 import BrowserFrame from '~/components/BrowserFrame.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import VersionBanner from '~/components/VersionBanner.astro';
+import CompanionBanner from '~/components/CompanionBanner.astro';
 import { Image } from 'astro:assets';
 import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
 import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
@@ -96,6 +97,10 @@ const yamlConfig = `plugins:
 			</p>
 		</div>
 	</section>
+
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<CompanionBanner variant="docs" href="/features/audit/" />
+	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -256,17 +261,11 @@ const yamlConfig = `plugins:
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
 						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
 					</tr>
-					<tr class="border-b border-astro-dark-100/10">
+					<tr>
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDocs</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
 						<td class="py-3 hidden md:table-cell">Active la génération des diagrammes Mermaid dans un répertoire séparé</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">severityOverrides</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">map</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>&#123;&#125;</code></td>
-						<td class="py-3 hidden md:table-cell">Surcharge de sévérité par contrainte (ex : <code>"ddd:aggregate-repository": "MINOR"</code>). Permet de rétrograder ou promouvoir la sévérité de contraintes individuelles. <em>(Prévu : API prête, lecture YAML pas encore câblée)</em></td>
 					</tr>
 				</tbody>
 			</table>
@@ -479,7 +478,7 @@ const yamlConfig = `plugins:
 			title="Métriques calculées"
 			gradient="bg-orange-yellow-gradient"
 		>
-			L'audit calcule 8 métriques de qualité architecturale. Chaque métrique a un seuil d'alerte configurable.
+			L'audit calcule 20 métriques de qualité architecturale regroupées en 5 familles. Chaque métrique a un seuil d'alerte configurable.
 		</SectionCopy>
 
 		<div class="table-panel mt-10">
@@ -494,6 +493,10 @@ const yamlConfig = `plugins:
 					</tr>
 				</thead>
 				<tbody class="text-astro-gray-200">
+					<!-- DDD et Domaine -->
+					<tr>
+						<td colspan="4" class="pt-6 pb-2 text-white font-semibold text-xs uppercase tracking-wider">DDD et Domaine</td>
+					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">domain.coverage</code></td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
@@ -507,16 +510,38 @@ const yamlConfig = `plugins:
 						<td class="py-3">Proportion des types du domaine sans dépendance d'infrastructure</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">ddd.value.object.ratio</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 40%</td>
+						<td class="py-3">Ratio de value objects par rapport aux types du domaine (entités + VO)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">ddd.event.coverage</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 50%</td>
+						<td class="py-3">Proportion des agrégats émettant au moins un événement de domaine</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">ddd.aggregate.coupling</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">deps/agrégat</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 3</td>
+						<td class="py-3">Nombre moyen de dépendances inter-agrégats</td>
+					</tr>
+					<!-- Agrégats -->
+					<tr>
+						<td colspan="4" class="pt-6 pb-2 text-white font-semibold text-xs uppercase tracking-wider">Agrégats</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.avgSize</code></td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">méthodes</td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 20</td>
-						<td class="py-3">Nombre moyen de méthodes par agrégat. Au-delà de 20, un refactoring est recommandé.</td>
+						<td class="py-3">Nombre moyen de méthodes par aggregate root</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.boundary</code></td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 80%</td>
-						<td class="py-3">Proportion des entités correctement encapsulées dans leur agrégat</td>
+						<td class="py-3">Proportion des entités encapsulées dans leur agrégat</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.repository.coverage</code></td>
@@ -528,19 +553,85 @@ const yamlConfig = `plugins:
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">aggregate.coupling.efferent</code></td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">ratio</td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 0.7</td>
-						<td class="py-3">Couplage moyen entre agrégats. Plus il est bas, plus les agrégats sont indépendants.</td>
+						<td class="py-3">Instabilité moyenne des packages (couplage efférent)</td>
+					</tr>
+					<!-- Architecture hexagonale -->
+					<tr>
+						<td colspan="4" class="pt-6 pb-2 text-white font-semibold text-xs uppercase tracking-wider">Architecture hexagonale</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">hexagonal.adapter.independence</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 80%</td>
+						<td class="py-3">Indépendance des adapters entre eux (REST ne dépend pas de JPA)</td>
+					</tr>
+					<!-- Qualité du code -->
+					<tr>
+						<td colspan="4" class="pt-6 pb-2 text-white font-semibold text-xs uppercase tracking-wider">Qualité du code</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">code.boilerplate.ratio</code></td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 50%</td>
-						<td class="py-3">Proportion de code boilerplate (getters, setters, equals) dans les types du domaine</td>
+						<td class="py-3">Proportion de code boilerplate (getters, setters, equals) dans le domaine</td>
 					</tr>
-					<tr>
+					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">code.complexity.average</code></td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">complexité</td>
 						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 10</td>
 						<td class="py-3">Complexité cyclomatique moyenne des méthodes du domaine</td>
+					</tr>
+					<!-- Modularité et structure -->
+					<tr>
+						<td colspan="4" class="pt-6 pb-2 text-white font-semibold text-xs uppercase tracking-wider">Modularité et structure</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.propagation.cost</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 35%</td>
+						<td class="py-3">Coût de propagation : impact moyen d'un changement sur le système</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.cyclicity.relative</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 5%</td>
+						<td class="py-3">Proportion de types impliqués dans des cycles de dépendances</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.dependency.depth</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">niveaux</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 7</td>
+						<td class="py-3">Profondeur maximale de la chaîne de dépendances</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.fan.out.max</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">dépendances</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 20</td>
+						<td class="py-3">Dépendances sortantes du type le plus couplé</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.modularity.q</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">Q</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 0.3</td>
+						<td class="py-3">Modularité de Newman-Girvan (> 0.3 = bonne structure communautaire)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.mmi</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">score</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&lt; 50</td>
+						<td class="py-3">Index de maturité modulaire de Lilienthal (0-100)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.visibility.average</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">%</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">&gt; 70%</td>
+						<td class="py-3">Visibilité relative moyenne : ratio de types publics par package</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">architecture.cohesion.relational</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">ratio</td>
+						<td class="py-3 pr-4 hidden md:table-cell whitespace-nowrap">hors 1.5 – 4.0</td>
+						<td class="py-3">Cohésion relationnelle H : dépendances internes par package</td>
 					</tr>
 				</tbody>
 			</table>
@@ -616,7 +707,7 @@ const yamlConfig = `plugins:
 	<section class="py-16 md:py-24 mb-12 relative">
 		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
 			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
-				<span class="text-astro-gray-300">15 contraintes, 8 métriques, un rapport.</span><br/>
+				<span class="text-astro-gray-300">15 contraintes, 20 métriques, un rapport.</span><br/>
 				Configurez l'audit en quelques lignes.
 			</h2>
 
@@ -626,11 +717,11 @@ const yamlConfig = `plugins:
 
 			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
 				<Link href="/features/audit/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
-					Comprendre les résultats de l'audit
+					Explorer les capacités de l'audit
 				</Link>
 				<Link href="/case-studies/ecommerce-migration/step-1-discovery/" class="secondary">
 					<Icon name="ri:eye-line" class="size-5" aria-hidden="true" />
-					<span>Voir un rapport réel</span>
+					<span>Interpréter un rapport d'audit</span>
 				</Link>
 			</div>
 		</div>

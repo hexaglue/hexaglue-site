@@ -10,6 +10,7 @@ import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import { Image } from 'astro:assets';
 import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
 import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
+import CompanionBanner from '~/components/CompanionBanner.astro';
 import versions from '~/data/versions';
 
 const pomPlugin = `<plugin>
@@ -94,6 +95,10 @@ const yamlConfig = `plugins:
 			</p>
 		</div>
 	</section>
+
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<CompanionBanner variant="docs" href="/features/audit/" />
+	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -254,17 +259,11 @@ const yamlConfig = `plugins:
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
 						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
 					</tr>
-					<tr class="border-b border-astro-dark-100/10">
+					<tr>
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDocs</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
 						<td class="py-3 hidden md:table-cell">Active la génération des diagrammes Mermaid dans un répertoire séparé</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">severityOverrides</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">map</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>&#123;&#125;</code></td>
-						<td class="py-3 hidden md:table-cell">Surcharge de sévérité par contrainte (ex : <code>"ddd:aggregate-repository": "MINOR"</code>). Permet de rétrograder ou promouvoir la sévérité de contraintes individuelles. <em>(Prévu : API prête, lecture YAML pas encore câblée)</em></td>
 					</tr>
 				</tbody>
 			</table>
@@ -624,11 +623,11 @@ const yamlConfig = `plugins:
 
 			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
 				<Link href="/features/audit/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
-					Comprendre les résultats de l'audit
+					Explorer les capacités de l'audit
 				</Link>
 				<Link href="/case-studies/ecommerce-migration/step-1-discovery/" class="secondary">
 					<Icon name="ri:eye-line" class="size-5" aria-hidden="true" />
-					<span>Voir un rapport réel</span>
+					<span>Interpréter un rapport d'audit</span>
 				</Link>
 			</div>
 		</div>

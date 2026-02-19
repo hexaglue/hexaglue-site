@@ -6,6 +6,7 @@ import SectionCopy from '../../_components/SectionCopy.astro';
 import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import CompanionBanner from '~/components/CompanionBanner.astro';
 import versions from '~/data/versions';
 
 const pomPlugin = `<plugin>
@@ -125,6 +126,10 @@ const yamlComplete = `plugins:
 			</p>
 		</div>
 	</section>
+
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<CompanionBanner variant="docs" href="/features/jpa-generation/" />
+	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -486,8 +491,8 @@ const yamlComplete = `plugins:
 	<section class="py-16 md:py-24 mb-12 relative">
 		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
 			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
-				<span class="text-astro-gray-300">Votre domaine mérite mieux que des annotations JPA.</span><br/>
-				Configurez la génération en quelques lignes.
+				<span class="text-astro-gray-300">Concentrez-vous sur le métier.</span><br/>
+				Générez la persistence en quelques lignes.
 			</h2>
 
 			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">

@@ -1,0 +1,63 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+	variant: 'features' | 'docs';
+	href: string;
+	class?: string;
+}
+
+const { variant, href, class: className } = Astro.props;
+
+const config = {
+	features: {
+		icon: 'ri:tools-fill',
+		headline: 'Installer et configurer le plugin',
+		subtext: 'D\u00e9pendance Maven, goals, param\u00e8tres et options.',
+		cta: 'Documentation',
+	},
+	docs: {
+		icon: 'ri:sparkling-2-line',
+		headline: 'D\u00e9couvrir toutes les fonctionnalit\u00e9s',
+		subtext: 'Ce que le plugin g\u00e9n\u00e8re, analyse ou produit.',
+		cta: 'Fonctionnalit\u00e9s',
+	},
+};
+
+const c = config[variant];
+
+const isAmber = variant === 'docs';
+---
+
+<a
+	href={href}
+	class:list={[
+		'companion-banner group flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-5 py-3',
+		'transition-all duration-300',
+		isAmber
+			? 'border border-[#FF7D54]/20 bg-gradient-to-r from-[#FF7D54]/10 to-[#F8E42E]/10 hover:border-[#FF7D54]/35'
+			: 'border border-[#4AF2C8]/20 bg-gradient-to-r from-[#2F4CB3]/10 to-[#4AF2C8]/10 hover:border-[#4AF2C8]/35',
+		className,
+	]}
+>
+	<Icon name={c.icon} class:list={['size-6 shrink-0', isAmber ? 'text-[#FF7D54]' : 'text-[#4AF2C8]']} aria-hidden="true" />
+
+	<div class="flex flex-col gap-y-0.5 flex-1 min-w-0">
+		<span class="text-base font-medium text-white/90">{c.headline}</span>
+		<span class="text-sm text-astro-gray-200 font-light">{c.subtext}</span>
+	</div>
+
+	<span
+		class:list={[
+			'companion-cta ml-auto inline-flex items-center gap-1.5 rounded-full px-4 py-1.5',
+			'text-xs font-semibold uppercase tracking-wide text-white',
+			'transition-shadow duration-300',
+			isAmber
+				? 'bg-orange-yellow-gradient group-hover:shadow-[0_0_16px_rgba(255,125,84,0.3)]'
+				: 'bg-blue-green-gradient group-hover:shadow-[0_0_16px_rgba(74,242,200,0.3)]',
+		]}
+	>
+		{c.cta}
+		<Icon name="ri:arrow-right-line" class="size-3.5" aria-hidden="true" />
+	</span>
+</a>
