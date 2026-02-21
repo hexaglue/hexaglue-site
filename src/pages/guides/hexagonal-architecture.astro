@@ -140,7 +140,7 @@ public class JpaOrderRepository implements OrderRepository {
 			title="Pourquoi l'architecture hexagonale ?"
 			gradient="bg-orange-yellow-gradient"
 		>
-			Dans une application classique, le code métier finit par dépendre directement de la base de données, du framework web, du système de messaging. Changer de technologie de persistence ou de mode d'exposition revient à réécrire une partie du domaine.
+			Dans une application classique, le code métier finit par dépendre directement de la base de données, du framework web, du système de messaging. Changer de technologie de persistance ou de mode d'exposition revient à réécrire une partie du domaine.
 			<br>
 			L'architecture hexagonale, proposée par Alistair Cockburn en 2005 sous le nom de "Ports and Adapters", résout ce problème en inversant les dépendances : le domaine définit ses besoins via des interfaces (ports), et l'infrastructure fournit des implémentations (adapters). Le domaine ne sait pas qui l'appelle ni où il persiste.
 			<br>
@@ -305,7 +305,7 @@ public class JpaOrderRepository implements OrderRepository {
 			title="Hexagonal vs Couches : quand choisir ?"
 			gradient="bg-orange-yellow-gradient"
 		>
-			L'architecture en couches (Presentation → Service → Persistence) est le pattern le plus répandu. L'architecture hexagonale propose une alternative centrée sur le domaine. Chacune a ses forces et ses cas d'usage.
+			L'architecture en couches (Présentation → Service → Persistance) est le pattern le plus répandu. L'architecture hexagonale propose une alternative centrée sur le domaine. Chacune a ses forces et ses cas d'usage.
 		</SectionCopy>
 
 		<div class="mt-10 table-panel">
@@ -321,7 +321,7 @@ public class JpaOrderRepository implements OrderRepository {
 					<tbody class="text-astro-gray-200">
 						<tr class="border-b border-astro-dark-100/10">
 							<td class="py-3 pr-4 font-medium text-white">Couplage</td>
-							<td class="py-3 pr-4">Fort : le métier dépend de la persistence</td>
+							<td class="py-3 pr-4">Fort : le métier dépend de la persistance</td>
 							<td class="py-3">Faible : le domaine ne dépend de rien</td>
 						</tr>
 						<tr class="border-b border-astro-dark-100/10">

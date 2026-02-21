@@ -53,7 +53,7 @@ const packageStructure = `com.acme.shop/
 const verificationCommand = `mvn clean compile`;
 
 const antiPatterns = [
-	{ num: 1, pattern: 'Couplage domaine/persistence', example: 'Order, Customer, Product sont annotées @Entity: le domaine dépend de JPA' },
+	{ num: 1, pattern: 'Couplage domaine/persistance', example: 'Order, Customer, Product sont annotées @Entity: le domaine dépend de JPA' },
 	{ num: 2, pattern: 'Pas d\'abstraction entre les services', example: 'Orchestration et logique métier sont dans les mêmes @Service, sans distinction de rôle' },
 	{ num: 3, pattern: 'Pas d\'inversion de dépendance', example: 'Les services appellent directement Spring Data: aucun port, aucune abstraction' },
 	{ num: 4, pattern: 'Données séparées du comportement', example: 'Les entités ne sont que des getters/setters, la logique vit dans les services' },
