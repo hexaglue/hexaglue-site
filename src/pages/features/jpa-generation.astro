@@ -263,6 +263,46 @@ public class OrderJpaEntity {
 		</div>
 	</section>
 
+	<!-- Section 5 : Performance et compromis -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Performance"
+			title="Génération JPA vs SQL optimisé : un faux dilemme"
+		>
+			Une objection fréquente : le SQL écrit à la main est plus performant que le code JPA généré.
+			C'est vrai. Mais les deux approches ne répondent pas au même problème.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:time-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">HexaGlue optimise le coût humain</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Moins de code à écrire, moins de code à maintenir, moins de bugs de câblage. Pour la grande majorité des applications métier (CRUD, back-office, SaaS, SI internes), les performances JPA standard sont largement suffisantes.</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:speed-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Le SQL manuel optimise le coût machine</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Requêtes taillées pour le plan d'exécution, exploitation fine des index, contrôle total sur les jointures. Indispensable pour les chemins critiques à forte charge (trading, analytics, temps réel).</p>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>Les deux approches coexistent dans les architectures matures. HexaGlue couvre les 80 à 90 % de cas CRUD standard où la productivité prime sur la micro-optimisation.<br>
+				Pour les requêtes critiques, Spring Data JPA offre <code>@Query</code> (JPQL), requêtes natives et projections : vous gardez le contrôle là où il compte, sans renoncer à l'automatisation partout ailleurs.</p>
+			</Insight>
+		</div>
+	</section>
+
 	<!-- CTA Final -->
 	<section class="py-16 md:py-24 mb-12 relative">
 		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
