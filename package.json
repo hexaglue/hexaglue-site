@@ -18,24 +18,24 @@
 		"@astrojs/tailwind": "^6.0.2",
 		"@iconify-json/mdi": "^1.2.3",
 		"@iconify-json/ph": "^1.2.2",
-		"@iconify-json/simple-icons": "^1.2.66",
+		"@iconify-json/simple-icons": "^1.2.71",
 		"@playform/compress": "^0.2.1",
-		"@preact/signals-core": "^1.12.1",
+		"@preact/signals-core": "^1.13.0",
 		"@tailwindcss/container-queries": "^0.1.1",
-		"@types/node": "^24.10.9",
-		"astro": "^5.17.1",
+		"@types/node": "^25.3.0",
+		"astro": "^5.17.3",
 		"astro-expressive-code": "^0.41.6",
 		"astro-icon": "^1.1.5",
 		"astro-seo": "^1.1.0",
-		"astro-seo-schema": "^5.1.0",
+		"astro-seo-schema": "^5.2.0",
 		"schema-dts": "^1.1.5",
 		"sharp": "^0.34.5",
-		"tailwindcss": "^3.4.19",
 		"typescript": "^5.9.3"
 	},
 	"packageManager": "pnpm@10.28.2+sha512.41872f037ad22f7348e3b1debbaf7e867cfd448f2726d9cf74c08f19507c31d2c8e7a11525b983febc2df640b5438dee6023ebb1f84ed43cc2d654d2bc326264",
 	"devDependencies": {
-		"@iconify-json/ri": "^1.2.9",
-		"svgo": "^4.0.0"
+		"@iconify-json/ri": "^1.2.10",
+		"svgo": "^4.0.0",
+		"tailwindcss": "^3.4.19"
 	}
 }
