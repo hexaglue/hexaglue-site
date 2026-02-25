@@ -39,14 +39,14 @@ const yamlConfig = `plugins:
 ---
 
 <MainLayout
-	title="Plugin Living Documentation v2.1.0 : Référence"
-	description="Référence complète du plugin Living Documentation HexaGlue v2.1.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
+	title="Plugin Living Documentation v3.0.0 : Référence"
+	description="Référence complète du plugin Living Documentation HexaGlue v3.0.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
 	pluginSlug="plugin-living-doc"
-	currentVersion="2.1.0"
+	currentVersion="3.0.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "2.1.0",
+		version: "3.0.0",
 		about: [
 			{ "@type": "Thing", name: "Documentation logicielle" },
 			{ "@type": "Thing", name: "Domain-Driven Design" },
@@ -100,6 +100,12 @@ const yamlConfig = `plugins:
 				<li>Le plugin Living Documentation est déclaré comme <code>&lt;dependency&gt;</code> du plugin Maven, pas du projet. HexaGlue découvre automatiquement les plugins via le mécanisme Java <code>ServiceLoader</code> : il suffit de les ajouter ici pour qu'ils soient actifs.</li>
 			</ul>
 		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>Les projets utilisant <strong>Lombok</strong> sont pris en charge nativement depuis HexaGlue 6.0.0 : le delombok est injecté automatiquement avant l'analyse, aucune configuration spéciale n'est nécessaire côté plugin.</p>
+			</Insight>
+		</div>
 	</section>
 
 	<!-- Paramètres Maven -->
@@ -145,10 +151,15 @@ const yamlConfig = `plugins:
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
 						<td class="py-3 hidden md:table-cell">Ignore la validation des classifications avant la génération de la documentation</td>
 					</tr>
-					<tr>
+					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
 						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types du domaine ne peuvent pas être classifiés</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tolerantResolution</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Active la résolution tolérante des types non résolus. Utile pour les projets utilisant des annotation processors (MapStruct, Immutables) dont le code généré n'est pas encore sur le classpath (configurable via <code>-Dhexaglue.tolerantResolution=true</code>)</td>
 					</tr>
 				</tbody>
 			</table>

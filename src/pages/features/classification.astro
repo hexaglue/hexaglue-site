@@ -70,6 +70,47 @@ const yamlConfig = `classification:
 		</SectionCopy>
 	</section>
 
+	<!-- Section : Compatibilité Lombok et annotation processors -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Compatibilité"
+			title="Lombok et annotation processors"
+			gradient="bg-blue-green-gradient"
+		>
+			HexaGlue s'intègre nativement avec les outils de génération de code les plus courants de l'écosystème Java.<br>
+			Aucune configuration n'est nécessaire : la détection et l'adaptation sont automatiques.
+		</SectionCopy>
+
+		<div class="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:grid-cols-3">
+			<IntroPoint tint="green" title="Support Lombok automatique">
+				<GemIcon slot="icon" icon="ri:magic-line" gradient="blue-green" />
+				<Fragment slot="description">
+					HexaGlue détecte automatiquement Lombok dans les dépendances Maven et injecte un delombok transparent avant l'analyse. Le code analysé est le code expandé : <code>@Data</code>, <code>@Builder</code>, <code>@Getter</code> sont résolus en champs et méthodes réels.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="green" title="Mode tolerant pour les annotation processors">
+				<GemIcon slot="icon" icon="ri:tools-line" gradient="red-pink" />
+				<Fragment slot="description">
+					Les projets utilisant MapStruct, Immutables ou d'autres processeurs d'annotations sont pris en charge grâce au mode tolerant (<code>noClasspath</code>). Le classpath d'analyse inclut automatiquement les classes compilées et les dépendances.
+				</Fragment>
+			</IntroPoint>
+
+			<IntroPoint tint="green" title="Zéro configuration">
+				<GemIcon slot="icon" icon="ri:checkbox-circle-line" gradient="orange-yellow" />
+				<Fragment slot="description">
+					Ces fonctionnalités sont activées automatiquement. Pas de modification du <code>pom.xml</code>, pas de paramètre à ajouter. HexaGlue détecte le contexte du projet et s'adapte.
+				</Fragment>
+			</IntroPoint>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>Le delombok s'exécute dans la phase <code>initialize</code> de Maven, avant l'analyse HexaGlue. Les sources générées sont placées dans un répertoire temporaire puis supprimées après l’analyse. Votre code source n’est jamais modifié.</p>
+			</Insight>
+		</div>
+	</section>
+
 	<!-- Section 1 : Ce que HexaGlue classifie -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<SectionCopy

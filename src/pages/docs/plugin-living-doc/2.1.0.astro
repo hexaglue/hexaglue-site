@@ -7,26 +7,24 @@ import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import BrowserFrame from '~/components/BrowserFrame.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
-import VersionBanner from '~/components/VersionBanner.astro';
-import CompanionBanner from '~/components/CompanionBanner.astro';
 import { Image } from 'astro:assets';
 import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
 import readmeOverviewScreenshot from '~/assets/screenshots/livingdoc-readme-overview.png';
-import versions from '~/data/versions';
+import VersionBanner from '~/components/VersionBanner.astro';
 
 const pomPlugin = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>5.1.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-living-doc</artifactId>
-            <version>${versions.plugins}</version>
+            <version>2.1.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
@@ -40,15 +38,15 @@ const yamlConfig = `plugins:
 ---
 
 <MainLayout
-	title="Plugin Living Documentation v2.2.0 : Référence"
-	description="Référence complète du plugin Living Documentation HexaGlue v2.2.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
+	title="Plugin Living Documentation v2.1.0 : Référence"
+	description="Référence complète du plugin Living Documentation HexaGlue v2.1.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
 	canonicalURL={new URL('/docs/plugin-living-doc/', Astro.site)}
 	pluginSlug="plugin-living-doc"
-	currentVersion="2.2.0"
+	currentVersion="2.1.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "2.2.0",
+		version: "2.1.0",
 		about: [
 			{ "@type": "Thing", name: "Documentation logicielle" },
 			{ "@type": "Thing", name: "Domain-Driven Design" },
@@ -56,7 +54,8 @@ const yamlConfig = `plugins:
 		],
 	}}
 >
-	<VersionBanner variant="upcoming" version="2.2.0" latestUrl="/docs/plugin-living-doc/" />
+	<VersionBanner variant="past" version="2.1.0" latestUrl="/docs/plugin-living-doc/" />
+
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<AmberStardust height="h-64 md:h-80" />
@@ -76,10 +75,6 @@ const yamlConfig = `plugins:
 			</p>
 		</div>
 	</section>
-
-	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<CompanionBanner variant="docs" href="/features/living-documentation/" />
-	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">

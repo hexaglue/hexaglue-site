@@ -5,10 +5,10 @@
 
 export const versions = {
 	/** Version de HexaGlue (core et hexaglue-maven-plugin) */
-	hexaglue: '5.1.0',
+	hexaglue: '6.0.0',
 
 	/** Version des plugins HexaGlue (living-doc, audit, jpa) */
-	plugins: '2.1.0',
+	plugins: '3.0.0',
 
 	/** GroupId Maven pour core et hexaglue-maven-plugin */
 	groupId: 'io.hexaglue',
