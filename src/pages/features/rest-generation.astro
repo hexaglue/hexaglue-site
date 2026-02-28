@@ -1,0 +1,374 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../_components/SectionCopy.astro';
+import Link from '../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import CompanionBanner from '~/components/CompanionBanner.astro';
+import GreenishStardust from '../_components/landing-page/GreenishStardust.astro';
+
+const portCode = `// Votre port driving : un contrat métier, pas une API HTTP
+public interface OrderUseCases {
+    Order createOrder(CustomerId customerId, List<OrderLine> lines);
+    Order getOrder(OrderId id);
+    List<Order> listOrders();
+    void deleteOrder(OrderId id);
+    Order updateOrder(OrderId id, List<OrderLine> lines);
+}`;
+
+const controllerCode = `@RestController
+@RequestMapping("/api/orders")
+@Tag(name = "Orders", description = "Order management operations")
+public class OrderController {
+
+    private final OrderUseCases orderUseCases;
+
+    public OrderController(OrderUseCases orderUseCases) {
+        this.orderUseCases = orderUseCases;
+    }
+
+    @PostMapping
+    @Operation(summary = "Create order")
+    public ResponseEntity<Object> createOrder(
+            @Valid @RequestBody CreateOrderRequest request) {
+        var result = orderUseCases.createOrder(
+            CustomerId.of(request.customerId()), request.lines());
+        return ResponseEntity.status(201).body(OrderResponse.from(result));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get order")
+    public ResponseEntity<Object> getOrder(@PathVariable UUID id) {
+        var result = orderUseCases.getOrder(OrderId.of(id));
+        return ResponseEntity.ok(OrderResponse.from(result));
+    }
+
+    @GetMapping
+    @Operation(summary = "List orders")
+    public ResponseEntity<Object> listOrders() {
+        var result = orderUseCases.listOrders();
+        return ResponseEntity.ok(result.stream()
+            .map(OrderResponse::from).toList());
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete order")
+    public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
+        orderUseCases.deleteOrder(OrderId.of(id));
+        return ResponseEntity.noContent().build();
+    }
+}`;
+
+const dtoCode = `// Request DTO : validation automatique depuis les types du domaine
+public record CreateOrderRequest(
+    @NotNull UUID customerId,
+    @Valid @NotEmpty List<OrderLineRequest> lines
+) {}
+
+// Response DTO : factory from() pour la projection domaine → REST
+public record OrderResponse(
+    UUID id,
+    UUID customerId,
+    String status
+) {
+    public static OrderResponse from(Order source) {
+        return new OrderResponse(
+            source.getId().value(),
+            source.getCustomerId().value(),
+            source.getStatus().name());
+    }
+}`;
+---
+
+<MainLayout
+	title="Génération REST"
+	description="HexaGlue génère les controllers Spring MVC, DTOs avec validation et documentation OpenAPI depuis vos ports driving. Zéro code manuel pour la couche API REST."
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		about: [
+			{ "@type": "Thing", name: "REST API" },
+			{ "@type": "Thing", name: "Génération de code" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<GreenishStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-blue-green-gradient font-semibold text-sm uppercase tracking-wider">
+				Génération REST
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				L'API REST est du glue code.<br/>
+				<span class="bg-clip-text text-transparent bg-blue-green-gradient">Pas besoin de l'écrire.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				HexaGlue génère les controllers Spring MVC, DTOs avec validation et documentation OpenAPI depuis vos ports driving. Zéro code manuel pour la couche API REST.
+			</p>
+		</div>
+	</section>
+
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<CompanionBanner variant="features" href="/docs/plugin-rest/" />
+	</div>
+
+	<!-- Section 1 : Ce qui est généré -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Artefacts générés"
+			title="5 types d'artefacts, dérivés de vos ports driving"
+		>
+			À partir de chaque port driving (interface de cas d'utilisation), HexaGlue produit toute la couche API REST. Pour un domaine e-commerce avec 3 ports driving, cela représente 3 controllers, 6+ DTOs, un handler d'exceptions et une configuration Spring.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Artefact</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Quantité typique</th>
+							<th class="py-3 text-astro-gray-300 font-medium">Rôle</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Controller</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 par port driving</td>
+							<td class="py-3"><code>@RestController</code> avec <code>@RequestMapping</code>, <code>@Tag</code> OpenAPI et injection du port</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Request DTO</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 par méthode avec body</td>
+							<td class="py-3">Record Java avec annotations <code>@NotNull</code>, <code>@NotBlank</code>, <code>@Positive</code> de Bean Validation</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Response DTO</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 par type de retour</td>
+							<td class="py-3">Record Java avec factory <code>from()</code> pour la projection domaine vers REST</td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Exception Handler</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 global</td>
+							<td class="py-3"><code>@RestControllerAdvice</code> avec mappings exception vers code HTTP configurables</td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4 font-medium text-white whitespace-nowrap">Configuration</td>
+							<td class="py-3 pr-4 whitespace-nowrap">1 global</td>
+							<td class="py-3"><code>@Configuration</code> avec <code>@Bean</code> exposant les services via leurs ports driving</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Le nombre d'artefacts croît linéairement avec le nombre de ports driving. Pour chaque interface de cas d'utilisation ajoutée au domaine, HexaGlue produit un controller complet avec ses DTOs. C'est du code que vous n'avez pas à écrire ni à maintenir.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 2 : Dérivation HTTP -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Dérivation HTTP"
+			title="Des noms de méthode aux verbes HTTP"
+		>
+			HexaGlue analyse chaque méthode du port driving et dérive automatiquement le verbe HTTP, le chemin et le code de statut. Cette dérivation est déterministe : un même port produit toujours la même API.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<table class="w-full text-sm text-left">
+					<thead>
+						<tr class="border-b border-astro-dark-100/20">
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Préfixe de méthode</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Verbe</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Chemin</th>
+							<th class="py-3 pr-4 text-astro-gray-300 font-medium">Statut</th>
+							<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Exemple</th>
+						</tr>
+					</thead>
+					<tbody class="text-astro-gray-200">
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4"><code>create</code>, <code>add</code>, <code>register</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>POST</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>/</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap">201</td>
+							<td class="py-3 hidden md:table-cell"><code>createOrder()</code> → <code>POST /api/orders</code></td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4"><code>get</code>, <code>find</code>, <code>load</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap">200</td>
+							<td class="py-3 hidden md:table-cell"><code>getOrder(OrderId)</code> → <code>GET /api/orders/&#123;id&#125;</code></td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4"><code>list</code>, <code>getAll</code>, <code>findAll</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>/</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap">200</td>
+							<td class="py-3 hidden md:table-cell"><code>listOrders()</code> → <code>GET /api/orders</code></td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4"><code>update</code>, <code>modify</code>, <code>edit</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>PUT</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap">200</td>
+							<td class="py-3 hidden md:table-cell"><code>updateOrder(OrderId, ...)</code> → <code>PUT /api/orders/&#123;id&#125;</code></td>
+						</tr>
+						<tr class="border-b border-astro-dark-100/10">
+							<td class="py-3 pr-4"><code>delete</code>, <code>remove</code>, <code>archive</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>DELETE</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap">204</td>
+							<td class="py-3 hidden md:table-cell"><code>deleteOrder(OrderId)</code> → <code>DELETE /api/orders/&#123;id&#125;</code></td>
+						</tr>
+						<tr>
+							<td class="py-3 pr-4"><code>search</code>, <code>query</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap"><code>/search</code></td>
+							<td class="py-3 pr-4 whitespace-nowrap">200</td>
+							<td class="py-3 hidden md:table-cell"><code>searchOrders(status)</code> → <code>GET /api/orders/search?status=</code></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="green">
+				<p>Ces règles sont déterministes : pour un même port driving, HexaGlue produit toujours la même API REST. Les identifiants de type wrapper (comme <code>OrderId(UUID)</code>) sont automatiquement dépliés vers leur type primitif dans les <code>@PathVariable</code> et reconstruits via la factory <code>OrderId.of(uuid)</code>.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 3 : Avant / Après -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Comparaison"
+			title="Votre port vs le code généré"
+		>
+			Vous définissez le contrat métier via un port driving. HexaGlue génère le controller REST, les DTOs et la validation. Les deux sont synchronisés par construction.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<Code code={portCode} lang="java" title="Ce que vous écrivez : port driving" />
+			<Code code={controllerCode} lang="java" title="Ce que HexaGlue génère : controller REST" />
+		</div>
+
+		<div class="mt-6 max-w-5xl mx-auto">
+			<Code code={dtoCode} lang="java" title="Ce que HexaGlue génère : DTOs avec validation" />
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Chaque méthode du port driving produit un endpoint REST complet : annotation HTTP, validation des entrées, projection de la réponse et documentation OpenAPI. Ajoutez une méthode au port, le controller se met à jour au prochain build.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Section 4 : Ownership -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Ownership"
+			title="Du code généré qui vous appartient"
+		>
+			Le code produit par HexaGlue n'est pas une boîte noire. Ce sont des classes Java standard, lisibles, débuggables. Vous choisissez comment les intégrer à votre projet.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:refresh-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Régénérer à chaque build</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Mode par défaut. Les artefacts sont écrits dans <code>target/</code> et régénérés à chaque <code>mvn compile</code>. Le code généré n'est pas versionné : il reste toujours synchronisé avec vos ports driving.</p>
+			</div>
+
+			<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="p-2 rounded-lg bg-blue-green-gradient/10 text-astro-green">
+						<Icon name="ri:git-commit-line" class="size-5" aria-hidden="true" />
+					</div>
+					<h3 class="text-white font-semibold">Committer dans votre code</h3>
+				</div>
+				<p class="text-sm text-astro-gray-200 font-light">Redirigez la sortie vers <code>src/main/java</code> via l'option <code>outputDirectory</code>. Le code généré devient partie intégrante de votre projet. Vous pouvez ensuite le modifier, l'enrichir ou désactiver la régénération.</p>
+			</div>
+		</div>
+
+		<div class="max-w-4xl mx-auto">
+			<Insight variant="amber">
+				<p>Le plugin génère des controllers Spring MVC standards avec des records Java pour les DTOs. Pas de framework propriétaire, pas de runtime : le code généré fonctionne avec n'importe quelle version de Spring Boot compatible.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Votre métier mérite toute votre attention.</span><br/>
+				Générez l'API REST au build.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Voyez comment HexaGlue produit des controllers REST complets à partir de ports driving.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/ecommerce-migration/step-5-generated/" class="primary">
+					Voir la génération en action
+				</Link>
+				<Link href="/docs/plugin-rest/" class="secondary">
+					<Icon name="ri:settings-3-line" class="size-5" aria-hidden="true" />
+					<span>Configurer le plugin REST</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-green-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(56, 189, 126, 0.07);
+		border-bottom: 1px solid rgba(56, 189, 126, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(56, 189, 126, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(56, 189, 126, 0.04) 0%, rgba(56, 189, 126, 0.02) 50%, rgba(56, 189, 126, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(56, 189, 126, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(56, 189, 126, 0.12),
+			0 0 50px rgba(56, 189, 126, 0.07),
+			0 0 80px rgba(56, 189, 126, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

@@ -27,6 +27,9 @@ export const pluginVersions: Record<string, PluginVersion[]> = {
 		{ version: '2.1.0', label: 'v2.1.0', url: '/docs/plugin-living-doc/2.1.0/' },
 		{ version: '2.0.0', label: 'v2.0.0', url: '/docs/plugin-living-doc/2.0.0/' },
 	],
+	'plugin-rest': [
+		{ version: '3.1.0', label: 'v3.1.0', url: '/docs/plugin-rest/', latest: true },
+	],
 };
 
 export default pluginVersions;
