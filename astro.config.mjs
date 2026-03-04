@@ -15,6 +15,22 @@ export default defineConfig({
 	prefetch: true,
 	redirects: {
 		'/getting-started/': '/docs/getting-started/',
+		// Banking migration: old step URLs → new condensed pages
+		'/case-studies/banking-migration/step-0-legacy/': '/case-studies/banking-migration/',
+		'/case-studies/banking-migration/step-1-discovery/': '/case-studies/banking-migration/',
+		'/case-studies/banking-migration/step-2-configured/': '/case-studies/banking-migration/',
+		'/case-studies/banking-migration/step-3-hexagonal/': '/case-studies/banking-migration/migration/',
+		'/case-studies/banking-migration/step-4-pure-domain/': '/case-studies/banking-migration/migration/',
+		'/case-studies/banking-migration/step-5-generated/': '/case-studies/banking-migration/result/',
+		'/case-studies/banking-migration/step-6-functional/': '/case-studies/banking-migration/result/',
+		// E-Commerce migration: old step URLs → new condensed pages
+		'/case-studies/ecommerce-migration/step-0-legacy/': '/case-studies/ecommerce-migration/',
+		'/case-studies/ecommerce-migration/step-1-discovery/': '/case-studies/ecommerce-migration/',
+		'/case-studies/ecommerce-migration/step-2-configured/': '/case-studies/ecommerce-migration/',
+		'/case-studies/ecommerce-migration/step-3-hexagonal/': '/case-studies/ecommerce-migration/migration/',
+		'/case-studies/ecommerce-migration/step-4-pure-domain/': '/case-studies/ecommerce-migration/migration/',
+		'/case-studies/ecommerce-migration/step-5-generated/': '/case-studies/ecommerce-migration/result/',
+		'/case-studies/ecommerce-migration/step-6-functional/': '/case-studies/ecommerce-migration/result/',
 	},
 	integrations: [
 		tailwind({

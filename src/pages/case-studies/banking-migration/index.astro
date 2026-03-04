@@ -1,27 +1,124 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
 import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
-import Link from '../../_components/Link.astro';
 import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
-import { steps } from './_data/steps';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
+import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import Insight from '~/components/Insight.astro';
 
-const lessons = [
-	{ icon: 'ri:brain-line', title: 'Inférence automatique', desc: 'Aucune classification explicite nécessaire si le code est bien structuré. Les exclusions dans hexaglue.yaml sont minimales après restructuration.' },
-	{ icon: 'ri:stack-line', title: 'Multi-module = visibilité globale', desc: 'Le mode reactor analyse tous les modules d\'un coup. Les ports définis dans banking-core sont naturellement vus par les plugins.' },
-	{ icon: 'ri:sparkling-2-line', title: 'Le domaine doit être pur', desc: 'La suppression des annotations JPA du domaine est le point d\'inflexion. Les records pour les identifiants et value objects permettent l\'inférence DDD complète.' },
-	{ icon: 'ri:code-box-line', title: 'Routage par module', desc: 'targetModule: banking-persistence route le code généré vers le bon module. L\'infrastructure ne pollue pas le domaine.' },
-	{ icon: 'ri:settings-3-line', title: 'Rôles de modules', desc: 'DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY : chaque module a un rôle architectural clair dans hexaglue.yaml.' },
-	{ icon: 'ri:git-branch-line', title: 'Migration incrémentale', desc: 'Chaque étape compile et les observations guident la suivante. Pas de Big Bang.' },
-	{ icon: 'ri:magic-line', title: 'Architecture générée', desc: '~32 fichiers générés remplacent ~20 fichiers manuels. Le coût de l\'architecture hexagonale est éliminé par la génération automatique.' },
-	{ icon: 'ri:organization-chart', title: 'Orchestration par agrégats', desc: 'Chaque service applicatif coordonne ses propres agrégats via les repositories, sans passer par d\'autres services.' },
-	{ icon: 'ri:bar-chart-box-line', title: 'Le score est un indicateur', desc: '66/100 avec 0 violations montre une architecture hexagonale bien structurée, malgré des métriques de couplage et dépendances encore perfectibles.' },
+const accountEntityCode = `@Entity
+@Table(name = "accounts")
+public class Account extends BaseEntity {
+
+    @Column(nullable = false, unique = true)
+    private String iban;
+
+    // Anti-pattern : référence directe à l'entité au lieu d'un identifiant typé
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Transaction> transactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<Card> cards = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountType type;
+
+    @Column(precision = 15, scale = 2)
+    private BigDecimal balance;
+
+    private String currency;
+
+    // getters, setters...
+}`;
+
+const moduleStructure = `banking/
+├── banking-core/          (14 classes)
+│   ├── model/             (10 classes : 6 entités, 3 enums, BaseEntity)
+│   ├── exception/         (3 classes)
+│   └── util/              (1 classe)
+├── banking-persistence/   (8 classes)
+│   ├── repository/        (6 interfaces Spring Data)
+│   └── config/            (2 classes)
+├── banking-service/       (8 classes)
+│   ├── service/           (7 classes)
+│   └── event/             (1 classe)
+├── banking-api/           (14 classes)
+│   ├── controller/        (5 classes)
+│   ├── dto/               (7 records + 1 response)
+│   └── exception/         (1 classe)
+└── banking-app/           (2 classes)
+    └── BankingApplication + AppConfig`;
+
+const pomXmlConfig = `<plugin>
+    <groupId>io.hexaglue</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>6.1.0</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.banking</basePackage>
+        <failOnError>false</failOnError>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>io.hexaglue.plugins</groupId>
+            <artifactId>hexaglue-plugin-audit</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const hexaglueYamlConfig = `# hexaglue.yaml (racine du projet multi-module)
+modules:
+  banking-core:
+    role: DOMAIN
+  banking-persistence:
+    role: INFRASTRUCTURE
+  banking-service:
+    role: APPLICATION
+  banking-api:
+    role: API
+  banking-app:
+    role: ASSEMBLY`;
+
+const antiPatterns = [
+	{ num: 1, pattern: '@Entity sur les classes domaine', example: 'Account, Customer, etc. héritent de BaseEntity (@MappedSuperclass)' },
+	{ num: 2, pattern: 'Services sans distinction de rôle', example: 'Services applicatifs et domaine annotés @Service, aucune séparation' },
+	{ num: 3, pattern: 'Aucun port d\'abstraction', example: 'Les services dépendent directement des repositories Spring Data' },
+	{ num: 4, pattern: 'Modèle anémique', example: 'Toute la logique métier vit dans les services, les entités sont de simples conteneurs' },
+	{ num: 5, pattern: 'Primitives au lieu de value objects', example: 'BigDecimal pour les montants, String pour IBAN/BIC/email' },
+	{ num: 6, pattern: 'Références directes entre agrégats', example: 'Account.customer = Customer (entité JPA) au lieu d\'un identifiant typé' },
+];
+
+const kpiRows: KpiRow[] = [
+	{ dimension: 'DDD Compliance', value: '0%', weight: '25%', contribution: '0.0', threshold: '> 60', status: 'CRITICAL' },
+	{ dimension: 'Hexagonal Architecture', value: '0%', weight: '25%', contribution: '0.0', threshold: '> 60', status: 'CRITICAL' },
+	{ dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '> 50', status: 'CRITICAL' },
+	{ dimension: 'Coupling', value: '24%', weight: '15%', contribution: '3.6', threshold: '> 40', status: 'CRITICAL' },
+	{ dimension: 'Cohesion', value: '47%', weight: '15%', contribution: '7.05', threshold: '> 60', status: 'WARNING' },
+];
+
+const violationRows: ViolationRow[] = [
+	{ constraint: 'ddd:entity-identity', count: 6, severity: 'CRITICAL' },
+	{ constraint: 'ddd:domain-purity', count: 7, severity: 'CRITICAL' },
+	{ constraint: 'hexagonal:port-direction', count: 7, severity: 'MAJOR' },
+	{ constraint: 'hexagonal:port-coverage', count: 8, severity: 'MAJOR' },
+	{ constraint: 'hexagonal:layer-isolation', count: 8, severity: 'MAJOR' },
 ];
 ---
 
 <MainLayout
-	title="Migration Bancaire Multi-Modules - Étude de cas"
-	description="Étude de cas : migration d'une application bancaire Spring Boot multi-modules vers une architecture hexagonale avec HexaGlue. 7 étapes, de 14/100 à 66/100. Code source inclus."
+	title="Application Bancaire Multi-Modules - Étude de cas HexaGlue"
+	description="Migration d'une application bancaire Spring Boot multi-modules vers une architecture hexagonale. 5 modules Maven, 45 classes, 10 anti-patterns. Premier diagnostic HexaGlue : score 14/100."
 >
 	<!-- Hero -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -33,215 +130,240 @@ const lessons = [
 			</span>
 
 			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
-				Migration d'une application bancaire multi-modules.<br/>
-				<span class="bg-clip-text text-transparent bg-blue-purple-gradient">D'un legacy à une architecture hexagonale.</span>
+				Application Bancaire Multi-Modules
 			</h1>
 
-			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl text-balance">
-				Une application bancaire Java 21, Spring Boot, 5 modules Maven, 45 classes, 10 anti-patterns, migrée en 7 étapes vers une architecture hexagonale complète, avec génération automatique de l'infrastructure routée par module.
-			</p>
+			<a
+				href="https://github.com/hexaglue/case-study-banking"
+				title="Voir le code source sur GitHub"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="mt-6 px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+			>
+				<Icon name="logos/github" class="size-5" aria-hidden="true" />
+				<span>Code source</span>
+			</a>
 
-			<div class="mt-8 flex flex-wrap gap-4">
-				<a
-					href="https://github.com/hexaglue/case-study-banking" title="Voir le code source sur GitHub"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
-				>
-					<Icon name="logos/github" class="size-5" aria-hidden="true" />
-					<span>Code source</span>
-				</a>
-			</div>
+			<ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+				<li>5 modules Maven, Java 21, Spring Boot 3.5.10.</li>
+				<li>45 classes réparties entre core, persistence, service, api et app.</li>
+				<li>10 anti-patterns typiques d'un découpage par couche technique.</li>
+			</ul>
 		</div>
 	</section>
 
-	<!-- Context -->
+	<!-- Section : L'application legacy -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
 		<div class="max-w-4xl mx-auto">
 			<SectionCopy
-				label="Point de départ"
+				label="Legacy"
 				title="L'application legacy"
-				description="Une application bancaire multi-modules Spring Boot, avec les anti-patterns typiques d'un découpage par couche technique."
 				gradient="bg-blue-purple-gradient"
-			/>
+			>
+				Cette application bancaire multi-modules illustre un anti-pattern courant : le découpage horizontal par couche technique.<br>
+				Chaque module correspond à une couche (modèle, persistance, services, API) plutôt qu'à un domaine métier. Le résultat est une application qui <em>semble</em> modulaire mais où le domaine reste invisible, noyé sous JPA et Spring.
+			</SectionCopy>
 
-			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
-					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-						<Icon name="ri:file-code-line" class="size-5 text-red-400" aria-hidden="true" />
-						Structure initiale
-					</h3>
-					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
-						<li><span class="text-red-400">45</span> classes Java</li>
-						<li><span class="text-red-400">5</span> modules Maven</li>
-						<li><span class="text-red-400">0</span> ports d'architecture</li>
-						<li><span class="text-red-400">0</span> value objects</li>
-						<li><span class="text-red-400">0</span> identifiants typés</li>
-					</ul>
-				</div>
-				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
-					<h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-						<Icon name="ri:bug-line" class="size-5 text-red-400" aria-hidden="true" />
-						Anti-patterns présents
-					</h3>
-					<ul class="space-y-2 text-sm text-astro-gray-200 font-light list-disc list-inside">
-						<li>Annotations JPA mélangées dans le code métier</li>
-						<li>Découpage multi-modules par couche technique</li>
-						<li>Aucune frontière entre domaine et infrastructure</li>
-						<li>Types primitifs partout au lieu de value objects</li>
-						<li>Modèle anémique dans les services</li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- Timeline -->
-	<section id="etapes" class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<PurpleStardust height="h-96" />
-
-		<SectionCopy
-			label="Le parcours"
-			title="7 étapes de migration"
-			description="Chaque étape correspond à une branche Git dans le dépôt."
-			gradient="bg-blue-purple-gradient"
-		/>
-
-		<div class="mt-12 space-y-4 max-w-4xl mx-auto">
-			{steps.map((step, i) => (
-				<a
-					href={`/case-studies/banking-migration/${step.slug}/`}
-					title={step.title}
-					class="step-link group flex items-center gap-4 md:gap-6 p-4 md:p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl hover:border-purple-400/30 transition-all duration-300"
-				>
-					<div class={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-${step.color}/10 border border-${step.color}/30 flex items-center justify-center shrink-0`}>
-						<span class={`text-lg md:text-xl font-bold text-${step.color}`}>{step.number}</span>
-					</div>
-
-					<div class="flex-1 min-w-0">
-						<div class="flex items-center gap-2 mb-0.5">
-							<Icon name={step.icon} class={`size-4 text-${step.color}`} aria-hidden="true" />
-							<h3 class="text-base md:text-lg font-semibold text-white truncate">{step.title}</h3>
-						</div>
-						<div class="flex items-center gap-3 text-xs text-astro-gray-400">
-							<code class="px-1.5 py-0.5 rounded bg-astro-dark-800/60">{step.branch}</code>
-							{step.score !== null && (
-								<span class={`font-medium text-${step.color}`}>{step.score}/100</span>
-							)}
-							{step.violations !== null && (
-								<span>{step.violations} violation{step.violations > 1 ? 's' : ''}</span>
-							)}
-						</div>
-					</div>
-
-					{step.score !== null && (
-						<div class="hidden md:flex items-center gap-3">
-							<div class="w-24 h-2 bg-astro-dark-800/60 rounded-full overflow-hidden">
-								<div class={`h-full rounded-full bg-${step.color}`} style={`width: ${step.score}%`} />
-							</div>
-							<span class={`text-sm font-medium text-${step.color} w-8`}>{step.score}</span>
-						</div>
-					)}
-
-					<Icon name="ri:arrow-right-line" class="size-5 text-astro-gray-400 group-hover:text-purple-400 transition-colors shrink-0" aria-hidden="true" />
-				</a>
-			))}
-		</div>
-	</section>
-
-	<!-- Before/After -->
-	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<PurpleStardust height="h-64" />
-
-		<div class="max-w-4xl mx-auto">
-			<SectionCopy
-				label="Bilan"
-				title="Avant vs Après"
-				description="Comparaison entre l'application legacy (étape 0) et l'architecture hexagonale finale (étape 6)."
-				gradient="bg-blue-purple-gradient"
-			/>
-
-			<div class="mt-8 overflow-x-auto">
-				<table class="w-full text-sm">
+			<!-- Anti-patterns table -->
+			<div class="mt-10 overflow-x-auto">
+				<table class="w-full text-left border-collapse">
 					<thead>
-						<tr class="border-b border-astro-dark-100/15 text-astro-gray-400 text-left">
-							<th class="py-3 pr-4 font-medium">Critère</th>
-							<th class="py-3 px-3 font-medium text-center text-red-400">Legacy</th>
-							<th class="py-3 pl-3 font-medium text-center text-astro-green">Hexagonal</th>
+						<tr class="border-b border-astro-dark-100/15">
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300 w-10">#</th>
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300">Anti-pattern</th>
+							<th class="py-3 px-4 text-sm font-semibold text-astro-gray-300 hidden md:table-cell">Exemple</th>
 						</tr>
 					</thead>
-					<tbody class="text-astro-gray-200">
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Classes manuelles</td><td class="py-2.5 px-3 text-center">45</td><td class="py-2.5 pl-3 text-center">38</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Infrastructure générée</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">~32</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">JPA dans le domaine</td><td class="py-2.5 px-3 text-center text-red-400">6 classes</td><td class="py-2.5 pl-3 text-center text-astro-green">0</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Spring dans les services</td><td class="py-2.5 px-3 text-center text-red-400">7 classes</td><td class="py-2.5 pl-3 text-center text-astro-green">0 (POJOs)</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Value objects</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">8</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Identifiants typés</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">6 (Long)</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Domain events</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center">0</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Driving ports</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">5</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Driven ports</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">8</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Application services</td><td class="py-2.5 px-3 text-center">0</td><td class="py-2.5 pl-3 text-center text-astro-green">5</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Setters dans le domaine</td><td class="py-2.5 px-3 text-center text-red-400">Partout</td><td class="py-2.5 pl-3 text-center text-astro-green">0</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Logique métier</td><td class="py-2.5 px-3 text-center text-red-400">Services</td><td class="py-2.5 pl-3 text-center text-astro-green">Agrégats</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Infrastructure de persistance</td><td class="py-2.5 px-3 text-center text-red-400">~20 classes manuelles</td><td class="py-2.5 pl-3 text-center text-astro-green">Générée par HexaGlue</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">DDD Compliance</td><td class="py-2.5 px-3 text-center text-astro-gray-400">N/A</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">100%</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Hexagonal Architecture</td><td class="py-2.5 px-3 text-center text-astro-gray-400">N/A</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">100%</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white font-bold">Score architectural</td><td class="py-2.5 px-3 text-center text-red-400 font-bold">14/100</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">66/100</td></tr>
-						<tr class="border-b border-astro-dark-100/10"><td class="py-2.5 pr-4 text-white">Violations critiques <span class="text-xs text-astro-gray-400 font-normal">(identité, immutabilité, pureté)</span></td><td class="py-2.5 px-3 text-center text-red-400 font-bold">13</td><td class="py-2.5 pl-3 text-center text-astro-green font-bold">0</td></tr>
-						<tr class="border-b border-astro-dark-100/15"><td class="py-2.5 pr-4 text-white">Violations majeures <span class="text-xs text-astro-gray-400 font-normal">(isolation, frontières, couverture)</span></td><td class="py-2.5 px-3 text-center text-red-400">23</td><td class="py-2.5 pl-3 text-center text-astro-green">0</td></tr>
+					<tbody>
+						{antiPatterns.map((item) => (
+							<tr class="border-b border-astro-dark-100/10 hover:bg-astro-dark-800/20 transition-colors">
+								<td class="py-4 px-4 text-sm text-astro-gray-300 font-mono">{item.num}</td>
+								<td class="py-4 px-4 text-sm text-white font-medium">{item.pattern}</td>
+								<td class="py-4 px-4 text-sm text-astro-gray-300 font-light hidden md:table-cell">{item.example}</td>
+							</tr>
+						))}
 					</tbody>
 				</table>
 			</div>
+
+			<!-- Module structure -->
+			<div class="mt-12">
+				<SectionCopy
+					label="Structure"
+					title="Organisation des modules"
+					gradient="bg-blue-purple-gradient"
+				>
+					L'application est découpée en 5 modules Maven suivant une logique purement technique : <code>banking-core</code> (modèle), <code>banking-persistence</code> (accès aux données), <code>banking-service</code> (logique), <code>banking-api</code> (exposition REST) et <code>banking-app</code> (démarrage).<br>
+					Il n'existe aucun package <code>domain</code>, aucun port, aucun agrégat : la frontière entre métier et infrastructure est inexistante.
+				</SectionCopy>
+
+				<div class="mt-10">
+					<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
+						<Code code={moduleStructure} lang="text" />
+					</div>
+				</div>
+
+				<Insight>
+					<p><strong>Découpage par couche technique au lieu d'un découpage par domaine métier.</strong></p>
+					<ul>
+						<li>Les 10 classes de <code>banking-core/model/</code> sont à la fois des entités JPA et des objets du domaine : le module "core" dépend de JPA</li>
+						<li>Les 7 services de <code>banking-service/</code> concentrent l'orchestration, la logique métier et les appels aux repositories</li>
+						<li>Changer de base de données ou de framework implique de réécrire le domaine entier</li>
+					</ul>
+				</Insight>
+			</div>
+
+			<!-- Code example -->
+			<div class="mt-12">
+				<SectionCopy
+					label="Code legacy"
+					title="Exemple : Account.java"
+					gradient="bg-blue-purple-gradient"
+				>
+					La classe <code>Account</code> telle qu'elle existe dans le projet : annotations JPA, héritage de <code>BaseEntity</code>, primitives pour les montants et devises, référence directe à <code>Customer</code> au lieu d'un identifiant typé.<br>
+					C'est exactement ce que HexaGlue va analyser et signaler dans le rapport d'audit initial.
+				</SectionCopy>
+
+				<div class="mt-10">
+					<Code code={accountEntityCode} lang="java" title="Account.java" />
+				</div>
+
+				<Insight>
+					<ul>
+						<li><strong>Domaine invisible</strong> sous les annotations JPA (<code>@Entity</code>, <code>@Table</code>, <code>@ManyToOne</code>)</li>
+						<li><strong>Couplage fort</strong> : <code>Account</code> référence l'entité <code>Customer</code> au lieu d'un identifiant typé <code>CustomerId</code></li>
+						<li><strong>Absence de typage métier</strong> : <code>BigDecimal</code> pour le solde, <code>String</code> pour l'IBAN et la devise</li>
+						<li><strong>Héritage technique</strong> imposé par <code>BaseEntity</code> (<code>@MappedSuperclass</code>) avec <code>Long id</code> auto-généré</li>
+						<li><strong>Aucun comportement métier</strong> : uniquement des getters/setters, la logique vit dans les services</li>
+					</ul>
+				</Insight>
+			</div>
 		</div>
 	</section>
 
-	<!-- Lessons Learned -->
+	<!-- Section : Premier diagnostic HexaGlue -->
 	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-		<PurpleStardust height="h-64" />
-
 		<div class="max-w-4xl mx-auto">
 			<SectionCopy
-				label="Retours"
-				title="Leçons apprises"
-				description="Les enseignements clés tirés de cette migration."
+				label="Premier diagnostic"
+				title="Brancher HexaGlue sur le projet"
 				gradient="bg-blue-purple-gradient"
-			/>
+			>
+				Pour obtenir un diagnostic architectural, on ajoute le plugin HexaGlue au POM parent et on déclare le rôle de chaque module dans <code>hexaglue.yaml</code>.<br>
+				En mode multi-module, HexaGlue détecte automatiquement la structure reactor et produit un rapport d'audit cross-module en une seule commande <code>mvn verify</code>.
+			</SectionCopy>
 
-			<div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{lessons.map((lesson) => (
-					<div class="p-5 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl">
-						<div class="p-2 w-fit rounded-lg bg-purple-400/10 mb-3">
-							<Icon name={lesson.icon} class="size-5 text-purple-400" aria-hidden="true" />
-						</div>
-						<h3 class="text-base font-semibold text-white mb-1.5">{lesson.title}</h3>
-						<p class="text-sm text-astro-gray-200 font-light leading-relaxed">{lesson.desc}</p>
-					</div>
-				))}
+			<div class="mt-10">
+				<Code code={pomXmlConfig} lang="xml" title="pom.xml (parent)" />
 			</div>
+
+			<div class="mt-10">
+				<Code code={hexaglueYamlConfig} lang="yaml" title="hexaglue.yaml" />
+			</div>
+
+			<Insight>
+				<ul>
+					<li><code>extensions=true</code> : HexaGlue détecte le POM parent multi-module et injecte automatiquement les goals <code>reactor-generate</code> et <code>reactor-audit</code></li>
+					<li><code>basePackage</code> : toutes les classes sous <code>com.acme.banking</code> seront analysées et classifiées par HexaGlue</li>
+					<li><code>failOnError=false</code> : le build ne sera pas bloqué par les violations, utile pour un premier diagnostic non intrusif</li>
+					<li><code>hexaglue.yaml</code> : chaque module reçoit un rôle architectural (DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY) qui permet de valider les dépendances entre couches</li>
+				</ul>
+			</Insight>
 		</div>
 	</section>
 
-	<!-- CTA Final -->
-	<section class="py-16 md:py-24 mb-12 relative">
-		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
-			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
-				<span class="text-astro-gray-300">Résorbez votre dette technique.</span><br/>
-				Migrez avec HexaGlue.
-			</h2>
+	<!-- Rapport d'audit initial -->
+	<AuditReport description="Résultat de la première exécution de l'audit HexaGlue en mode reactor sur les 5 modules du projet bancaire.">
 
-			<p class="text-xl text-astro-gray-200 font-light">
-				Suivez la migration pas-à-pas ou lancez HexaGlue sur votre propre projet.
-			</p>
+	<!-- Verdict -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Verdict"
+				title="Verdict de l'audit initial"
+				gradient="bg-orange-yellow-gradient"
+			>
+				Le score global, la note et les violations sont affichés en tête du rapport. Ce premier verdict donne une photographie chiffrée de l'état architectural avant toute modification.
+			</SectionCopy>
 
-			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-				<Link href="/docs/getting-started/" class="primary" gradient="linear-gradient(83.21deg, #3245FF 0%, #B845ED 100%)">
-					Essayer HexaGlue sur votre projet
-				</Link>
-				<Link href="/contact/" class="secondary">
-					<Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
-					<span>Parlons de votre projet</span>
-				</Link>
+			<div class="mt-10">
+				<AuditVerdict
+					score={14}
+					grade="F"
+					status="FAILED"
+					violations={{ critical: 13, major: 23 }}
+				/>
 			</div>
+
+			<Insight>
+				<p>Le grade F confirme que l'architecture ne respecte aucun principe DDD ni hexagonal. Les sections suivantes détaillent la décomposition du score et les violations par catégorie.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Décomposition du score -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Score"
+				title="Décomposition du score"
+				gradient="bg-orange-yellow-gradient"
+			>
+				Le score de 14/100 est calculé à partir de 5 dimensions pondérées. Ce tableau montre la contribution de chaque dimension et son écart par rapport au seuil attendu.
+			</SectionCopy>
+
+			<div class="mt-10">
+				<KpiTable rows={kpiRows} total="10.65" />
+			</div>
+
+			<Insight>
+				<ul>
+					<li><strong>DDD Compliance</strong> et <strong>Hexagonal Architecture</strong> à 0% : ces deux dimensions représentent 50% du score total. Aucun agrégat, aucun port et aucun identifiant typé n'existe dans le code</li>
+					<li><strong>Dependencies</strong> à 0% : les dépendances vont du domaine vers l'infrastructure, l'inverse de ce qu'attend l'architecture hexagonale</li>
+					<li><strong>Coupling</strong> et <strong>Cohesion</strong> contribuent légèrement : la séparation en modules Maven apporte un minimum de découplage structurel</li>
+				</ul>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Violations -->
+	<section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+		<div class="max-w-4xl mx-auto">
+			<SectionCopy
+				label="Violations"
+				title="Violations détectées"
+				gradient="bg-orange-yellow-gradient"
+			>
+				Chaque violation correspond à une règle architecturale enfreinte par le code.
+				Elles sont classées par sévérité : <strong>Critical</strong> pour les problèmes structurels fondamentaux, <strong>Major</strong> pour les écarts significatifs qui bloquent la progression vers une architecture hexagonale.
+			</SectionCopy>
+
+			<div class="mt-10">
+				<ViolationsTable rows={violationRows} />
+			</div>
+
+			<Insight>
+				<p>Les 13 violations <strong>Critical</strong> ont toutes la même cause racine : le domaine dépend directement de l'infrastructure.</p>
+				<ul>
+					<li><strong>ddd:entity-identity</strong> : les 6 entités utilisent un <code>Long id</code> auto-généré par JPA, pas un identifiant métier typé</li>
+					<li><strong>ddd:domain-purity</strong> : le domaine importe <code>jakarta.persistence</code>, il dépend structurellement de la couche de persistance</li>
+				</ul>
+				<p>Les 23 violations <strong>Major</strong> signalent l'absence de structure hexagonale. La prochaine étape commence par configurer les exclusions pour éliminer le bruit d'analyse, puis restructure le code en couches hexagonales.</p>
+			</Insight>
+		</div>
+	</section>
+
+	</AuditReport>
+
+	<!-- Navigation -->
+	<section class="py-16 relative">
+		<div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+			<StepNavigation
+				next={{
+					href: '/case-studies/banking-migration/migration/',
+					label: 'Migration hexagonale'
+				}}
+			/>
 		</div>
 		<div
 			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
