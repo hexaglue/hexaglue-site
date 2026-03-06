@@ -7,33 +7,32 @@ import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import BrowserFrame from '~/components/BrowserFrame.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import VersionBanner from '~/components/VersionBanner.astro';
 import { Image } from 'astro:assets';
 import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
 import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
-import CompanionBanner from '~/components/CompanionBanner.astro';
-import versions from '~/data/versions';
 
 const pomPlugin = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>6.0.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-audit</artifactId>
-            <version>${versions.plugins}</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
 
 const pomConfig = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>6.0.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
@@ -44,9 +43,9 @@ const pomConfig = `<plugin>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-audit</artifactId>
-            <version>${versions.plugins}</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
@@ -61,14 +60,15 @@ const yamlConfig = `plugins:
 ---
 
 <MainLayout
-	title="Plugin Audit v3.1.0 : Référence"
-	description="Référence complète du plugin d'audit HexaGlue v3.1.0 : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport."
+	title="Plugin Audit v3.0.0 : Référence"
+	description="Référence complète du plugin d'audit HexaGlue v3.0.0 : options de configuration, contraintes vérifiées, métriques calculées et formats de rapport."
+	canonicalURL={new URL('/docs/plugin-audit/', Astro.site)}
 	pluginSlug="plugin-audit"
-	currentVersion="3.1.0"
+	currentVersion="3.0.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "3.1.0",
+		version: "3.0.0",
 		about: [
 			{ "@type": "Thing", name: "Audit d'architecture logicielle" },
 			{ "@type": "Thing", name: "Architecture hexagonale" },
@@ -76,6 +76,8 @@ const yamlConfig = `plugins:
 		],
 	}}
 >
+	<VersionBanner variant="past" version="3.0.0" latestUrl="/docs/plugin-audit/" />
+
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<AmberStardust height="h-64 md:h-80" />
@@ -95,10 +97,6 @@ const yamlConfig = `plugins:
 			</p>
 		</div>
 	</section>
-
-	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<CompanionBanner variant="docs" href="/features/audit/" />
-	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">

@@ -6,22 +6,21 @@ import SectionCopy from '../../_components/SectionCopy.astro';
 import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
-import CompanionBanner from '~/components/CompanionBanner.astro';
-import versions from '~/data/versions';
+import VersionBanner from '~/components/VersionBanner.astro';
 
 const pomPlugin = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>6.0.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-jpa</artifactId>
-            <version>${versions.plugins}</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
@@ -87,22 +86,20 @@ const yamlComplete = `plugins:
     generateAdapters: true
     generateEmbeddables: true
 
-    # Stratégie @GeneratedValue sur le champ @Id généré
-    idStrategy: "ASSIGNED"
-
     # Multi-module (optionnel)
     # targetModule: "banking-persistence"`;
 ---
 
 <MainLayout
-	title="Plugin JPA v3.1.0 : Référence"
-	description="Référence complète du plugin JPA HexaGlue v3.1.0 : suffixes de nommage, artefacts générés, options d'auditing JPA, stratégie d'identifiant et configuration multi-module."
+	title="Plugin JPA v3.0.0 : Référence"
+	description="Référence complète du plugin JPA HexaGlue v3.0.0 : suffixes de nommage, artefacts générés, options d'auditing JPA et configuration multi-module."
+	canonicalURL={new URL('/docs/plugin-jpa/', Astro.site)}
 	pluginSlug="plugin-jpa"
-	currentVersion="3.1.0"
+	currentVersion="3.0.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "3.1.0",
+		version: "3.0.0",
 		about: [
 			{ "@type": "Thing", name: "JPA" },
 			{ "@type": "Thing", name: "Génération de code" },
@@ -110,6 +107,8 @@ const yamlComplete = `plugins:
 		],
 	}}
 >
+	<VersionBanner variant="past" version="3.0.0" latestUrl="/docs/plugin-jpa/" />
+
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<AmberStardust height="h-64 md:h-80" />
@@ -129,10 +128,6 @@ const yamlComplete = `plugins:
 			</p>
 		</div>
 	</section>
-
-	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<CompanionBanner variant="docs" href="/features/jpa-generation/" />
-	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -329,12 +324,6 @@ const yamlComplete = `plugins:
 						<td class="py-3 hidden md:table-cell">Package cible pour les artefacts JPA générés</td>
 					</tr>
 					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">idStrategy</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"ASSIGNED"</code></td>
-						<td class="py-3 hidden md:table-cell">Stratégie <code>@GeneratedValue</code> ajoutée au champ <code>@Id</code> des entités JPA générées. Contrôle comment la base de données attribue les identifiants.</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
 						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
 						<td class="py-3 pr-4 whitespace-nowrap">string</td>
 						<td class="py-3 pr-4">(défaut global)</td>
@@ -351,19 +340,7 @@ const yamlComplete = `plugins:
 			</div>
 		</div>
 
-		<div class="mt-6 max-w-4xl mx-auto space-y-6">
-			<Insight variant="green">
-				<p>Le paramètre <code>idStrategy</code> contrôle l'annotation <code>@GeneratedValue</code> ajoutée au champ <code>@Id</code> des entités JPA générées. Le domaine reste pur : aucune annotation JPA n'y est nécessaire.</p>
-				<ul>
-					<li><code>ASSIGNED</code> (défaut) : pas de <code>@GeneratedValue</code>, l'application fournit l'identifiant (adapté aux identifiants métier ou UUID générés dans le domaine)</li>
-					<li><code>IDENTITY</code> : auto-incrément géré par la base (MySQL, SQL Server, PostgreSQL)</li>
-					<li><code>SEQUENCE</code> : séquence de base de données (PostgreSQL, Oracle)</li>
-					<li><code>UUID</code> : génération d'UUID déléguée au provider JPA</li>
-					<li><code>AUTO</code> : le provider JPA choisit la stratégie selon la base</li>
-					<li><code>TABLE</code> : table dédiée simulant une séquence (portable, moins performant)</li>
-				</ul>
-			</Insight>
-
+		<div class="mt-6 max-w-4xl mx-auto">
 			<Insight variant="amber">
 				<p>Les fichiers générés sont <strong>systématiquement écrasés</strong> à chaque build. Si vous redirigez la sortie vers <code>src/main/java</code> via <code>outputDirectory</code>, toute modification manuelle des fichiers générés sera perdue au prochain <code>mvn compile</code>.<br>
 				Un avertissement est émis dans les logs Maven lorsqu'un fichier existant est écrasé.</p>
