@@ -11,7 +11,38 @@ import { Image } from 'astro:assets';
 import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
 import readmeOverviewScreenshot from '~/assets/screenshots/livingdoc-readme-overview.png';
 import CompanionBanner from '~/components/CompanionBanner.astro';
+import ConfigTable from '../_components/ConfigTable.astro';
+import MavenParamsTable from '../_components/MavenParamsTable.astro';
 import versions from '~/data/versions';
+import livingDocConfig from '~/data/generated/plugin-living-doc.json';
+import mavenGoals from '~/data/generated/maven-goals.json';
+import { yamlDescriptions, mavenDescriptions } from '~/data/generated/descriptions-living-doc';
+
+const yamlParams = [
+	...livingDocConfig.parameters.map(p => ({
+		name: p.name,
+		type: p.type === 'String' ? 'string' : p.type === 'int' ? 'integer' : p.type,
+		defaultValue: `<code>${p.defaultValue.replace(/^"|"$/g, '')}</code>`,
+		description: yamlDescriptions[p.name] || p.description,
+	})),
+	{
+		name: 'outputDirectory',
+		type: 'string',
+		defaultValue: '(défaut global)',
+		description: yamlDescriptions.outputDirectory,
+	},
+];
+
+const generateGoal = mavenGoals.goals.find((g: any) => g.name === 'generate');
+const mvnParams = generateGoal ? generateGoal.parameters.map((p: any) => ({
+	name: p.name,
+	defaultValue: p.required
+		? '(requis)'
+		: p.defaultValue
+			? `<code>${p.defaultValue.replace(/\$\{[^}]+\}/g, '').replace('${project.build.directory}/', '')}</code>`
+			: '',
+	description: mavenDescriptions[p.name] || p.description,
+})) : [];
 
 const pomPlugin = `<plugin>
     <groupId>${versions.groupId}</groupId>
@@ -122,47 +153,7 @@ const yamlConfig = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-			<table class="w-full text-sm text-left">
-				<thead>
-					<tr class="border-b border-astro-dark-100/20">
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
-						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
-					</tr>
-				</thead>
-				<tbody class="text-astro-gray-200">
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
-						<td class="py-3 hidden md:table-cell">Package racine à analyser. La documentation est générée à partir des types de domaine de ce package.</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
-						<td class="py-3 pr-4"><code>target/hexaglue/generated-sources</code></td>
-						<td class="py-3 hidden md:table-cell">Répertoire de base pour les fichiers générés</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Désactive complètement l'exécution de HexaGlue (configurable via <code>-Dhexaglue.skip=true</code>)</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skipValidation</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Ignore la validation des classifications avant la génération de la documentation</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types du domaine ne peuvent pas être classifiés</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tolerantResolution</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Active la résolution tolérante des types non résolus. Utile pour les projets utilisant des annotation processors (MapStruct, Immutables) dont le code généré n'est pas encore sur le classpath (configurable via <code>-Dhexaglue.tolerantResolution=true</code>)</td>
-					</tr>
-				</tbody>
-			</table>
+				<MavenParamsTable params={mvnParams} />
 			</div>
 		</div>
 	</section>
@@ -181,48 +172,7 @@ const yamlConfig = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-			<table class="w-full text-sm text-left">
-				<thead>
-					<tr class="border-b border-astro-dark-100/20">
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Type</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
-						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
-					</tr>
-				</thead>
-				<tbody class="text-astro-gray-200">
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDir</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"living-doc"</code></td>
-						<td class="py-3 hidden md:table-cell">Répertoire de sortie pour les fichiers de documentation (relatif à <code>target/hexaglue/reports/</code>)</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDiagrams</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Active la génération de diagrammes Mermaid dans un fichier <code>diagrams.md</code> dédié</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">maxPropertiesInDiagram</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">integer</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>5</code></td>
-						<td class="py-3 hidden md:table-cell">Nombre maximum de propriétés affichées par classe dans les diagrammes</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">includeDebugSections</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Inclut les sections de debug (classification trace, source location) dans <code>domain.md</code> et <code>ports.md</code>. Mettre à <code>false</code> pour une documentation plus concise.</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4">(défaut global)</td>
-						<td class="py-3 hidden md:table-cell">Répertoire de sortie spécifique au plugin, surchargeant le répertoire global</td>
-					</tr>
-				</tbody>
-			</table>
+				<ConfigTable params={yamlParams} />
 			</div>
 		</div>
 

@@ -11,7 +11,78 @@ import { Image } from 'astro:assets';
 import kpiTableScreenshot from '~/assets/screenshots/audit-kpi-table.png';
 import overviewScreenshot from '~/assets/screenshots/audit-overview-basic.png';
 import CompanionBanner from '~/components/CompanionBanner.astro';
+import ConfigTable from '../_components/ConfigTable.astro';
+import MavenParamsTable from '../_components/MavenParamsTable.astro';
 import versions from '~/data/versions';
+import auditConfig from '~/data/generated/plugin-audit.json';
+import mavenGoals from '~/data/generated/maven-goals.json';
+import { yamlDescriptions, mavenDescriptions } from '~/data/generated/descriptions-audit';
+
+// Build YAML options: 3 failure params + generateDocs extra param
+const auditGoal = mavenGoals.goals.find((g: any) => g.name === 'audit');
+const yamlFailureParams = ['failOnError', 'errorOnBlocker', 'errorOnCritical'];
+const yamlParams = yamlFailureParams.map(name => {
+	const p = auditGoal?.parameters.find((p: any) => p.name === name);
+	const effectiveDefault = name === 'errorOnCritical' ? 'false' : 'true';
+	return {
+		name,
+		type: 'boolean',
+		defaultValue: `<code>${effectiveDefault}</code>`,
+		description: yamlDescriptions[name] || p?.description || '',
+	};
+});
+// Add generateDocs from extra parameters
+const generateDocsParam = auditConfig.extraParameters.find(p => p.name === 'generateDocs');
+if (generateDocsParam) {
+	yamlParams.push({
+		name: 'generateDocs',
+		type: 'boolean',
+		defaultValue: `<code>${generateDocsParam.defaultValue}</code>`,
+		description: yamlDescriptions.generateDocs || generateDocsParam.description,
+	});
+}
+
+// Build Maven params from audit goal + tolerantResolution + validationReportPath
+const typeMap: Record<string, string> = { String: 'string', Boolean: 'boolean', File: 'string' };
+const effectiveDefaults: Record<string, string> = {
+	failOnError: 'true',
+	errorOnBlocker: 'true',
+	errorOnCritical: 'false',
+};
+const mvnParams = auditGoal ? auditGoal.parameters.map((p: any) => ({
+	name: p.name,
+	type: typeMap[p.type] || p.type,
+	defaultValue: p.required
+		? '(requis)'
+		: effectiveDefaults[p.name]
+			? `<code>${effectiveDefaults[p.name]}</code>`
+			: p.defaultValue
+				? `<code>${p.defaultValue}</code>`
+				: '',
+	description: mavenDescriptions[p.name] || p.description,
+})) : [];
+// Add tolerantResolution (from generate goal, shared across mojos)
+const generateGoal = mavenGoals.goals.find((g: any) => g.name === 'generate');
+const tolerantParam = generateGoal?.parameters.find((p: any) => p.name === 'tolerantResolution');
+if (tolerantParam) {
+	mvnParams.push({
+		name: 'tolerantResolution',
+		type: 'boolean',
+		defaultValue: `<code>${tolerantParam.defaultValue}</code>`,
+		description: mavenDescriptions.tolerantResolution || tolerantParam.description,
+	});
+}
+// Add validationReportPath (from validate goal)
+const validateGoal = mavenGoals.goals.find((g: any) => g.name === 'validate');
+const validationParam = validateGoal?.parameters.find((p: any) => p.name === 'validationReportPath');
+if (validationParam) {
+	mvnParams.push({
+		name: 'validationReportPath',
+		type: 'string',
+		defaultValue: `<code>${validationParam.defaultValue}</code>`,
+		description: mavenDescriptions.validationReportPath || validationParam.description,
+	});
+}
 
 const pomPlugin = `<plugin>
     <groupId>${versions.groupId}</groupId>
@@ -154,72 +225,7 @@ const yamlConfig = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-			<table class="w-full text-sm text-left">
-				<thead>
-					<tr class="border-b border-astro-dark-100/20">
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Type</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Défaut</th>
-						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
-					</tr>
-				</thead>
-				<tbody class="text-astro-gray-200">
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
-						<td class="py-3 hidden md:table-cell">Package racine à analyser pour les violations DDD et hexagonales</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnError</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Fait échouer le build Maven quand des erreurs d'audit existent</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnBlocker</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Les violations BLOCKER comptent comme erreurs d'audit</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnCritical</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">reportDirectory</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>$&#123;project.build.directory&#125;/hexaglue/reports</code></td>
-						<td class="py-3 hidden md:table-cell">Répertoire de sortie pour les rapports d'audit</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Désactive complètement l'audit (configurable via <code>-Dhexaglue.skip=true</code>)</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types restent non classifiés après l'analyse</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tolerantResolution</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Active la résolution tolérante des types non résolus. Utile pour les projets utilisant des annotation processors (MapStruct, Immutables) dont le code généré n'est pas encore sur le classpath (configurable via <code>-Dhexaglue.tolerantResolution=true</code>)</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">validationReportPath</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4"><code>$&#123;project.build.directory&#125;/hexaglue/reports/validation/validation-report.md</code></td>
-						<td class="py-3 hidden md:table-cell">Chemin du rapport de validation Markdown (goal <code>validate</code> uniquement)</td>
-					</tr>
-				</tbody>
-			</table>
+				<MavenParamsTable params={mvnParams} showType={true} />
 			</div>
 		</div>
 
@@ -243,42 +249,7 @@ const yamlConfig = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-			<table class="w-full text-sm text-left">
-				<thead>
-					<tr class="border-b border-astro-dark-100/20">
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Type</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium whitespace-nowrap">Défaut</th>
-						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
-					</tr>
-				</thead>
-				<tbody class="text-astro-gray-200">
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnError</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Fait échouer le build Maven quand des erreurs d'audit existent</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnBlocker</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Les violations BLOCKER comptent comme erreurs d'audit</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">errorOnCritical</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Les violations CRITICAL comptent comme erreurs d'audit</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDocs</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Active la génération des diagrammes Mermaid dans un répertoire séparé</td>
-					</tr>
-				</tbody>
-			</table>
+				<ConfigTable params={yamlParams} />
 			</div>
 		</div>
 

@@ -7,7 +7,46 @@ import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import CompanionBanner from '~/components/CompanionBanner.astro';
+import ConfigTable from '../_components/ConfigTable.astro';
+import MavenParamsTable from '../_components/MavenParamsTable.astro';
 import versions from '~/data/versions';
+import jpaConfig from '~/data/generated/plugin-jpa.json';
+import mavenGoals from '~/data/generated/maven-goals.json';
+import { yamlDescriptions, mavenDescriptions } from '~/data/generated/descriptions-jpa';
+
+// Build YAML options from extracted JSON + localized descriptions
+const allParams = [...jpaConfig.parameters, ...jpaConfig.extraParameters];
+const yamlParams = allParams.map(p => ({
+	name: p.name,
+	type: p.type === 'String' ? 'string' : p.type === 'IdentityStrategy' ? 'string' : p.type,
+	defaultValue: p.name === 'tablePrefix' && p.defaultValue === '""'
+		? '<code>""</code> (vide)'
+		: p.name === 'infrastructurePackage'
+			? '<code>"&#123;basePackage&#125;.infrastructure.persistence"</code>'
+			: p.defaultValue === 'null'
+				? '<code>null</code>'
+				: `<code>${p.defaultValue.replace(/^"|"$/g, '')}</code>`,
+	description: yamlDescriptions[p.name] || p.description,
+}));
+// Add outputDirectory (not in config record, but documented)
+yamlParams.push({
+	name: 'outputDirectory',
+	type: 'string',
+	defaultValue: '(défaut global)',
+	description: yamlDescriptions.outputDirectory,
+});
+
+// Build Maven params from extracted goals JSON
+const generateGoal = mavenGoals.goals.find((g: any) => g.name === 'generate');
+const mvnParams = generateGoal ? generateGoal.parameters.map((p: any) => ({
+	name: p.name,
+	defaultValue: p.required
+		? '(requis)'
+		: p.defaultValue
+			? `<code>${p.defaultValue.replace(/\$\{[^}]+\}/g, '').replace('${project.build.directory}/', '')}</code>`
+			: '',
+	description: mavenDescriptions[p.name] || p.description,
+})) : [];
 
 const pomPlugin = `<plugin>
     <groupId>${versions.groupId}</groupId>
@@ -181,47 +220,7 @@ const yamlComplete = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-			<table class="w-full text-sm text-left">
-				<thead>
-					<tr class="border-b border-astro-dark-100/20">
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
-						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
-					</tr>
-				</thead>
-				<tbody class="text-astro-gray-200">
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
-						<td class="py-3 hidden md:table-cell">Package racine à analyser. Les artefacts JPA sont générés à partir des types de domaine de ce package.</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
-						<td class="py-3 pr-4"><code>target/hexaglue/generated-sources</code></td>
-						<td class="py-3 hidden md:table-cell">Répertoire où les entités JPA, repositories et mappers sont écrits</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Désactive complètement l'exécution de HexaGlue (configurable via <code>-Dhexaglue.skip=true</code>)</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skipValidation</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Ignore la validation des classifications avant la génération JPA</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types du domaine ne peuvent pas être classifiés</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tolerantResolution</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Active la résolution tolérante des types non résolus. Utile pour les projets utilisant des annotation processors (MapStruct, Immutables) dont le code généré n'est pas encore sur le classpath (configurable via <code>-Dhexaglue.tolerantResolution=true</code>)</td>
-					</tr>
-				</tbody>
-			</table>
+				<MavenParamsTable params={mvnParams} />
 			</div>
 		</div>
 	</section>
@@ -240,114 +239,7 @@ const yamlComplete = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-			<table class="w-full text-sm text-left">
-				<thead>
-					<tr class="border-b border-astro-dark-100/20">
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Type</th>
-						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
-						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
-					</tr>
-				</thead>
-				<tbody class="text-astro-gray-200">
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">entitySuffix</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"Entity"</code></td>
-						<td class="py-3 hidden md:table-cell">Suffixe ajouté aux noms de classes pour les entités JPA générées</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">embeddableSuffix</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"Embeddable"</code></td>
-						<td class="py-3 hidden md:table-cell">Suffixe pour les classes <code>@Embeddable</code> (value objects persistés)</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">repositorySuffix</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"JpaRepository"</code></td>
-						<td class="py-3 hidden md:table-cell">Suffixe pour les interfaces Spring Data Repository</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">adapterSuffix</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"Adapter"</code></td>
-						<td class="py-3 hidden md:table-cell">Suffixe pour les implémentations d'adapter de port</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">mapperSuffix</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"Mapper"</code></td>
-						<td class="py-3 hidden md:table-cell">Suffixe pour les interfaces MapStruct</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tablePrefix</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>""</code> (vide)</td>
-						<td class="py-3 hidden md:table-cell">Préfixe ajouté à tous les noms de tables en base</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">enableAuditing</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Génère les champs <code>@CreatedDate</code> et <code>@LastModifiedDate</code></td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">enableOptimisticLocking</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
-						<td class="py-3 hidden md:table-cell">Génère un champ <code>@Version</code> pour le verrouillage optimiste</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateRepositories</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Génère les interfaces Spring Data JPA Repository</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateMappers</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Génère les mappers MapStruct bidirectionnels</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateAdapters</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Génère les implémentations d'adapter de port</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateEmbeddables</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
-						<td class="py-3 hidden md:table-cell">Génère les classes <code>@Embeddable</code> pour les value objects</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">infrastructurePackage</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4"><code>"&#123;basePackage&#125;.infrastructure.persistence"</code></td>
-						<td class="py-3 hidden md:table-cell">Package cible pour les artefacts JPA générés</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">idStrategy</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>"ASSIGNED"</code></td>
-						<td class="py-3 hidden md:table-cell">Stratégie <code>@GeneratedValue</code> ajoutée au champ <code>@Id</code> des entités JPA générées. Contrôle comment la base de données attribue les identifiants.</td>
-					</tr>
-					<tr class="border-b border-astro-dark-100/10">
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4">(défaut global)</td>
-						<td class="py-3 hidden md:table-cell">Répertoire de sortie spécifique au plugin. Utilisez <code>src/main/java</code> pour écrire les artefacts JPA directement dans votre arbre source au lieu de <code>target/</code>. Les fichiers existants sont écrasés à chaque build (voir note ci-dessous).</td>
-					</tr>
-					<tr>
-						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">targetModule</code></td>
-						<td class="py-3 pr-4 whitespace-nowrap">string</td>
-						<td class="py-3 pr-4 whitespace-nowrap"><code>null</code></td>
-						<td class="py-3 hidden md:table-cell">Multi-module : identifiant du module cible pour le routage des artefacts générés</td>
-					</tr>
-				</tbody>
-			</table>
+				<ConfigTable params={yamlParams} />
 			</div>
 		</div>
 
