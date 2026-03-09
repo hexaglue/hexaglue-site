@@ -1,0 +1,1285 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "projectName": "Acme Shop - E-Commerce Case Study",
+    "projectVersion": "1.0.0",
+    "timestamp": "2026-03-09T10:32:45.299037Z",
+    "analysisDuration": "17ms",
+    "hexaglueVersion": "3.1.0",
+    "pluginVersion": "3.1.0"
+  },
+  "verdict": {
+    "score": 63,
+    "grade": "D",
+    "status": "PASSED_WITH_WARNINGS",
+    "statusReason": "1 issue found",
+    "summary": "Your application has notable architectural issues that should be addressed.",
+    "kpis": [
+      {
+        "id": "ddd-compliance",
+        "name": "DDD Compliance",
+        "value": 95.0,
+        "unit": "%",
+        "threshold": 90.0,
+        "status": "OK"
+      },
+      {
+        "id": "hexagonal-compliance",
+        "name": "Hexagonal Architecture",
+        "value": 100.0,
+        "unit": "%",
+        "threshold": 90.0,
+        "status": "OK"
+      },
+      {
+        "id": "dependency-quality",
+        "name": "Dependencies",
+        "value": 0.0,
+        "unit": "%",
+        "threshold": 80.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "coupling-metrics",
+        "name": "Coupling",
+        "value": 36.0,
+        "unit": "%",
+        "threshold": 70.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "cohesion-quality",
+        "name": "Cohesion",
+        "value": 65.0,
+        "unit": "%",
+        "threshold": 80.0,
+        "status": "WARNING"
+      }
+    ],
+    "immediateAction": {
+      "required": false,
+      "message": null,
+      "reference": null
+    }
+  },
+  "architecture": {
+    "summary": "Analyzed 44 types across 1 bounded context",
+    "inventory": {
+      "boundedContexts": [
+        {
+          "name": "shop",
+          "aggregates": 6,
+          "entities": 2,
+          "valueObjects": 7,
+          "domainEvents": 1
+        }
+      ],
+      "totals": {
+        "aggregates": 6,
+        "entities": 2,
+        "valueObjects": 7,
+        "identifiers": 6,
+        "domainEvents": 1,
+        "domainServices": 0,
+        "applicationServices": 7,
+        "commandHandlers": 0,
+        "queryHandlers": 0,
+        "drivingPorts": 7,
+        "drivenPorts": 8
+      }
+    },
+    "components": {
+      "aggregates": [
+        {
+          "name": "Customer",
+          "package": "com.acme.shop.domain.customer",
+          "fields": 6,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Inventory",
+          "package": "com.acme.shop.domain.inventory",
+          "fields": 6,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Order",
+          "package": "com.acme.shop.domain.order",
+          "fields": 13,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Payment",
+          "package": "com.acme.shop.domain.payment",
+          "fields": 11,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Product",
+          "package": "com.acme.shop.domain.product",
+          "fields": 7,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Shipment",
+          "package": "com.acme.shop.domain.shipping",
+          "fields": 9,
+          "references": [],
+          "usesPorts": []
+        }
+      ],
+      "valueObjects": [
+        {
+          "name": "Email",
+          "package": "com.acme.shop.domain.customer"
+        },
+        {
+          "name": "Address",
+          "package": "com.acme.shop.domain.order"
+        },
+        {
+          "name": "Money",
+          "package": "com.acme.shop.domain.order"
+        },
+        {
+          "name": "OrderStatus",
+          "package": "com.acme.shop.domain.order"
+        },
+        {
+          "name": "Quantity",
+          "package": "com.acme.shop.domain.order"
+        },
+        {
+          "name": "PaymentStatus",
+          "package": "com.acme.shop.domain.payment"
+        },
+        {
+          "name": "Category",
+          "package": "com.acme.shop.domain.product"
+        }
+      ],
+      "identifiers": [
+        {
+          "name": "CustomerId",
+          "package": "com.acme.shop.domain.customer",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "InventoryId",
+          "package": "com.acme.shop.domain.inventory",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "OrderId",
+          "package": "com.acme.shop.domain.order",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "PaymentId",
+          "package": "com.acme.shop.domain.payment",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "ProductId",
+          "package": "com.acme.shop.domain.product",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "ShipmentId",
+          "package": "com.acme.shop.domain.shipping",
+          "wrappedType": "java.lang.Long"
+        }
+      ],
+      "drivingPorts": [
+        {
+          "name": "CatalogUseCases",
+          "package": "com.acme.shop.ports.in",
+          "kind": null,
+          "methods": 2,
+          "hasAdapter": true,
+          "adapter": "CatalogApplicationService"
+        },
+        {
+          "name": "CustomerUseCases",
+          "package": "com.acme.shop.ports.in",
+          "kind": null,
+          "methods": 4,
+          "hasAdapter": true,
+          "adapter": "CustomerApplicationService"
+        },
+        {
+          "name": "InventoryUseCases",
+          "package": "com.acme.shop.ports.in",
+          "kind": null,
+          "methods": 5,
+          "hasAdapter": true,
+          "adapter": "InventoryApplicationService"
+        },
+        {
+          "name": "OrderUseCases",
+          "package": "com.acme.shop.ports.in",
+          "kind": null,
+          "methods": 6,
+          "hasAdapter": true,
+          "adapter": "OrderApplicationService"
+        },
+        {
+          "name": "PaymentUseCases",
+          "package": "com.acme.shop.ports.in",
+          "kind": null,
+          "methods": 2,
+          "hasAdapter": true,
+          "adapter": "PaymentApplicationService"
+        },
+        {
+          "name": "ProductUseCases",
+          "package": "com.acme.shop.ports.in",
+          "kind": null,
+          "methods": 7,
+          "hasAdapter": true,
+          "adapter": "ProductApplicationService"
+        },
+        {
+          "name": "ShippingUseCases",
+          "package": "com.acme.shop.ports.in",
+          "kind": null,
+          "methods": 3,
+          "hasAdapter": true,
+          "adapter": "ShippingApplicationService"
+        }
+      ],
+      "drivenPorts": [
+        {
+          "name": "CustomerRepository",
+          "package": "com.acme.shop.ports.out",
+          "kind": "REPOSITORY",
+          "methods": 5,
+          "hasAdapter": true,
+          "adapter": "CustomerRepositoryAdapter"
+        },
+        {
+          "name": "InventoryRepository",
+          "package": "com.acme.shop.ports.out",
+          "kind": "REPOSITORY",
+          "methods": 3,
+          "hasAdapter": true,
+          "adapter": "InventoryRepositoryAdapter"
+        },
+        {
+          "name": "NotificationSender",
+          "package": "com.acme.shop.ports.out",
+          "kind": "EVENT_PUBLISHER",
+          "methods": 2,
+          "hasAdapter": true,
+          "adapter": "NotificationAdapter"
+        },
+        {
+          "name": "OrderRepository",
+          "package": "com.acme.shop.ports.out",
+          "kind": "REPOSITORY",
+          "methods": 5,
+          "hasAdapter": true,
+          "adapter": "OrderRepositoryAdapter"
+        },
+        {
+          "name": "PaymentGateway",
+          "package": "com.acme.shop.ports.out",
+          "kind": "GATEWAY",
+          "methods": 3,
+          "hasAdapter": true,
+          "adapter": "PaymentGatewayAdapter"
+        },
+        {
+          "name": "PaymentRepository",
+          "package": "com.acme.shop.ports.out",
+          "kind": "REPOSITORY",
+          "methods": 5,
+          "hasAdapter": true,
+          "adapter": "PaymentRepositoryAdapter"
+        },
+        {
+          "name": "ProductRepository",
+          "package": "com.acme.shop.ports.out",
+          "kind": "REPOSITORY",
+          "methods": 6,
+          "hasAdapter": true,
+          "adapter": "ProductRepositoryAdapter"
+        },
+        {
+          "name": "ShipmentRepository",
+          "package": "com.acme.shop.ports.out",
+          "kind": "REPOSITORY",
+          "methods": 4,
+          "hasAdapter": true,
+          "adapter": "ShipmentRepositoryAdapter"
+        }
+      ],
+      "adapters": [
+        {
+          "name": "CatalogApplicationService",
+          "package": "com.acme.shop.application",
+          "implementsPort": "CatalogUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "CustomerApplicationService",
+          "package": "com.acme.shop.application",
+          "implementsPort": "CustomerUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "InventoryApplicationService",
+          "package": "com.acme.shop.application",
+          "implementsPort": "InventoryUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "OrderApplicationService",
+          "package": "com.acme.shop.application",
+          "implementsPort": "OrderUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "PaymentApplicationService",
+          "package": "com.acme.shop.application",
+          "implementsPort": "PaymentUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "ProductApplicationService",
+          "package": "com.acme.shop.application",
+          "implementsPort": "ProductUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "ShippingApplicationService",
+          "package": "com.acme.shop.application",
+          "implementsPort": "ShippingUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "CustomerRepositoryAdapter",
+          "package": "com.acme.shop.infrastructure.persistence",
+          "implementsPort": "CustomerRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "InventoryRepositoryAdapter",
+          "package": "com.acme.shop.infrastructure.persistence",
+          "implementsPort": "InventoryRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "NotificationAdapter",
+          "package": "com.acme.shop.infrastructure.external",
+          "implementsPort": "NotificationSender",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "OrderRepositoryAdapter",
+          "package": "com.acme.shop.infrastructure.persistence",
+          "implementsPort": "OrderRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "PaymentGatewayAdapter",
+          "package": "com.acme.shop.infrastructure.external",
+          "implementsPort": "PaymentGateway",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "PaymentRepositoryAdapter",
+          "package": "com.acme.shop.infrastructure.persistence",
+          "implementsPort": "PaymentRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "ProductRepositoryAdapter",
+          "package": "com.acme.shop.infrastructure.persistence",
+          "implementsPort": "ProductRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "ShipmentRepositoryAdapter",
+          "package": "com.acme.shop.infrastructure.persistence",
+          "implementsPort": "ShipmentRepository",
+          "type": "DRIVEN"
+        }
+      ]
+    },
+    "relationships": [
+      {
+        "from": "CatalogApplicationService",
+        "to": "CatalogUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "CatalogApplicationService",
+        "to": "ProductRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerApplicationService",
+        "to": "CustomerUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerApplicationService",
+        "to": "CustomerRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "InventoryApplicationService",
+        "to": "InventoryUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "InventoryApplicationService",
+        "to": "InventoryRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "InventoryApplicationService",
+        "to": "ProductRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "OrderApplicationService",
+        "to": "OrderUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "OrderApplicationService",
+        "to": "OrderRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "OrderApplicationService",
+        "to": "CustomerRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "OrderApplicationService",
+        "to": "ProductRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "OrderApplicationService",
+        "to": "InventoryUseCases",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "OrderApplicationService",
+        "to": "NotificationSender",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "PaymentApplicationService",
+        "to": "PaymentUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "PaymentApplicationService",
+        "to": "PaymentRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "PaymentApplicationService",
+        "to": "OrderRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "PaymentApplicationService",
+        "to": "PaymentGateway",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "ProductApplicationService",
+        "to": "ProductUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "ProductApplicationService",
+        "to": "ProductRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "ShippingApplicationService",
+        "to": "ShippingUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "ShippingApplicationService",
+        "to": "ShipmentRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "ShippingApplicationService",
+        "to": "OrderRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "ShippingApplicationService",
+        "to": "InventoryUseCases",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "CustomerId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "Email",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "Address",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Inventory",
+        "to": "InventoryId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Inventory",
+        "to": "ProductId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Inventory",
+        "to": "Product",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "Inventory",
+        "to": "StockMovement",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "OrderId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "CustomerId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "OrderStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "Address",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "OrderPlacedEvent",
+        "type": "emits",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "Customer",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "Order",
+        "to": "OrderLine",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "OrderLine",
+        "to": "Product",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "OrderLine",
+        "to": "ProductId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "OrderLine",
+        "to": "Quantity",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "OrderLine",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "OrderPlacedEvent",
+        "to": "Order",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "OrderPlacedEvent",
+        "to": "OrderId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "OrderPlacedEvent",
+        "to": "Customer",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "OrderPlacedEvent",
+        "to": "CustomerId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "OrderPlacedEvent",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Payment",
+        "to": "PaymentId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Payment",
+        "to": "OrderId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Payment",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Payment",
+        "to": "PaymentStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Payment",
+        "to": "Order",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "Product",
+        "to": "ProductId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Product",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Product",
+        "to": "Category",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Shipment",
+        "to": "ShipmentId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Shipment",
+        "to": "OrderId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Shipment",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Shipment",
+        "to": "Address",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Shipment",
+        "to": "Order",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "ShippingRate",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerRepositoryAdapter",
+        "to": "CustomerRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "InventoryRepositoryAdapter",
+        "to": "InventoryRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "InventoryUseCasesRepositoryAdapter",
+        "to": "InventoryUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "OrderRepositoryAdapter",
+        "to": "OrderRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "PaymentRepositoryAdapter",
+        "to": "PaymentRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "ProductRepositoryAdapter",
+        "to": "ProductRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "ShipmentRepositoryAdapter",
+        "to": "ShipmentRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerRepository",
+        "to": "Customer",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "InventoryRepository",
+        "to": "Inventory",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "OrderRepository",
+        "to": "Order",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "PaymentRepository",
+        "to": "Payment",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "ProductRepository",
+        "to": "Product",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "ShipmentRepository",
+        "to": "Shipment",
+        "type": "persists-via",
+        "isCycle": false
+      }
+    ],
+    "typeViolations": [
+      {
+        "typeName": "OrderLine",
+        "violationType": "BOUNDARY_VIOLATION"
+      }
+    ]
+  },
+  "issues": {
+    "summary": {
+      "total": 1,
+      "blockers": 0,
+      "criticals": 0,
+      "majors": 1,
+      "minors": 0,
+      "infos": 0
+    },
+    "groups": [
+      {
+        "id": "domain-model-issues",
+        "theme": "Domain Model Issues",
+        "icon": "domain",
+        "description": "Problems with DDD tactical patterns that affect domain integrity",
+        "count": 1,
+        "violations": [
+          {
+            "id": "ddd-aggregate-boundary-1",
+            "constraintId": "ddd:aggregate-boundary",
+            "severity": "MAJOR",
+            "title": "Aggregate boundary violation",
+            "message": "Entity 'OrderLine' is accessible outside its aggregate 'Product'",
+            "location": {
+              "type": "com.acme.shop.domain.order.OrderLine",
+              "file": "com.acme.shop.domain.order.OrderLine",
+              "line": 1
+            },
+            "impact": "Direct access to internal entities bypasses the aggregate root, which is responsible for enforcing invariants and maintaining consistency. External code modifying internal entities can break business rules and lead to inconsistent state that the aggregate root cannot prevent or detect.",
+            "suggestion": {
+              "action": "Route all access to internal entities through the aggregate root",
+              "steps": ["Remove direct references to the internal entity from external code", "Add methods on the aggregate root to expose the needed behavior", "If external code needs read access, return value objects or DTOs instead", "Ensure the internal entity is not directly retrievable from repositories"],
+              "codeExample": "// Before: external code accesses entity directly\n// orderItem.updateQuantity(5);\n\n// After: access through aggregate root\norder.updateItemQuantity(orderItemId, 5);",
+              "effort": "2 days"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "remediation": {
+    "summary": "1 action required to achieve compliance. Estimated total effort: 2,0 days.",
+    "actions": [
+      {
+        "priority": 1,
+        "severity": "MAJOR",
+        "title": "Route all access to internal entities through the aggregate root",
+        "description": "Direct access to internal entities bypasses the aggregate root, which is responsible for enforcing invariants and maintaining consistency. External code modifying internal entities can break business rules and lead to inconsistent state that the aggregate root cannot prevent or detect.",
+        "effort": {
+          "days": 2.0,
+          "description": "Estimated effort"
+        },
+        "impact": "Resolves 1 issue(s)",
+        "affectedTypes": ["com.acme.shop.domain.order.OrderLine"],
+        "relatedIssues": ["ddd-aggregate-boundary-1"],
+        "hexagluePlugin": null
+      }
+    ],
+    "totalEffort": {
+      "days": 2.0,
+      "cost": {
+        "amount": 1000,
+        "currency": "EUR",
+        "dailyRate": 500
+      },
+      "hexaglueSavingsDays": 0.0,
+      "hexaglueSavingsCost": {
+        "amount": 0,
+        "currency": "EUR",
+        "dailyRate": 500
+      },
+      "effectiveDays": 2.0,
+      "effectiveCost": {
+        "amount": 1000,
+        "currency": "EUR",
+        "dailyRate": 500
+      }
+    }
+  },
+  "appendix": {
+    "scoreBreakdown": {
+      "dddCompliance": {"weight": 25, "score": 95},
+      "hexagonalCompliance": {"weight": 25, "score": 100},
+      "dependencyQuality": {"weight": 20, "score": 0},
+      "couplingMetrics": {"weight": 15, "score": 36},
+      "cohesionQuality": {"weight": 15, "score": 65}
+    },
+    "metrics": [
+      {
+        "id": "aggregate.avgSize",
+        "name": "aggregate.avgSize",
+        "value": 14.33,
+        "unit": "methods",
+        "threshold": {"max": 20.0},
+        "status": "OK"
+      },
+      {
+        "id": "aggregate.boundary",
+        "name": "aggregate.boundary",
+        "value": 0.00,
+        "unit": "%",
+        "threshold": {"min": 80.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "aggregate.coupling.efferent",
+        "name": "aggregate.coupling.efferent",
+        "value": 0.40,
+        "unit": "ratio",
+        "threshold": {"max": 0.7},
+        "status": "OK"
+      },
+      {
+        "id": "aggregate.repository.coverage",
+        "name": "aggregate.repository.coverage",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 100.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.cohesion.relational",
+        "name": "architecture.cohesion.relational",
+        "value": 0.66,
+        "unit": "ratio",
+        "threshold": {"min": 1.5, "max": 4.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "architecture.cyclicity.relative",
+        "name": "architecture.cyclicity.relative",
+        "value": 0.00,
+        "unit": "%",
+        "threshold": {"max": 5.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.dependency.depth",
+        "name": "architecture.dependency.depth",
+        "value": 4.00,
+        "unit": "levels",
+        "threshold": {"max": 7.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.fan.out.max",
+        "name": "architecture.fan.out.max",
+        "value": 15.00,
+        "unit": "dependencies",
+        "threshold": {"max": 20.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.mmi",
+        "name": "architecture.mmi",
+        "value": 53.01,
+        "unit": "score",
+        "threshold": {"min": 50.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.modularity.q",
+        "name": "architecture.modularity.q",
+        "value": 0.24,
+        "unit": "Q",
+        "threshold": {"min": 0.3},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "architecture.propagation.cost",
+        "name": "architecture.propagation.cost",
+        "value": 4.96,
+        "unit": "%",
+        "threshold": {"max": 35.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.visibility.average",
+        "name": "architecture.visibility.average",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"max": 70.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "code.boilerplate.ratio",
+        "name": "code.boilerplate.ratio",
+        "value": 80.20,
+        "unit": "%",
+        "threshold": {"max": 50.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "code.complexity.average",
+        "name": "code.complexity.average",
+        "value": 1.12,
+        "unit": "complexity",
+        "threshold": {"max": 10.0},
+        "status": "OK"
+      },
+      {
+        "id": "ddd.aggregate.coupling",
+        "name": "ddd.aggregate.coupling",
+        "value": 0.83,
+        "unit": "deps/aggregate",
+        "threshold": {"max": 3.0},
+        "status": "OK"
+      },
+      {
+        "id": "ddd.event.coverage",
+        "name": "ddd.event.coverage",
+        "value": 16.67,
+        "unit": "%",
+        "threshold": {"min": 50.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "ddd.value.object.ratio",
+        "name": "ddd.value.object.ratio",
+        "value": 77.78,
+        "unit": "%",
+        "threshold": {"min": 40.0},
+        "status": "OK"
+      },
+      {
+        "id": "domain.coverage",
+        "name": "domain.coverage",
+        "value": 50.00,
+        "unit": "%",
+        "threshold": {"min": 30.0},
+        "status": "OK"
+      },
+      {
+        "id": "domain.purity",
+        "name": "domain.purity",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 100.0},
+        "status": "OK"
+      },
+      {
+        "id": "hexagonal.adapter.independence",
+        "name": "hexagonal.adapter.independence",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 80.0},
+        "status": "OK"
+      }
+    ],
+    "constraintsEvaluated": [
+      {"id": "ddd:aggregate-boundary", "violations": 1}
+    ],
+    "packageMetrics": [
+      {
+        "package": "com.acme.shop",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.api.controller",
+        "ca": 0,
+        "ce": 20,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.shop.api.dto",
+        "ca": 5,
+        "ce": 6,
+        "instability": 0.55,
+        "abstractness": 0.00,
+        "distance": 0.45,
+        "zone": "STABLE_CORE"
+      },
+      {
+        "package": "com.acme.shop.api.exception",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.application",
+        "ca": 0,
+        "ce": 28,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.shop.domain.customer",
+        "ca": 16,
+        "ce": 1,
+        "instability": 0.06,
+        "abstractness": 0.00,
+        "distance": 0.94,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.domain.inventory",
+        "ca": 7,
+        "ce": 1,
+        "instability": 0.13,
+        "abstractness": 0.00,
+        "distance": 0.88,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.domain.order",
+        "ca": 40,
+        "ce": 2,
+        "instability": 0.05,
+        "abstractness": 0.00,
+        "distance": 0.95,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.domain.payment",
+        "ca": 9,
+        "ce": 2,
+        "instability": 0.18,
+        "abstractness": 0.00,
+        "distance": 0.82,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.domain.product",
+        "ca": 22,
+        "ce": 1,
+        "instability": 0.04,
+        "abstractness": 0.00,
+        "distance": 0.96,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.domain.shipping",
+        "ca": 7,
+        "ce": 3,
+        "instability": 0.30,
+        "abstractness": 0.00,
+        "distance": 0.70,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.shop.exception",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.infrastructure.config",
+        "ca": 0,
+        "ce": 15,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.shop.infrastructure.external",
+        "ca": 0,
+        "ce": 4,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.shop.infrastructure.persistence",
+        "ca": 0,
+        "ce": 28,
+        "instability": 1.00,
+        "abstractness": 0.34,
+        "distance": 0.34,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.shop.infrastructure.util",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.shop.ports.in",
+        "ca": 15,
+        "ce": 13,
+        "instability": 0.46,
+        "abstractness": 1.00,
+        "distance": 0.46,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.shop.ports.out",
+        "ca": 16,
+        "ce": 17,
+        "instability": 0.52,
+        "abstractness": 1.00,
+        "distance": 0.52,
+        "zone": "MAIN_SEQUENCE"
+      }
+    ]
+  }
+}

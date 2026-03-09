@@ -7,14 +7,15 @@ import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro'
 import StepNavigation from '../_components/StepNavigation.astro';
 import AuditReport from '../_components/AuditReport.astro';
 import AuditVerdict from '../_components/AuditVerdict.astro';
-import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
-import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
-import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
-import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
-import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
-import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
+import KpiTable from '../_components/KpiTable.astro';
+import ViolationsTable from '../_components/ViolationsTable.astro';
+import MetricsTable from '../_components/MetricsTable.astro';
+import InventoryTable from '../_components/InventoryTable.astro';
+import PackageStabilityTable from '../_components/PackageStabilityTable.astro';
+import RemediationTable from '../_components/RemediationTable.astro';
 import Insight from '~/components/Insight.astro';
 import Link from '../../_components/Link.astro';
+import { loadEcommerceAudit, toAuditVerdict, toKpiRows, toKpiRowsWithDelta, toViolationRows, toInventoryRows, toMetricRows, toPackageStabilityRows, filterPackages, toRemediationRows, computeScoreDelta } from '~/data/case-studies/loader';
 
 const hexaglueConfig = `classification:
   exclude:
@@ -34,67 +35,28 @@ plugins:
   io.hexaglue.plugin.rest:
     flattenValueObjects: true
     generateExceptionHandler: true
-    generateConfiguration: true
+    generateConfiguration: false
 
   io.hexaglue.plugin.livingdoc:
     outputDir: "living-doc"`;
 
-const kpiRows: KpiRow[] = [
-  { dimension: 'DDD Compliance', value: '95%', weight: '25%', contribution: '23.75', threshold: '≥ 90%', status: 'OK' },
-  { dimension: 'Hexagonal Architecture', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK' },
-  { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL' },
-  { dimension: 'Coupling', value: '40%', weight: '15%', contribution: '6.0', threshold: '≥ 70%', status: 'CRITICAL' },
-  { dimension: 'Cohesion', value: '64%', weight: '15%', contribution: '9.6', threshold: '≥ 80%', status: 'WARNING' },
-];
-
-const inventoryRows: InventoryRow[] = [
-  { component: 'Aggregate Roots', count: 6, observation: 'Customer, Inventory, Order, Payment, Product, Shipment' },
-  { component: 'Entities', count: 2, observation: 'OrderLine, StockMovement' },
-  { component: 'Value Objects', count: 7, observation: 'Email, Address, Money, OrderStatus, Quantity, PaymentStatus, Category' },
-  { component: 'Identifiers', count: 6, observation: 'CustomerId, InventoryId, OrderId, PaymentId, ProductId, ShipmentId' },
-  { component: 'Domain Events', count: 1, observation: 'OrderPlacedEvent' },
-  { component: 'Application Services', count: 7, observation: '7 implémentations de use cases' },
-  { component: 'Driving Ports', count: 7, observation: '7 use cases exposés par l\'hexagone' },
-  { component: 'Driven Ports', count: 8, observation: '6 repositories + NotificationSender + EmailSender' },
-];
-
-const violationRows: ViolationRow[] = [
-  { constraint: 'ddd:aggregate-boundary', count: 1, severity: 'MAJOR', observation: 'OrderLine accessible outside Order aggregate' },
-];
-
-const metricRows: MetricRow[] = [
-  { metric: 'Domain purity', value: '100.00%', threshold: 'min 100%', status: 'OK' },
-  { metric: 'Domain coverage', value: '50.00%', threshold: 'min 30%', status: 'OK' },
-  { metric: 'Aggregate boundary', value: '0.00%', threshold: 'min 80%', status: 'CRITICAL' },
-  { metric: 'Code boilerplate', value: '80.20%', threshold: 'max 50%', status: 'CRITICAL' },
-  { metric: 'Code complexity', value: '1.12', threshold: 'max 10', status: 'OK' },
-  { metric: 'Adapter independence', value: '100.00%', threshold: 'min 80%', status: 'OK' },
-];
-
-const packageStabilityRows: PackageStabilityRow[] = [
-  { package: 'com.acme.shop.domain.order', ca: 40, ce: 2, instability: 0.05, abstractness: 0.00, distance: 0.95, zone: 'Zone of Pain' },
-  { package: 'com.acme.shop.domain.product', ca: 22, ce: 1, instability: 0.04, abstractness: 0.00, distance: 0.96, zone: 'Zone of Pain' },
-  { package: 'com.acme.shop.ports.in', ca: 16, ce: 13, instability: 0.45, abstractness: 1.00, distance: 0.45, zone: 'Main Sequence' },
-  { package: 'com.acme.shop.ports.out', ca: 17, ce: 17, instability: 0.50, abstractness: 1.00, distance: 0.50, zone: 'Main Sequence' },
-  { package: 'com.acme.shop.application', ca: 0, ce: 28, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
-  { package: 'com.acme.shop.infrastructure.persistence', ca: 0, ce: 28, instability: 1.00, abstractness: 0.34, distance: 0.34, zone: 'Main Sequence' },
-];
-
-const remediationRows: RemediationRow[] = [
-  {
-    constraint: 'ddd:aggregate-boundary',
-    violations: 1,
-    severity: 'MAJOR',
-    manualEffort: 2,
-    hexaglueEffort: 0,
-    description: 'Route all access to OrderLine through Order aggregate root',
-  },
-];
+const { legacy, hexagonal } = loadEcommerceAudit();
+const delta = computeScoreDelta(legacy, hexagonal);
+const verdict = toAuditVerdict(hexagonal, delta);
+const { rows: kpiRows, total: kpiTotal } = toKpiRowsWithDelta(hexagonal, legacy);
+const inventoryRows = toInventoryRows(hexagonal);
+const violationRows = toViolationRows(hexagonal);
+const metricRows = toMetricRows(hexagonal);
+const packageStabilityRows = filterPackages(
+  toPackageStabilityRows(hexagonal),
+  ['domain.order', 'domain.product', 'ports.in', 'ports.out', 'application', 'infrastructure.persistence'],
+);
+const remediationRows = toRemediationRows(hexagonal);
 ---
 
 <MainLayout
   title="Résultat final - Infrastructure générée et application fonctionnelle | Migration E-Commerce"
-  description="Résultat final de la migration e-commerce mono-module : configuration HexaGlue, ~55 fichiers générés (JPA + REST), score 64/100, grade D, 1 violation majeure. DDD à 95% et Hexagonal à 100%."
+  description="Résultat final de la migration e-commerce mono-module : configuration HexaGlue, ~55 fichiers générés (JPA + REST), score 63/100, grade D, 1 violation majeure. DDD à 95% et Hexagonal à 100%."
 >
   <!-- Hero -->
   <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -110,7 +72,7 @@ const remediationRows: RemediationRow[] = [
         <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
           <li>Plugins JPA et REST configurés en mono-module.</li>
           <li>~55 fichiers d'infrastructure générés automatiquement.</li>
-          <li>Score final 64/100, grade D, 1 violation majeure.</li>
+          <li>Score final 63/100, grade D, 1 violation majeure.</li>
         </ul>
       </div>
     </div>
@@ -135,7 +97,8 @@ const remediationRows: RemediationRow[] = [
       <Insight>
         <ul>
           <li><strong>Pas de <code>targetModule</code></strong> : en mono-module, tout le code généré (entités JPA, repositories, adapters, controllers REST, DTOs) est produit dans le même module. HexaGlue n'a pas besoin d'instruction de routage</li>
-          <li><strong><code>generateConfiguration: true</code></strong> : en mono-module, les <code>ApplicationService</code> sont visibles dans le même module que la génération. HexaGlue peut donc générer automatiquement la configuration Spring qui câble les services aux driven ports générés</li>
+          <li><strong><code>generateExceptionHandler: true</code></strong> : le plugin génère un <code>@RestControllerAdvice</code> global qui couvre <code>IllegalArgumentException</code>, les erreurs de validation Bean et les exceptions génériques. Il remplace le handler d'exceptions manuel qu'il n'est plus nécessaire de maintenir</li>
+          <li><strong><code>generateConfiguration: false</code></strong> : la configuration Spring manuelle (<code>ApplicationServiceConfig</code>) est conservée car elle gère des dépendances inter-services. Par exemple, <code>OrderApplicationService</code> dépend d'<code>InventoryUseCases</code> (un driving port), pas seulement de driven ports. Le générateur ne câble que les dépendances directes vers les driven ports</li>
           <li><strong>Exclusions</strong> : <code>infrastructure.**</code> et <code>exception.**</code> sont explicitement exclus du périmètre DDD. HexaGlue ne classifie que les packages domaine, ports et application</li>
         </ul>
       </Insight>
@@ -151,7 +114,7 @@ const remediationRows: RemediationRow[] = [
         gradient="bg-blue-purple-gradient"
       >
         Les plugins JPA et REST analysent le modèle domaine pur et génèrent toute la couche infrastructure à la compilation.<br>
-        Aucun de ces fichiers n'est écrit à la main : entités JPA, repositories, mappers, adapters, controllers REST, DTOs et configuration Spring sont tous produits au compile-time.
+        Aucun de ces fichiers n'est écrit à la main : entités JPA, repositories, mappers, adapters, controllers REST et DTOs sont tous produits au compile-time.
       </SectionCopy>
 
       <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-8">
@@ -224,16 +187,16 @@ const remediationRows: RemediationRow[] = [
               <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
                 <div>
                   <span class="text-base font-semibold text-white">Exception Handler</span>
-                  <p class="text-xs text-astro-gray-400 mt-0.5">ShopExceptionHandler : gestionnaire global des erreurs domaine</p>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">GlobalExceptionHandler : gestionnaire global des erreurs domaine</p>
                 </div>
                 <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">1 fichier</span>
               </div>
               <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
                 <div>
                   <span class="text-base font-semibold text-white">Configuration Spring</span>
-                  <p class="text-xs text-astro-gray-400 mt-0.5">ApplicationServiceConfig : câblage automatique des services applicatifs aux driven ports</p>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">ApplicationServiceConfig : configuration manuelle conservée avec <code>generateConfiguration: false</code> (dépendances inter-services)</p>
                 </div>
-                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">1 fichier</span>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-gray-400/20 text-astro-gray-400 rounded-full text-sm font-mono">manuelle</span>
               </div>
             </div>
           </div>
@@ -248,8 +211,9 @@ const remediationRows: RemediationRow[] = [
 
       <Insight>
         <ul>
-          <li><strong>~55 fichiers générés</strong> remplacent le code infrastructure manuel : 27 fichiers JPA (entités, embeddables, repositories, mappers, adapters) et environ 9 fichiers REST de base (controllers, exception handler, configuration Spring), auxquels s'ajoutent les ~18 DTOs</li>
-          <li><strong>La configuration Spring est générée</strong> : en mono-module, HexaGlue voit les <code>ApplicationService</code> et peut produire automatiquement l'<code>ApplicationServiceConfig</code> qui câble les services aux driven ports. En multi-module, cette configuration resterait manuelle</li>
+          <li><strong>~55 fichiers générés</strong> remplacent le code infrastructure manuel : 27 fichiers JPA (entités, embeddables, repositories, mappers, adapters) et environ 9 fichiers REST de base (controllers, exception handler), auxquels s'ajoutent les ~18 DTOs</li>
+          <li><strong>La configuration Spring reste manuelle</strong> : <code>generateConfiguration: false</code> parce que <code>ApplicationServiceConfig</code> gère des dépendances inter-services (<code>OrderUseCases</code> &rarr; <code>InventoryUseCases</code>). Le générateur ne câble que les driven ports directs. En mono-module simple (sans dépendances inter-services), <code>generateConfiguration: true</code> génère la config automatiquement</li>
+          <li><strong>Dépendance springdoc-openapi</strong> : les controllers générés utilisent les annotations <code>@Operation</code> et <code>@Tag</code> de Swagger. Le POM doit déclarer <code>springdoc-openapi-starter-webmvc-ui</code> dans une version compatible avec Spring Boot (2.4.0 pour Spring Boot 3.2.5)</li>
           <li><strong>Synchronisation garantie</strong> : si le domaine évolue, toute la couche infrastructure est régénérée automatiquement à la compilation suivante, sans intervention manuelle</li>
         </ul>
       </Insight>
@@ -267,23 +231,18 @@ const remediationRows: RemediationRow[] = [
           title="Verdict de l'audit"
           gradient="bg-orange-yellow-gradient"
         >
-          Le score final est de 64/100, grade D, statut PASSED_WITH_WARNINGS. L'architecture hexagonale atteint 100% et le DDD 95%. Une seule violation majeure subsiste, liée à une limitation du classificateur sur <code>OrderLine</code>.
+          Le score final est de 63/100, grade D, statut PASSED_WITH_WARNINGS. L'architecture hexagonale atteint 100% et le DDD 95%. Une seule violation majeure subsiste, liée à une limitation du classificateur sur <code>OrderLine</code>.
         </SectionCopy>
 
         <div class="mt-10">
-          <AuditVerdict
-            score={64}
-            grade="D"
-            status="PASSED_WITH_WARNINGS"
-            violations={{ critical: 0, major: 1 }}
-          />
+          <AuditVerdict {...verdict} />
         </div>
 
         <Insight>
           <p>Le statut PASSED_WITH_WARNINGS reflète l'absence de violation Blocker ou Critical, avec une seule violation Major résiduelle qui ne compromet pas la conformité hexagonale.</p>
           <ul>
             <li><strong>Statut PASSED_WITH_WARNINGS</strong> : aucune violation Blocker ou Critical. La violation <code>aggregate-boundary</code> sur <code>OrderLine</code> est de sévérité Major : elle relève d'une limitation du classificateur (absence d'identifiant explicite), pas d'un défaut d'architecture</li>
-            <li><strong>Grade D (score &ge; 60)</strong> : DDD Compliance (95%) et Hexagonal Architecture (100%) sont proches du maximum, mais Dependencies (0%) et Coupling (40%) plafonnent le score. Ces dimensions mesurent les cycles de dépendances et le couplage entre packages, indépendamment de la conformité hexagonale</li>
+            <li><strong>Grade D (score &ge; 60)</strong> : DDD Compliance (95%) et Hexagonal Architecture (100%) sont proches du maximum, mais Dependencies (0%) et Coupling (36%) plafonnent le score. Ces dimensions mesurent les cycles de dépendances et le couplage entre packages, indépendamment de la conformité hexagonale</li>
           </ul>
         </Insight>
       </div>
@@ -297,12 +256,12 @@ const remediationRows: RemediationRow[] = [
           title="Décomposition du score"
           gradient="bg-orange-yellow-gradient"
         >
-          Le score final de 64/100 reflète l'état de chaque dimension architecturale.<br>
+          Le score final de 63/100 reflète l'état de chaque dimension architecturale.<br>
           DDD Compliance et Hexagonal Architecture sont proches du maximum. Dependencies et Coupling, qui mesurent les cycles inter-packages, concentrent les points perdus.
         </SectionCopy>
 
         <div class="mt-10">
-          <KpiTable rows={kpiRows} total="64.35" />
+          <KpiTable rows={kpiRows} total={kpiTotal} />
         </div>
 
         <Insight>
@@ -310,8 +269,8 @@ const remediationRows: RemediationRow[] = [
             <li><strong>DDD Compliance à 95%</strong> : la quasi-totalité des patterns tactiques DDD sont en place (6 agrégats avec identifiants typés, 7 value objects, 2 entités, 1 domain event, ports correctement séparés). Les 5% manquants correspondent à la violation <code>aggregate-boundary</code> sur <code>OrderLine</code></li>
             <li><strong>Hexagonal Architecture à 100%</strong> : les services applicatifs sont des POJOs purs, chaque port dispose d'un adaptateur généré, les couches sont isolées sans aucune dépendance croisée</li>
             <li><strong>Dependencies à 0%</strong> : cette dimension pénalise les cycles de dépendances entre packages. Des cycles inter-packages subsistent dans la base de code mono-module, indépendamment de la qualité de l'architecture hexagonale</li>
-            <li><strong>Coupling à 40%</strong> : le couplage inter-packages est élevé car plusieurs bounded contexts partagent des types dans un mono-module. La migration vers une structure multi-module résoudrait cette dimension</li>
-            <li><strong>Cohesion à 64%</strong> : la concentration fonctionnelle des packages est satisfaisante mais pourrait progresser en regroupant les types par bounded context</li>
+            <li><strong>Coupling à 36%</strong> : le couplage inter-packages est élevé car plusieurs bounded contexts partagent des types dans un mono-module. La migration vers une structure multi-module résoudrait cette dimension</li>
+            <li><strong>Cohesion à 65%</strong> : la concentration fonctionnelle des packages est satisfaisante mais pourrait progresser en regroupant les types par bounded context</li>
           </ul>
         </Insight>
       </div>
@@ -352,7 +311,7 @@ const remediationRows: RemediationRow[] = [
           title="Violations détectées"
           gradient="bg-orange-yellow-gradient"
         >
-          Une seule violation majeure subsiste après toutes les corrections effectuées aux étapes 5 et 6.<br>
+          Une seule violation majeure subsiste après toutes les corrections effectuées lors des étapes précédentes.<br>
           Elle est liée à une limitation du classificateur sur <code>OrderLine</code>, et non à un défaut d'architecture.
         </SectionCopy>
 
@@ -515,7 +474,7 @@ const remediationRows: RemediationRow[] = [
             <tr class="border-b border-astro-dark-100/15">
               <td class="py-2.5 pr-4 text-white font-bold">Score architectural</td>
               <td class="py-2.5 px-3 text-center text-astro-gray-400">N/A</td>
-              <td class="py-2.5 pl-3 text-center text-astro-green font-bold">64/100</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green font-bold">63/100</td>
             </tr>
           </tbody>
         </table>
@@ -556,9 +515,9 @@ const remediationRows: RemediationRow[] = [
               <Icon name="ri:settings-3-line" class="size-5 text-purple-400" aria-hidden="true" />
             </div>
             <div>
-              <h3 class="text-base font-semibold text-white mb-1.5">Mono-module : configuration simplifiée</h3>
+              <h3 class="text-base font-semibold text-white mb-1.5">Mono-module : configuration adaptée</h3>
               <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
-                Sans <code>targetModule</code>, tout le code généré atterrit dans le même module. <code>generateConfiguration: true</code> permet à HexaGlue de câbler automatiquement les services applicatifs.
+                Sans dépendance inter-services, <code>generateConfiguration: true</code> génère le câblage automatiquement. Avec des dépendances inter-services (ici <code>OrderUseCases</code> &rarr; <code>InventoryUseCases</code>), <code>generateConfiguration: false</code> et la config manuelle est conservée.
               </p>
             </div>
           </div>
@@ -586,7 +545,7 @@ const remediationRows: RemediationRow[] = [
             <div>
               <h3 class="text-base font-semibold text-white mb-1.5">Migration incrémentale</h3>
               <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
-                Chaque étape compile. Les rapports d'audit guident l'étape suivante. Pas de Big Bang : le score progresse de 13 à 64/100 en 6 étapes mesurables.
+                Chaque étape compile. Les rapports d'audit guident l'étape suivante. Pas de Big Bang : le score progresse de 13 à 63/100 de manière incrémentale.
               </p>
             </div>
           </div>
@@ -600,7 +559,7 @@ const remediationRows: RemediationRow[] = [
             <div>
               <h3 class="text-base font-semibold text-white mb-1.5">Le score est un indicateur fidèle</h3>
               <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
-                64/100 avec 1 violation signale une architecture hexagonale bien structurée. Dependencies (0%) et Coupling (40%) indiquent le prochain axe d'amélioration : la séparation des bounded contexts.
+                63/100 avec 1 violation signale une architecture hexagonale bien structurée. Dependencies (0%) et Coupling (36%) indiquent le prochain axe d'amélioration : la séparation des bounded contexts.
               </p>
             </div>
           </div>
@@ -632,7 +591,7 @@ const remediationRows: RemediationRow[] = [
       </h2>
 
       <p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
-        L'application e-commerce mono-module est passée de 13/100 à 64/100 en 6 étapes mesurables, avec Hexagonal Architecture à 100% et ~55 fichiers générés automatiquement. Lancez HexaGlue sur votre propre projet.
+        L'application e-commerce mono-module est passée de 13/100 à 63/100, avec Hexagonal Architecture à 100% et ~55 fichiers générés automatiquement.
       </p>
 
       <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">

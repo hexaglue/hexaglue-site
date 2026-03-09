@@ -7,9 +7,10 @@ import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro'
 import StepNavigation from '../_components/StepNavigation.astro';
 import AuditReport from '../_components/AuditReport.astro';
 import AuditVerdict from '../_components/AuditVerdict.astro';
-import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
-import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import KpiTable from '../_components/KpiTable.astro';
+import ViolationsTable from '../_components/ViolationsTable.astro';
 import Insight from '~/components/Insight.astro';
+import { loadEcommerceAudit, toAuditVerdict, toKpiRows, toViolationRows } from '~/data/case-studies/loader';
 
 const orderEntityCode = `@Entity
 @Table(name = "orders")
@@ -85,21 +86,10 @@ const antiPatterns = [
 	{ num: 10, pattern: 'Aucune séparation des couches', example: 'Chaque classe est à la fois un bean Spring et une entité JPA' },
 ];
 
-const kpiRows: KpiRow[] = [
-	{ dimension: 'DDD Compliance', value: '0%', weight: '25%', contribution: '0.0', threshold: '>= 90%', status: 'CRITICAL' },
-	{ dimension: 'Hexagonal Architecture', value: '0%', weight: '25%', contribution: '0.0', threshold: '>= 90%', status: 'CRITICAL' },
-	{ dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '>= 80%', status: 'CRITICAL' },
-	{ dimension: 'Coupling', value: '30%', weight: '15%', contribution: '4.5', threshold: '>= 70%', status: 'CRITICAL' },
-	{ dimension: 'Cohesion', value: '58%', weight: '15%', contribution: '8.7', threshold: '>= 80%', status: 'CRITICAL' },
-];
-
-const violationRows: ViolationRow[] = [
-	{ constraint: 'ddd:domain-purity', count: 10, severity: 'CRITICAL' },
-	{ constraint: 'ddd:entity-identity', count: 9, severity: 'CRITICAL' },
-	{ constraint: 'hexagonal:layer-isolation', count: 12, severity: 'MAJOR' },
-	{ constraint: 'hexagonal:port-direction', count: 6, severity: 'MAJOR' },
-	{ constraint: 'hexagonal:port-coverage', count: 6, severity: 'MAJOR' },
-];
+const { legacy } = loadEcommerceAudit();
+const verdict = toAuditVerdict(legacy);
+const { rows: kpiRows, total: kpiTotal } = toKpiRows(legacy);
+const violationRows = toViolationRows(legacy);
 ---
 
 <MainLayout
@@ -268,12 +258,7 @@ const violationRows: ViolationRow[] = [
 			</SectionCopy>
 
 			<div class="mt-10">
-				<AuditVerdict
-					score={13}
-					grade="F"
-					status="FAILED"
-					violations={{ critical: 19, major: 24 }}
-				/>
+				<AuditVerdict {...verdict} />
 			</div>
 
 			<Insight>
@@ -294,7 +279,7 @@ const violationRows: ViolationRow[] = [
 			</SectionCopy>
 
 			<div class="mt-10">
-				<KpiTable rows={kpiRows} total="13.2" />
+				<KpiTable rows={kpiRows} total={kpiTotal} />
 			</div>
 
 			<Insight>

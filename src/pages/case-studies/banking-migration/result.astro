@@ -7,14 +7,13 @@ import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro'
 import StepNavigation from '../_components/StepNavigation.astro';
 import AuditReport from '../_components/AuditReport.astro';
 import AuditVerdict from '../_components/AuditVerdict.astro';
-import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
-import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
-import MetricsTable, { type MetricRow } from '../_components/MetricsTable.astro';
-import InventoryTable, { type InventoryRow } from '../_components/InventoryTable.astro';
-import PackageStabilityTable, { type PackageStabilityRow } from '../_components/PackageStabilityTable.astro';
-import RemediationTable, { type RemediationRow } from '../_components/RemediationTable.astro';
+import KpiTable from '../_components/KpiTable.astro';
+import InventoryTable from '../_components/InventoryTable.astro';
+import MetricsTable from '../_components/MetricsTable.astro';
+import PackageStabilityTable from '../_components/PackageStabilityTable.astro';
 import Insight from '~/components/Insight.astro';
 import Link from '../../_components/Link.astro';
+import { loadBankingAudit, toAuditVerdict, toKpiRowsWithDelta, toInventoryRows, toMetricRows, toPackageStabilityRows, filterPackages, computeScoreDelta } from '~/data/case-studies/loader';
 
 const hexaglueConfig = `classification:
   exclude:
@@ -56,42 +55,16 @@ modules:
   banking-app:
     role: ASSEMBLY`;
 
-const kpiRows: KpiRow[] = [
-  { dimension: 'DDD Compliance', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK' },
-  { dimension: 'Hexagonal Architecture', value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK' },
-  { dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '≥ 80%', status: 'CRITICAL' },
-  { dimension: 'Coupling', value: '51%', weight: '15%', contribution: '7.65', threshold: '≥ 70%', status: 'CRITICAL' },
-  { dimension: 'Cohesion', value: '68%', weight: '15%', contribution: '10.2', threshold: '≥ 80%', status: 'WARNING' },
-];
-
-const inventoryRows: InventoryRow[] = [
-  { component: 'Aggregate Roots', count: 6, observation: 'Account, Beneficiary, Card, Customer, Transaction, Transfer' },
-  { component: 'Entities', count: 0 },
-  { component: 'Value Objects', count: 8, observation: '4 enums + Money, Iban, Email, Address' },
-  { component: 'Identifiers', count: 6, observation: 'AccountId, BeneficiaryId, CardId, CustomerId, TransactionId, TransferId' },
-  { component: 'Domain Events', count: 0 },
-  { component: 'Application Services', count: 5, observation: '5 use case implementations' },
-  { component: 'Driving Ports', count: 5, observation: '5 use cases' },
-  { component: 'Driven Ports', count: 8, observation: '6 repositories + FraudDetection + NotificationSender' },
-];
-
-const metricRows: MetricRow[] = [
-  { metric: 'Domain purity', value: '100.00%', threshold: 'min 100%', status: 'OK' },
-  { metric: 'Domain coverage', value: '52.63%', threshold: 'min 30%', status: 'OK' },
-  { metric: 'Aggregate boundary', value: '100.00%', threshold: 'min 80%', status: 'OK' },
-  { metric: 'Code boilerplate', value: '88.41%', threshold: 'max 50%', status: 'CRITICAL' },
-  { metric: 'Code complexity', value: '1.08', threshold: 'max 10', status: 'OK' },
-  { metric: 'Adapter independence', value: '100.00%', threshold: 'min 80%', status: 'OK' },
-];
-
-const packageStabilityRows: PackageStabilityRow[] = [
-  { package: 'com.acme.banking.core.model', ca: 49, ce: 0, instability: 0.00, abstractness: 0.00, distance: 1.00, zone: 'Zone of Pain' },
-  { package: 'com.acme.banking.core.port.in', ca: 11, ce: 13, instability: 0.54, abstractness: 1.00, distance: 0.54, zone: 'Main Sequence' },
-  { package: 'com.acme.banking.core.port.out', ca: 14, ce: 13, instability: 0.48, abstractness: 1.00, distance: 0.48, zone: 'Main Sequence' },
-  { package: 'com.acme.banking.infrastructure.persistence', ca: 0, ce: 26, instability: 1.00, abstractness: 0.46, distance: 0.46, zone: 'Main Sequence' },
-  { package: 'com.acme.banking.service.application', ca: 0, ce: 25, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
-  { package: 'com.acme.banking.api.controller', ca: 0, ce: 20, instability: 1.00, abstractness: 0.00, distance: 0.00, zone: 'Main Sequence' },
-];
+const { legacy, hexagonal } = loadBankingAudit();
+const delta = computeScoreDelta(legacy, hexagonal);
+const verdict = toAuditVerdict(hexagonal, delta);
+const { rows: kpiRows, total: kpiTotal } = toKpiRowsWithDelta(hexagonal, legacy);
+const inventoryRows = toInventoryRows(hexagonal);
+const metricRows = toMetricRows(hexagonal);
+const packageStabilityRows = filterPackages(
+  toPackageStabilityRows(hexagonal),
+  ['core.model', 'core.port', 'infrastructure', 'service.application', 'api.controller'],
+);
 ---
 
 <MainLayout
@@ -267,12 +240,7 @@ const packageStabilityRows: PackageStabilityRow[] = [
         </SectionCopy>
 
         <div class="mt-10">
-          <AuditVerdict
-            score={67}
-            grade="D"
-            status="PASSED"
-            violations={{ critical: 0, major: 0 }}
-          />
+          <AuditVerdict {...verdict} />
         </div>
 
         <Insight>
@@ -298,7 +266,7 @@ const packageStabilityRows: PackageStabilityRow[] = [
         </SectionCopy>
 
         <div class="mt-10">
-          <KpiTable rows={kpiRows} total="67.85" />
+          <KpiTable rows={kpiRows} total={kpiTotal} />
         </div>
 
         <Insight>
@@ -349,7 +317,7 @@ const packageStabilityRows: PackageStabilityRow[] = [
           gradient="bg-orange-yellow-gradient"
         >
           Aucune violation architecturale n'est détectée dans l'état final.<br>
-          La génération automatique et la purification des services ont éliminé les 16 violations de l'étape 4.
+          La génération automatique et la purification des services ont éliminé les 16 violations de l'étape précédente.
         </SectionCopy>
 
         <div class="mt-10">
@@ -363,7 +331,7 @@ const packageStabilityRows: PackageStabilityRow[] = [
         </div>
 
         <Insight variant="green">
-          <p>Le zéro violation résulte de la combinaison de trois actions menées lors des étapes 5 et 6 :</p>
+          <p>Le zéro violation résulte de la combinaison de trois actions menées lors des étapes précédentes :</p>
           <ul>
             <li><strong>Génération JPA</strong> : les adaptateurs générés couvrent correctement tous les driven ports, éliminant les violations <code>port-coverage</code> et <code>layer-isolation</code></li>
             <li><strong>Génération REST</strong> : les contrôleurs et DTOs générés remplacent le code REST manuel, éliminant les violations <code>adapter-coupling</code></li>
@@ -584,7 +552,7 @@ const packageStabilityRows: PackageStabilityRow[] = [
             <div>
               <h3 class="text-base font-semibold text-white mb-1.5">Migration incrémentale</h3>
               <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
-                Chaque étape compile. Les rapports d'audit guident l'étape suivante. Pas de Big Bang : le score progresse de 14 à 67/100 en 6 étapes mesurables.
+                Chaque étape compile. Les rapports d'audit guident l'étape suivante. Pas de Big Bang : le score progresse de 14 à 67/100 de manière incrémentale.
               </p>
             </div>
           </div>
@@ -630,7 +598,7 @@ const packageStabilityRows: PackageStabilityRow[] = [
       </h2>
 
       <p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
-        L'application bancaire multi-modules est passée de 14/100 à 67/100 en 6 étapes mesurables, avec 0 violation et DDD + Hexagonal à 100%. Lancez HexaGlue sur votre propre projet.
+        L'application bancaire multi-modules est passée de 14/100 à 67/100, avec 0 violation et DDD + Hexagonal à 100%.
       </p>
 
       <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">

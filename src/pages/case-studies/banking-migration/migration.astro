@@ -5,9 +5,6 @@ import MainLayout from '~/layouts/MainLayout.astro';
 import SectionCopy from '../../_components/SectionCopy.astro';
 import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
 import StepNavigation from '../_components/StepNavigation.astro';
-import AuditReport from '../_components/AuditReport.astro';
-import AuditVerdict from '../_components/AuditVerdict.astro';
-import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
 import Insight from '~/components/Insight.astro';
 import ModificationList from '../_components/ModificationList.astro';
 import ModificationGroup from '../_components/ModificationGroup.astro';
@@ -56,28 +53,11 @@ const moneyCode = `public record Money(BigDecimal amount, String currency) {
     }
 }`;
 
-// ── KPI tables ───────────────────────────────────────────────────────────────
-
-const kpiRowsHexagonal: KpiRow[] = [
-    { dimension: 'DDD Compliance',        value: '16%',  weight: '25%', contribution: '4.0',  threshold: '≥ 90%', status: 'CRITICAL', delta: '+16' },
-    { dimension: 'Hexagonal Architecture', value: '30%',  weight: '25%', contribution: '7.5',  threshold: '≥ 90%', status: 'CRITICAL', delta: '+30' },
-    { dimension: 'Dependencies',           value: '0%',   weight: '20%', contribution: '0.0',  threshold: '≥ 80%', status: 'CRITICAL', delta: '='   },
-    { dimension: 'Coupling',               value: '27%',  weight: '15%', contribution: '4.05', threshold: '≥ 70%', status: 'CRITICAL', delta: '+3'  },
-    { dimension: 'Cohesion',               value: '34%',  weight: '15%', contribution: '5.1',  threshold: '≥ 80%', status: 'WARNING',  delta: '-13' },
-];
-
-const kpiRowsPureDomain: KpiRow[] = [
-    { dimension: 'DDD Compliance',        value: '100%', weight: '25%', contribution: '25.0', threshold: '≥ 90%', status: 'OK',       delta: '+84' },
-    { dimension: 'Hexagonal Architecture', value: '20%',  weight: '25%', contribution: '5.0',  threshold: '≥ 90%', status: 'CRITICAL', delta: '-10' },
-    { dimension: 'Dependencies',           value: '0%',   weight: '20%', contribution: '0.0',  threshold: '≥ 80%', status: 'CRITICAL', delta: '='   },
-    { dimension: 'Coupling',               value: '37%',  weight: '15%', contribution: '5.55', threshold: '≥ 70%', status: 'CRITICAL', delta: '+10' },
-    { dimension: 'Cohesion',               value: '68%',  weight: '15%', contribution: '10.2', threshold: '≥ 80%', status: 'WARNING',  delta: '+34' },
-];
 ---
 
 <MainLayout
-    title="Migration hexagonale - Étapes 3 & 4 | Migration Banking"
-    description="Restructuration hexagonale et purification du domaine : création des ports, identifiants typés, value objects. Score 20/100 puis 45/100."
+    title="Migration hexagonale | Migration Banking"
+    description="Restructuration hexagonale et purification du domaine : création des ports, identifiants typés, value objects."
 >
     <!-- Hero Section -->
     <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
@@ -85,34 +65,24 @@ const kpiRowsPureDomain: KpiRow[] = [
         <div class="max-w-4xl mx-auto">
             <div class="mt-8 max-w-3xl">
                 <span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
-                    Étapes 3 &amp; 4
+                    Migration hexagonale
                 </span>
                 <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
                     Migration hexagonale
                 </h1>
                 <p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl">
-                    Deux étapes fondamentales : la restructuration hexagonale pose le squelette des ports et services applicatifs, puis la purification du domaine élimine toutes les violations DDD et fait bondir le score de 20 à 45/100.
+                    Deux étapes fondamentales : la restructuration hexagonale pose le squelette des ports et services applicatifs, puis la purification du domaine élimine toutes les violations DDD.
                 </p>
                 <div class="mt-6 flex flex-wrap gap-3">
                     <a
-                        href="https://github.com/hexaglue/case-study-banking/tree/step/3-hexagonal"
-                        title="Voir l'étape 3 sur GitHub"
+                        href="https://github.com/hexaglue/case-study-banking"
+                        title="Voir le code sur GitHub"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
                     >
                         <Icon name="logos/github" class="size-5" aria-hidden="true" />
-                        <code class="text-sm text-purple-400">step/3-hexagonal</code>
-                    </a>
-                    <a
-                        href="https://github.com/hexaglue/case-study-banking/tree/step/4-pure-domain"
-                        title="Voir l'étape 4 sur GitHub"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
-                    >
-                        <Icon name="logos/github" class="size-5" aria-hidden="true" />
-                        <code class="text-sm text-purple-400">step/4-pure-domain</code>
+                        <code class="text-sm text-purple-400">case-study-banking</code>
                     </a>
                 </div>
             </div>
@@ -127,7 +97,7 @@ const kpiRowsPureDomain: KpiRow[] = [
     <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
         <div class="max-w-4xl mx-auto">
             <SectionCopy
-                label="Étape 3"
+                label="Restructuration"
                 title="Restructuration hexagonale"
                 gradient="bg-blue-purple-gradient"
             >
@@ -204,89 +174,6 @@ const kpiRowsPureDomain: KpiRow[] = [
         </div>
     </section>
 
-    <!-- Audit step-3 -->
-    <AuditReport description="Résultat après restructuration hexagonale : création des ports et services applicatifs.">
-
-        <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-            <div class="max-w-4xl mx-auto">
-                <SectionCopy
-                    label="Verdict"
-                    title="Verdict : étape 3"
-                    gradient="bg-orange-yellow-gradient"
-                >
-                    Le score atteint 20/100 malgré la restructuration hexagonale.<br>
-                    Les ports existent mais le domaine reste pollué par JPA, et les nouveaux driven ports sans adaptateur génèrent des violations qui pèsent sur le résultat.
-                </SectionCopy>
-
-                <div class="mt-10">
-                    <AuditVerdict
-                        score={20}
-                        grade="F"
-                        status="FAILED"
-                        violations={{ critical: 12, major: 14 }}
-                        delta={{ score: 6, violations: -10 }}
-                    />
-                </div>
-
-                <Insight>
-                    <ul>
-                        <li><strong>+6 points</strong> par rapport au diagnostic initial (14 vers 20) : la structure hexagonale progresse</li>
-                        <li><strong>12 violations Critical</strong> : 6 entités avec imports JPA et 6 entités sans identifiant typé</li>
-                        <li><strong>14 violations Major</strong> : 7 driven ports sans adaptateur et 7 non utilisés par un service applicatif</li>
-                    </ul>
-                    <p>Le score est bas parce que le domaine n'est pas encore purifié. La structure existe, mais le contenu reste pollué.</p>
-                </Insight>
-            </div>
-        </section>
-
-        <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-            <div class="max-w-4xl mx-auto">
-                <SectionCopy
-                    label="Score"
-                    title="Décomposition du score : étape 3"
-                    gradient="bg-orange-yellow-gradient"
-                >
-                    Deux dimensions progressent grâce à la restructuration, mais DDD Compliance reste bloquée à 16% tant que les entités portent des annotations JPA et des identifiants non typés.
-                </SectionCopy>
-
-                <div class="mt-10">
-                    <KpiTable rows={kpiRowsHexagonal} total="20.65" />
-                </div>
-
-                <Insight>
-                    <ul>
-                        <li><strong>Hexagonal Architecture</strong> à 30% (+30) : les ports driving et driven sont créés, c'est la première fois que cette dimension progresse significativement</li>
-                        <li><strong>Coupling</strong> à 27% (+3) : la séparation en couches améliore légèrement les dépendances entre packages</li>
-                        <li><strong>Cohesion</strong> à 34% (-13) : la dispersion des classes dans la nouvelle structure de packages réduit temporairement la cohésion mesurée</li>
-                        <li><strong>DDD Compliance</strong> à 16% et <strong>Dependencies</strong> à 0% : les entités n'ont toujours pas d'identifiants typés et le domaine dépend encore de l'infrastructure</li>
-                    </ul>
-                </Insight>
-            </div>
-        </section>
-
-        <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-            <div class="max-w-4xl mx-auto">
-                <SectionCopy
-                    label="Ce que révèle l'audit"
-                    title="Pourquoi le score reste bas ?"
-                    gradient="bg-orange-yellow-gradient"
-                >
-                    La restructuration hexagonale est nécessaire mais insuffisante.<br>
-                    Le score ne décollera qu'après la purification du domaine : suppression des annotations JPA et introduction des patterns tactiques DDD.
-                </SectionCopy>
-
-                <Insight class="mt-10" variant="amber">
-                    <ul>
-                        <li>Les ports existent mais les entités domaine embarquent encore <code>@Entity</code>, <code>@Id</code> et <code>Long id</code></li>
-                        <li>Sans identifiant typé (<code>AccountId</code>), HexaGlue ne peut pas promouvoir les entités en <code>AGGREGATE_ROOT</code></li>
-                        <li>Sans aggregate root détecté, la dimension <strong>DDD Compliance</strong> reste très basse, bridant le score global</li>
-                        <li>Les 7 driven ports sans adaptateur génèrent des violations <code>port-coverage</code> et <code>port-direction</code> supplémentaires</li>
-                    </ul>
-                </Insight>
-            </div>
-        </section>
-
-    </AuditReport>
 
     <!-- ══════════════════════════════════════════════════════════════════════ -->
     <!-- SECTION 2 : Purification du domaine (step-4)                          -->
@@ -296,7 +183,7 @@ const kpiRowsPureDomain: KpiRow[] = [
     <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
         <div class="max-w-4xl mx-auto">
             <SectionCopy
-                label="Étape 4"
+                label="Purification"
                 title="Purification du domaine"
                 gradient="bg-blue-purple-gradient"
             >
@@ -381,91 +268,6 @@ const kpiRowsPureDomain: KpiRow[] = [
         </div>
     </section>
 
-    <!-- Audit step-4 -->
-    <AuditReport description="Résultat après purification du domaine et création des patterns tactiques DDD.">
-
-        <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-            <div class="max-w-4xl mx-auto">
-                <SectionCopy
-                    label="Verdict"
-                    title="Verdict : étape 4"
-                    gradient="bg-orange-yellow-gradient"
-                >
-                    Le score bondit à 45/100 : la plus forte progression de toute la migration avant la génération automatique.<br>
-                    DDD Compliance atteint 100% et toutes les violations Critical disparaissent en une seule étape.
-                </SectionCopy>
-
-                <div class="mt-10">
-                    <AuditVerdict
-                        score={45}
-                        grade="F"
-                        status="PASSED"
-                        violations={{ critical: 0, major: 16 }}
-                        delta={{ score: 25, violations: -10 }}
-                    />
-                </div>
-
-                <Insight>
-                    <ul>
-                        <li><strong>+25 points</strong> (20 vers 45) : la purification du domaine est le levier le plus puissant de toute la migration</li>
-                        <li><strong>0 violation Critical</strong> : les violations <code>domain-purity</code> et <code>entity-identity</code> disparaissent complètement</li>
-                        <li><strong>16 violations Major</strong> (-10) : seules des violations d'infrastructure restent (ports sans adaptateur, services avec imports Spring)</li>
-                    </ul>
-                    <p>Ces violations seront éliminées à l'étape suivante par la génération automatique de l'infrastructure.</p>
-                </Insight>
-            </div>
-        </section>
-
-        <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-            <div class="max-w-4xl mx-auto">
-                <SectionCopy
-                    label="Score"
-                    title="Décomposition du score : étape 4"
-                    gradient="bg-orange-yellow-gradient"
-                >
-                    La dimension DDD Compliance bondit à 100% grâce aux 6 identifiants typés, aux 8 value objects et à la pureté totale du domaine.<br>
-                    Coupling et Cohesion progressent aussi significativement avec la séparation domaine/infrastructure.
-                </SectionCopy>
-
-                <div class="mt-10">
-                    <KpiTable rows={kpiRowsPureDomain} total="45.75" />
-                </div>
-
-                <Insight>
-                    <ul>
-                        <li><strong>DDD Compliance</strong> à 100% (+84) : tous les agrégats ont des identifiants typés, le domaine est pur, les value objects sont correctement classifiés</li>
-                        <li><strong>Hexagonal Architecture</strong> à 20% (-10) : les ports sans adaptateur et les services avec imports Spring maintiennent cette dimension basse</li>
-                        <li><strong>Coupling</strong> à 37% (+10) : la séparation domaine/infrastructure améliore les dépendances entre packages</li>
-                        <li><strong>Cohesion</strong> à 68% (+34) : les agrégats regroupent des concepts cohérents avec leur logique métier encapsulée</li>
-                    </ul>
-                </Insight>
-            </div>
-        </section>
-
-        <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
-            <div class="max-w-4xl mx-auto">
-                <SectionCopy
-                    label="Point d'inflexion DDD"
-                    title="Pourquoi le score bondit de 25 points ?"
-                    gradient="bg-orange-yellow-gradient"
-                >
-                    La purification du domaine est le point d'inflexion de toute migration DDD.<br>
-                    Tant que le domaine embarque des annotations techniques, HexaGlue ne peut pas inférer la classification complète.
-                </SectionCopy>
-
-                <Insight class="mt-10" variant="green" icon="ri:sparkling-2-line">
-                    <ul>
-                        <li>Les identifiants typés (<code>AccountId</code>, <code>CustomerId</code>...) permettent à HexaGlue de promouvoir les 6 entités en <strong>Aggregate Root</strong></li>
-                        <li>Le passage de <code>Entity</code> à <code>AGGREGATE_ROOT</code> fait passer DDD Compliance de 16% à 100% d'un coup</li>
-                        <li>La suppression des annotations JPA du domaine élimine les 6 violations <code>domain-purity</code> et valide la métrique <code>Domain purity: 100%</code></li>
-                        <li>Les value objects (<code>Money</code>, <code>Iban</code>, <code>Email</code>, <code>Address</code>) sont détectés automatiquement et enrichissent l'inventaire architectural</li>
-                    </ul>
-                    <p>Les 16 violations restantes sont toutes des violations <code>Major</code> liées à l'infrastructure : elles disparaîtront à l'étape suivante avec la génération automatique.</p>
-                </Insight>
-            </div>
-        </section>
-
-    </AuditReport>
 
     <!-- Navigation -->
     <section class="py-16 relative">

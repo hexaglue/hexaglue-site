@@ -7,9 +7,10 @@ import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro'
 import StepNavigation from '../_components/StepNavigation.astro';
 import AuditReport from '../_components/AuditReport.astro';
 import AuditVerdict from '../_components/AuditVerdict.astro';
-import KpiTable, { type KpiRow } from '../_components/KpiTable.astro';
-import ViolationsTable, { type ViolationRow } from '../_components/ViolationsTable.astro';
+import KpiTable from '../_components/KpiTable.astro';
+import ViolationsTable from '../_components/ViolationsTable.astro';
 import Insight from '~/components/Insight.astro';
+import { loadBankingAudit, toAuditVerdict, toKpiRows, toViolationRows } from '~/data/case-studies/loader';
 
 const accountEntityCode = `@Entity
 @Table(name = "accounts")
@@ -99,21 +100,10 @@ const antiPatterns = [
 	{ num: 6, pattern: 'Références directes entre agrégats', example: 'Account.customer = Customer (entité JPA) au lieu d\'un identifiant typé' },
 ];
 
-const kpiRows: KpiRow[] = [
-	{ dimension: 'DDD Compliance', value: '0%', weight: '25%', contribution: '0.0', threshold: '> 60', status: 'CRITICAL' },
-	{ dimension: 'Hexagonal Architecture', value: '0%', weight: '25%', contribution: '0.0', threshold: '> 60', status: 'CRITICAL' },
-	{ dimension: 'Dependencies', value: '0%', weight: '20%', contribution: '0.0', threshold: '> 50', status: 'CRITICAL' },
-	{ dimension: 'Coupling', value: '24%', weight: '15%', contribution: '3.6', threshold: '> 40', status: 'CRITICAL' },
-	{ dimension: 'Cohesion', value: '47%', weight: '15%', contribution: '7.05', threshold: '> 60', status: 'WARNING' },
-];
-
-const violationRows: ViolationRow[] = [
-	{ constraint: 'ddd:entity-identity', count: 6, severity: 'CRITICAL' },
-	{ constraint: 'ddd:domain-purity', count: 7, severity: 'CRITICAL' },
-	{ constraint: 'hexagonal:port-direction', count: 7, severity: 'MAJOR' },
-	{ constraint: 'hexagonal:port-coverage', count: 8, severity: 'MAJOR' },
-	{ constraint: 'hexagonal:layer-isolation', count: 8, severity: 'MAJOR' },
-];
+const { legacy } = loadBankingAudit();
+const verdict = toAuditVerdict(legacy);
+const { rows: kpiRows, total: kpiTotal } = toKpiRows(legacy);
+const violationRows = toViolationRows(legacy);
 ---
 
 <MainLayout
@@ -287,12 +277,7 @@ const violationRows: ViolationRow[] = [
 			</SectionCopy>
 
 			<div class="mt-10">
-				<AuditVerdict
-					score={14}
-					grade="F"
-					status="FAILED"
-					violations={{ critical: 13, major: 23 }}
-				/>
+				<AuditVerdict {...verdict} />
 			</div>
 
 			<Insight>
@@ -313,7 +298,7 @@ const violationRows: ViolationRow[] = [
 			</SectionCopy>
 
 			<div class="mt-10">
-				<KpiTable rows={kpiRows} total="10.65" />
+				<KpiTable rows={kpiRows} total={kpiTotal} />
 			</div>
 
 			<Insight>

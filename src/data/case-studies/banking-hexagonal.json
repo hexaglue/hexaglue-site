@@ -1,0 +1,1104 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "projectName": "Acme Banking - Multi-Module Case Study",
+    "projectVersion": "1.0.0",
+    "timestamp": "2026-03-09T10:32:36.454299Z",
+    "analysisDuration": "15ms",
+    "hexaglueVersion": "3.1.0",
+    "pluginVersion": "3.1.0"
+  },
+  "verdict": {
+    "score": 67,
+    "grade": "D",
+    "status": "PASSED",
+    "statusReason": "All checks passed",
+    "summary": "Congratulations! Your application follows all architectural best practices.",
+    "kpis": [
+      {
+        "id": "ddd-compliance",
+        "name": "DDD Compliance",
+        "value": 100.0,
+        "unit": "%",
+        "threshold": 90.0,
+        "status": "OK"
+      },
+      {
+        "id": "hexagonal-compliance",
+        "name": "Hexagonal Architecture",
+        "value": 100.0,
+        "unit": "%",
+        "threshold": 90.0,
+        "status": "OK"
+      },
+      {
+        "id": "dependency-quality",
+        "name": "Dependencies",
+        "value": 0.0,
+        "unit": "%",
+        "threshold": 80.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "coupling-metrics",
+        "name": "Coupling",
+        "value": 51.0,
+        "unit": "%",
+        "threshold": 70.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "cohesion-quality",
+        "name": "Cohesion",
+        "value": 68.0,
+        "unit": "%",
+        "threshold": 80.0,
+        "status": "WARNING"
+      }
+    ],
+    "immediateAction": {
+      "required": false,
+      "message": null,
+      "reference": null
+    }
+  },
+  "architecture": {
+    "summary": "Analyzed 38 types across 1 bounded context",
+    "inventory": {
+      "boundedContexts": [
+        {
+          "name": "banking",
+          "aggregates": 6,
+          "entities": 0,
+          "valueObjects": 8,
+          "domainEvents": 0
+        }
+      ],
+      "totals": {
+        "aggregates": 6,
+        "entities": 0,
+        "valueObjects": 8,
+        "identifiers": 6,
+        "domainEvents": 0,
+        "domainServices": 0,
+        "applicationServices": 5,
+        "commandHandlers": 0,
+        "queryHandlers": 0,
+        "drivingPorts": 5,
+        "drivenPorts": 8
+      }
+    },
+    "components": {
+      "aggregates": [
+        {
+          "name": "Account",
+          "package": "com.acme.banking.core.model",
+          "fields": 6,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Beneficiary",
+          "package": "com.acme.banking.core.model",
+          "fields": 5,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Card",
+          "package": "com.acme.banking.core.model",
+          "fields": 7,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Customer",
+          "package": "com.acme.banking.core.model",
+          "fields": 6,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Transaction",
+          "package": "com.acme.banking.core.model",
+          "fields": 7,
+          "references": [],
+          "usesPorts": []
+        },
+        {
+          "name": "Transfer",
+          "package": "com.acme.banking.core.model",
+          "fields": 6,
+          "references": [],
+          "usesPorts": []
+        }
+      ],
+      "valueObjects": [
+        {
+          "name": "AccountType",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "Address",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "CardStatus",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "Email",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "Iban",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "Money",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "TransactionType",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "TransferStatus",
+          "package": "com.acme.banking.core.model"
+        }
+      ],
+      "identifiers": [
+        {
+          "name": "AccountId",
+          "package": "com.acme.banking.core.model",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "BeneficiaryId",
+          "package": "com.acme.banking.core.model",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "CardId",
+          "package": "com.acme.banking.core.model",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "CustomerId",
+          "package": "com.acme.banking.core.model",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "TransactionId",
+          "package": "com.acme.banking.core.model",
+          "wrappedType": "java.lang.Long"
+        },
+        {
+          "name": "TransferId",
+          "package": "com.acme.banking.core.model",
+          "wrappedType": "java.lang.Long"
+        }
+      ],
+      "drivingPorts": [
+        {
+          "name": "AccountUseCases",
+          "package": "com.acme.banking.core.port.in",
+          "kind": null,
+          "methods": 9,
+          "hasAdapter": true,
+          "adapter": "AccountApplicationService"
+        },
+        {
+          "name": "CardUseCases",
+          "package": "com.acme.banking.core.port.in",
+          "kind": null,
+          "methods": 4,
+          "hasAdapter": true,
+          "adapter": "CardApplicationService"
+        },
+        {
+          "name": "CustomerUseCases",
+          "package": "com.acme.banking.core.port.in",
+          "kind": null,
+          "methods": 4,
+          "hasAdapter": true,
+          "adapter": "CustomerApplicationService"
+        },
+        {
+          "name": "TransactionUseCases",
+          "package": "com.acme.banking.core.port.in",
+          "kind": null,
+          "methods": 3,
+          "hasAdapter": true,
+          "adapter": "TransactionApplicationService"
+        },
+        {
+          "name": "TransferUseCases",
+          "package": "com.acme.banking.core.port.in",
+          "kind": null,
+          "methods": 5,
+          "hasAdapter": true,
+          "adapter": "TransferApplicationService"
+        }
+      ],
+      "drivenPorts": [
+        {
+          "name": "AccountRepository",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "REPOSITORY",
+          "methods": 6,
+          "hasAdapter": true,
+          "adapter": "AccountRepositoryAdapter"
+        },
+        {
+          "name": "BeneficiaryRepository",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "REPOSITORY",
+          "methods": 2,
+          "hasAdapter": true,
+          "adapter": "BeneficiaryRepositoryAdapter"
+        },
+        {
+          "name": "CardRepository",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "REPOSITORY",
+          "methods": 4,
+          "hasAdapter": true,
+          "adapter": "CardRepositoryAdapter"
+        },
+        {
+          "name": "CustomerRepository",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "REPOSITORY",
+          "methods": 4,
+          "hasAdapter": true,
+          "adapter": "CustomerRepositoryAdapter"
+        },
+        {
+          "name": "FraudDetection",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "GATEWAY",
+          "methods": 2,
+          "hasAdapter": true,
+          "adapter": "FraudDetectionAdapter"
+        },
+        {
+          "name": "NotificationSender",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "EVENT_PUBLISHER",
+          "methods": 2,
+          "hasAdapter": true,
+          "adapter": "NotificationSenderAdapter"
+        },
+        {
+          "name": "TransactionRepository",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "REPOSITORY",
+          "methods": 4,
+          "hasAdapter": true,
+          "adapter": "TransactionRepositoryAdapter"
+        },
+        {
+          "name": "TransferRepository",
+          "package": "com.acme.banking.core.port.out",
+          "kind": "REPOSITORY",
+          "methods": 5,
+          "hasAdapter": true,
+          "adapter": "TransferRepositoryAdapter"
+        }
+      ],
+      "adapters": [
+        {
+          "name": "AccountApplicationService",
+          "package": "com.acme.banking.service.application",
+          "implementsPort": "AccountUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "CardApplicationService",
+          "package": "com.acme.banking.service.application",
+          "implementsPort": "CardUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "CustomerApplicationService",
+          "package": "com.acme.banking.service.application",
+          "implementsPort": "CustomerUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "TransactionApplicationService",
+          "package": "com.acme.banking.service.application",
+          "implementsPort": "TransactionUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "TransferApplicationService",
+          "package": "com.acme.banking.service.application",
+          "implementsPort": "TransferUseCases",
+          "type": "DRIVING"
+        },
+        {
+          "name": "AccountRepositoryAdapter",
+          "package": "com.acme.banking.infrastructure.persistence",
+          "implementsPort": "AccountRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "BeneficiaryRepositoryAdapter",
+          "package": "com.acme.banking.infrastructure.persistence",
+          "implementsPort": "BeneficiaryRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "CardRepositoryAdapter",
+          "package": "com.acme.banking.infrastructure.persistence",
+          "implementsPort": "CardRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "CustomerRepositoryAdapter",
+          "package": "com.acme.banking.infrastructure.persistence",
+          "implementsPort": "CustomerRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "FraudDetectionAdapter",
+          "package": "com.acme.banking.service.adapter.out",
+          "implementsPort": "FraudDetection",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "NotificationSenderAdapter",
+          "package": "com.acme.banking.service.adapter.out",
+          "implementsPort": "NotificationSender",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "TransactionRepositoryAdapter",
+          "package": "com.acme.banking.infrastructure.persistence",
+          "implementsPort": "TransactionRepository",
+          "type": "DRIVEN"
+        },
+        {
+          "name": "TransferRepositoryAdapter",
+          "package": "com.acme.banking.infrastructure.persistence",
+          "implementsPort": "TransferRepository",
+          "type": "DRIVEN"
+        }
+      ]
+    },
+    "relationships": [
+      {
+        "from": "Account",
+        "to": "AccountId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "AccountType",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "CustomerId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "Customer",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "Beneficiary",
+        "to": "BeneficiaryId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Beneficiary",
+        "to": "Iban",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Beneficiary",
+        "to": "CustomerId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Beneficiary",
+        "to": "Customer",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "CardId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "AccountId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "CardStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "Account",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "CustomerId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "Email",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "Address",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "TransactionId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "TransactionType",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "AccountId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "Account",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "TransferId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "AccountId",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "Money",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "TransferStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "Account",
+        "type": "references",
+        "isCycle": false
+      },
+      {
+        "from": "AccountRepository",
+        "to": "Account",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "BeneficiaryRepository",
+        "to": "Beneficiary",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "CardRepository",
+        "to": "Card",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerRepository",
+        "to": "Customer",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionRepository",
+        "to": "Transaction",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "TransferRepository",
+        "to": "Transfer",
+        "type": "persists-via",
+        "isCycle": false
+      },
+      {
+        "from": "AccountRepositoryAdapter",
+        "to": "AccountRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "BeneficiaryRepositoryAdapter",
+        "to": "BeneficiaryRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "CardRepositoryAdapter",
+        "to": "CardRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerRepositoryAdapter",
+        "to": "CustomerRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionRepositoryAdapter",
+        "to": "TransactionRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "TransferRepositoryAdapter",
+        "to": "TransferRepository",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "FraudDetectionAdapter",
+        "to": "FraudDetection",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "NotificationSenderAdapter",
+        "to": "NotificationSender",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "AccountApplicationService",
+        "to": "AccountUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "AccountApplicationService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "AccountApplicationService",
+        "to": "CustomerRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "AccountApplicationService",
+        "to": "TransactionRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CardApplicationService",
+        "to": "CardUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "CardApplicationService",
+        "to": "CardRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CardApplicationService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CardApplicationService",
+        "to": "NotificationSender",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerApplicationService",
+        "to": "CustomerUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerApplicationService",
+        "to": "CustomerRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionApplicationService",
+        "to": "TransactionUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionApplicationService",
+        "to": "TransactionRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionApplicationService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferApplicationService",
+        "to": "TransferUseCases",
+        "type": "implements",
+        "isCycle": false
+      },
+      {
+        "from": "TransferApplicationService",
+        "to": "TransferRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferApplicationService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferApplicationService",
+        "to": "TransactionRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferApplicationService",
+        "to": "FraudDetection",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferApplicationService",
+        "to": "NotificationSender",
+        "type": "uses",
+        "isCycle": false
+      }
+    ],
+    "typeViolations": [],
+    "moduleTopology": {
+      "summary": "5 modules detected",
+      "modules": [
+        {
+          "moduleId": "banking-api",
+          "role": "API",
+          "typeCount": 25,
+          "packages": ["com.acme.banking.api.controller", "com.acme.banking.api.dto", "com.acme.banking.api.exception"]
+        },
+        {
+          "moduleId": "banking-app",
+          "role": "ASSEMBLY",
+          "typeCount": 3,
+          "packages": ["com.acme.banking", "com.acme.banking.config"]
+        },
+        {
+          "moduleId": "banking-core",
+          "role": "DOMAIN",
+          "typeCount": 36,
+          "packages": ["com.acme.banking.core.exception", "com.acme.banking.core.model", "com.acme.banking.core.port.in", "com.acme.banking.core.port.out"]
+        },
+        {
+          "moduleId": "banking-persistence",
+          "role": "INFRASTRUCTURE",
+          "typeCount": 28,
+          "packages": ["com.acme.banking.infrastructure.persistence", "com.acme.banking.persistence.config"]
+        },
+        {
+          "moduleId": "banking-service",
+          "role": "APPLICATION",
+          "typeCount": 7,
+          "packages": ["com.acme.banking.service.adapter.out", "com.acme.banking.service.application"]
+        }
+      ]
+    }
+  },
+  "issues": {
+    "summary": {
+      "total": 0,
+      "blockers": 0,
+      "criticals": 0,
+      "majors": 0,
+      "minors": 0,
+      "infos": 0
+    },
+    "groups": []
+  },
+  "remediation": {
+    "summary": "No actions required. All checks passed.",
+    "actions": [],
+    "totalEffort": {
+      "days": 0.0,
+      "cost": null,
+      "hexaglueSavingsDays": 0.0,
+      "hexaglueSavingsCost": null,
+      "effectiveDays": 0.0,
+      "effectiveCost": null
+    }
+  },
+  "appendix": {
+    "scoreBreakdown": {
+      "dddCompliance": {"weight": 25, "score": 100},
+      "hexagonalCompliance": {"weight": 25, "score": 100},
+      "dependencyQuality": {"weight": 20, "score": 0},
+      "couplingMetrics": {"weight": 15, "score": 51},
+      "cohesionQuality": {"weight": 15, "score": 68}
+    },
+    "metrics": [
+      {
+        "id": "aggregate.avgSize",
+        "name": "aggregate.avgSize",
+        "value": 11.50,
+        "unit": "methods",
+        "threshold": {"max": 20.0},
+        "status": "OK"
+      },
+      {
+        "id": "aggregate.boundary",
+        "name": "aggregate.boundary",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": null,
+        "status": "OK"
+      },
+      {
+        "id": "aggregate.coupling.efferent",
+        "name": "aggregate.coupling.efferent",
+        "value": 0.51,
+        "unit": "ratio",
+        "threshold": {"max": 0.7},
+        "status": "OK"
+      },
+      {
+        "id": "aggregate.repository.coverage",
+        "name": "aggregate.repository.coverage",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 100.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.cohesion.relational",
+        "name": "architecture.cohesion.relational",
+        "value": 0.49,
+        "unit": "ratio",
+        "threshold": {"min": 1.5, "max": 4.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "architecture.cyclicity.relative",
+        "name": "architecture.cyclicity.relative",
+        "value": 0.00,
+        "unit": "%",
+        "threshold": {"max": 5.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.dependency.depth",
+        "name": "architecture.dependency.depth",
+        "value": 3.00,
+        "unit": "levels",
+        "threshold": {"max": 7.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.fan.out.max",
+        "name": "architecture.fan.out.max",
+        "value": 12.00,
+        "unit": "dependencies",
+        "threshold": {"max": 20.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.mmi",
+        "name": "architecture.mmi",
+        "value": 58.91,
+        "unit": "score",
+        "threshold": {"min": 50.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.modularity.q",
+        "name": "architecture.modularity.q",
+        "value": 0.22,
+        "unit": "Q",
+        "threshold": {"min": 0.3},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "architecture.propagation.cost",
+        "name": "architecture.propagation.cost",
+        "value": 5.31,
+        "unit": "%",
+        "threshold": {"max": 35.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.visibility.average",
+        "name": "architecture.visibility.average",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"max": 70.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "code.boilerplate.ratio",
+        "name": "code.boilerplate.ratio",
+        "value": 88.41,
+        "unit": "%",
+        "threshold": {"max": 50.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "code.complexity.average",
+        "name": "code.complexity.average",
+        "value": 1.08,
+        "unit": "complexity",
+        "threshold": {"max": 10.0},
+        "status": "OK"
+      },
+      {
+        "id": "ddd.aggregate.coupling",
+        "name": "ddd.aggregate.coupling",
+        "value": 0.50,
+        "unit": "deps/aggregate",
+        "threshold": {"max": 3.0},
+        "status": "OK"
+      },
+      {
+        "id": "ddd.event.coverage",
+        "name": "ddd.event.coverage",
+        "value": 0.00,
+        "unit": "%",
+        "threshold": {"min": 50.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "ddd.value.object.ratio",
+        "name": "ddd.value.object.ratio",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 40.0},
+        "status": "OK"
+      },
+      {
+        "id": "domain.coverage",
+        "name": "domain.coverage",
+        "value": 52.63,
+        "unit": "%",
+        "threshold": {"min": 30.0},
+        "status": "OK"
+      },
+      {
+        "id": "domain.purity",
+        "name": "domain.purity",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 100.0},
+        "status": "OK"
+      },
+      {
+        "id": "hexagonal.adapter.independence",
+        "name": "hexagonal.adapter.independence",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 80.0},
+        "status": "OK"
+      }
+    ],
+    "constraintsEvaluated": [],
+    "packageMetrics": [
+      {
+        "package": "com.acme.banking",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.api.controller",
+        "ca": 0,
+        "ce": 20,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.api.dto",
+        "ca": 5,
+        "ce": 8,
+        "instability": 0.62,
+        "abstractness": 0.00,
+        "distance": 0.38,
+        "zone": "STABLE_CORE"
+      },
+      {
+        "package": "com.acme.banking.api.exception",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.config",
+        "ca": 0,
+        "ce": 12,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.core.exception",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.core.model",
+        "ca": 48,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.core.port.in",
+        "ca": 11,
+        "ce": 13,
+        "instability": 0.54,
+        "abstractness": 1.00,
+        "distance": 0.54,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.core.port.out",
+        "ca": 14,
+        "ce": 13,
+        "instability": 0.48,
+        "abstractness": 1.00,
+        "distance": 0.48,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.infrastructure.persistence",
+        "ca": 0,
+        "ce": 26,
+        "instability": 1.00,
+        "abstractness": 0.46,
+        "distance": 0.46,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.persistence.config",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.service.adapter.out",
+        "ca": 0,
+        "ce": 5,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.service.application",
+        "ca": 0,
+        "ce": 25,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      }
+    ]
+  }
+}
