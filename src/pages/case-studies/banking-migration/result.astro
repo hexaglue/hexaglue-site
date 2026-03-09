@@ -1,0 +1,627 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
+import StepNavigation from '../_components/StepNavigation.astro';
+import AuditReport from '../_components/AuditReport.astro';
+import AuditVerdict from '../_components/AuditVerdict.astro';
+import KpiTable from '../_components/KpiTable.astro';
+import InventoryTable from '../_components/InventoryTable.astro';
+import MetricsTable from '../_components/MetricsTable.astro';
+import PackageStabilityTable from '../_components/PackageStabilityTable.astro';
+import Insight from '~/components/Insight.astro';
+import Link from '../../_components/Link.astro';
+import { loadBankingAudit, toAuditVerdict, toKpiRowsWithDelta, toInventoryRows, toMetricRows, toPackageStabilityRows, filterPackages, computeScoreDelta } from '~/data/case-studies/loader';
+
+const hexaglueConfig = `classification:
+  exclude:
+    - "com.acme.banking.core.exception.*"
+
+plugins:
+  io.hexaglue.plugin.jpa:
+    entitySuffix: "JpaEntity"
+    repositorySuffix: "JpaRepository"
+    adapterSuffix: "RepositoryAdapter"
+    generateRepositories: true
+    generateAdapters: true
+    generateEmbeddables: true
+    enableAuditing: false
+    targetModule: banking-persistence
+    outputDirectory: "src/main/java"
+
+  io.hexaglue.plugin.rest:
+    targetModule: banking-api
+    flattenValueObjects: true
+    generateExceptionHandler: true
+    generateConfiguration: false
+
+  io.hexaglue.plugin.livingdoc:
+    outputDir: "living-doc"
+
+  io.hexaglue.plugin.audit:
+    generateDocs: false
+
+modules:
+  banking-core:
+    role: DOMAIN
+  banking-persistence:
+    role: INFRASTRUCTURE
+  banking-service:
+    role: APPLICATION
+  banking-api:
+    role: API
+  banking-app:
+    role: ASSEMBLY`;
+
+const { legacy, hexagonal } = loadBankingAudit();
+const delta = computeScoreDelta(legacy, hexagonal);
+const verdict = toAuditVerdict(hexagonal, delta);
+const { rows: kpiRows, total: kpiTotal } = toKpiRowsWithDelta(hexagonal, legacy);
+const inventoryRows = toInventoryRows(hexagonal);
+const metricRows = toMetricRows(hexagonal);
+const packageStabilityRows = filterPackages(
+  toPackageStabilityRows(hexagonal),
+  ['core.model', 'core.port', 'infrastructure', 'service.application', 'api.controller'],
+);
+---
+
+<MainLayout
+  title="Résultat final - Infrastructure générée et application fonctionnelle | Migration Banking"
+  description="Résultat final de la migration bancaire multi-modules : configuration HexaGlue, ~32 fichiers générés, score 67/100, grade D, 0 violation. DDD et Hexagonal à 100%."
+>
+  <!-- Hero -->
+  <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <PurpleStardust height="h-64 md:h-80" />
+    <div class="max-w-5xl mx-auto">
+      <div class="mt-8 max-w-3xl">
+        <span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+          Résultat final
+        </span>
+        <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+          Infrastructure générée,<br />application fonctionnelle.
+        </h1>
+        <ul class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl space-y-1 list-disc list-inside">
+          <li>Plugins JPA et REST configurés avec routage multi-module.</li>
+          <li>~32 fichiers d'infrastructure générés automatiquement.</li>
+          <li>Score final 67/100, grade D, 0 violation.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Configuration HexaGlue -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Configuration"
+        title="Configuration HexaGlue"
+        gradient="bg-blue-purple-gradient"
+      >
+        Le fichier <code>hexaglue.yaml</code> à la racine du projet configure les quatre plugins actifs et déclare le rôle architectural de chaque module Maven.<br>
+        Deux clés structurent la configuration : les <strong>exclusions de classification</strong> pour les packages hors périmètre DDD, et les <strong>rôles de modules</strong> qui permettent le routage du code généré.
+      </SectionCopy>
+
+      <div class="mt-10">
+        <Code code={hexaglueConfig} lang="yaml" title="hexaglue.yaml" />
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong><code>targetModule: banking-persistence</code></strong> : tout le code JPA généré (entités, repositories, mappers, adapters) est routé vers le module de persistance dédié, sans polluer le domaine</li>
+          <li><strong><code>targetModule: banking-api</code></strong> : les contrôleurs REST, DTOs et l'exception handler sont routés vers le module API</li>
+          <li><strong><code>generateConfiguration: false</code></strong> : nécessaire ici car les <code>ApplicationService</code> sont définis dans <code>banking-service</code>. HexaGlue ne peut pas générer la configuration Spring dans un module qui ne voit pas ces services ; la configuration reste manuelle dans <code>banking-app</code></li>
+          <li><strong>Rôles de modules</strong> : DOMAIN, INFRASTRUCTURE, APPLICATION, API, ASSEMBLY permettent à HexaGlue de valider les règles d'isolation entre couches et de router la génération vers le bon module</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Code généré -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Génération"
+        title="Code généré automatiquement"
+        gradient="bg-blue-purple-gradient"
+      >
+        Les plugins JPA et REST analysent le modèle domaine pur et génèrent toute la couche infrastructure à la compilation.<br>
+        Aucun de ces fichiers n'est écrit à la main : le code JPA est produit dans <code>banking-persistence</code>, le code REST dans <code>banking-api</code>.
+      </SectionCopy>
+
+      <div class="mt-10 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-8">
+        <div class="grid grid-cols-1 gap-6">
+
+          <!-- JPA -->
+          <div>
+            <h3 class="text-sm font-semibold text-astro-gray-400 uppercase tracking-wider mb-4">
+              Plugin JPA &rarr; <code class="text-purple-400 normal-case">banking-persistence</code>
+            </h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-base font-semibold text-white">Entités JPA</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">AccountJpaEntity, BeneficiaryJpaEntity, CardJpaEntity, CustomerJpaEntity, TransactionJpaEntity, TransferJpaEntity</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
+                <div>
+                  <span class="text-base font-semibold text-white">Embeddables</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">AddressEmbeddable, MoneyEmbeddable</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">2 fichiers</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
+                <div>
+                  <span class="text-base font-semibold text-white">Spring Data Repositories</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">AccountJpaRepository, BeneficiaryJpaRepository, CardJpaRepository, CustomerJpaRepository, TransactionJpaRepository, TransferJpaRepository</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
+                <div>
+                  <span class="text-base font-semibold text-white">MapStruct Mappers</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">AccountMapper, BeneficiaryMapper, CardMapper, CustomerMapper, TransactionMapper, TransferMapper</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
+                <div>
+                  <span class="text-base font-semibold text-white">Repository Adapters</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">AccountRepositoryAdapter, BeneficiaryRepositoryAdapter, CardRepositoryAdapter, CustomerRepositoryAdapter, TransactionRepositoryAdapter, TransferRepositoryAdapter</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">6 fichiers</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- REST -->
+          <div class="border-t border-astro-dark-100/15 pt-6">
+            <h3 class="text-sm font-semibold text-astro-gray-400 uppercase tracking-wider mb-4">
+              Plugin REST &rarr; <code class="text-purple-400 normal-case">banking-api</code>
+            </h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-base font-semibold text-white">REST Controllers</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">AccountController, BeneficiaryController, CardController, CustomerController, TransferController</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">5 fichiers</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
+                <div>
+                  <span class="text-base font-semibold text-white">DTOs (request / response)</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">Objets de transfert aplatis depuis les value objects domaine (<code>flattenValueObjects: true</code>)</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">~18 fichiers</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-astro-dark-100/10 pt-4">
+                <div>
+                  <span class="text-base font-semibold text-white">Exception Handler</span>
+                  <p class="text-xs text-astro-gray-400 mt-0.5">BankingExceptionHandler — gestionnaire global des erreurs domaine</p>
+                </div>
+                <span class="shrink-0 ml-4 px-3 py-1 bg-astro-brand-purple/20 text-astro-brand-purple rounded-full text-sm font-mono">1 fichier</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="border-t border-astro-dark-100/15 pt-6 flex items-center justify-between">
+            <span class="text-xl font-bold text-astro-brand-teal">Total généré</span>
+            <span class="px-4 py-2 bg-astro-brand-teal/20 text-astro-brand-teal rounded-full text-lg font-mono font-bold">~32 fichiers</span>
+          </div>
+        </div>
+      </div>
+
+      <Insight>
+        <ul>
+          <li><strong>~32 fichiers générés</strong> remplacent le code infrastructure manuel : 26 fichiers JPA (entités, embeddables, repositories, mappers, adapters) et environ 6 fichiers REST de base (controllers, exception handler), auxquels s'ajoutent les ~18 DTOs</li>
+          <li><strong>38 types domaine manuels</strong> restent : les agrégats, value objects, identifiants, ports et services applicatifs constituent l'architecture métier que HexaGlue analyse et ne génère pas</li>
+          <li><strong>Synchronisation garantie</strong> : si le domaine évolue, toute la couche infrastructure est régénérée automatiquement à la compilation suivante, sans intervention manuelle</li>
+        </ul>
+      </Insight>
+    </div>
+  </section>
+
+  <!-- Rapport d'audit final -->
+  <AuditReport description="Rapport d'audit final après génération automatique JPA et REST, purification des services et câblage des driven ports.">
+
+    <!-- Verdict -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <SectionCopy
+          label="Verdict"
+          title="Verdict de l'audit"
+          gradient="bg-orange-yellow-gradient"
+        >
+          Le score final est de 67/100, grade D, statut PASSED. L'architecture hexagonale et le DDD atteignent tous deux 100%. Le score est plafonné par les dimensions Dependencies et Coupling, qui mesurent les cycles de dépendances inter-packages.
+        </SectionCopy>
+
+        <div class="mt-10">
+          <AuditVerdict {...verdict} />
+        </div>
+
+        <Insight>
+          <p>Le statut PASSED reflète l'absence totale de violations architecturales. Le grade D traduit la qualité globale mesurée sur cinq dimensions.</p>
+          <ul>
+            <li><strong>Statut PASSED</strong> : aucune violation Blocker, Critical ou Major. Toutes les contraintes DDD et hexagonales sont respectées</li>
+            <li><strong>Grade D (score &ge; 60)</strong> : DDD Compliance et Hexagonal Architecture sont au maximum (100%), mais Dependencies (0%) et Coupling (51%) plafonnent le score total. Ces dimensions mesurent les cycles de dépendances et le couplage entre packages, indépendamment de la conformité hexagonale</li>
+          </ul>
+        </Insight>
+      </div>
+    </section>
+
+    <!-- Décomposition du score -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <SectionCopy
+          label="Score"
+          title="Décomposition du score"
+          gradient="bg-orange-yellow-gradient"
+        >
+          Le score final de 67/100 reflète l'état de chaque dimension architecturale.<br>
+          DDD Compliance et Hexagonal Architecture sont au maximum. Dependencies et Coupling, qui mesurent les cycles inter-packages, concentrent les points perdus.
+        </SectionCopy>
+
+        <div class="mt-10">
+          <KpiTable rows={kpiRows} total={kpiTotal} />
+        </div>
+
+        <Insight>
+          <ul>
+            <li><strong>DDD Compliance à 100%</strong> : tous les patterns tactiques DDD sont en place — agrégats avec identifiants typés, value objects, ports de domaine. Le modèle domaine est complet</li>
+            <li><strong>Hexagonal Architecture à 100%</strong> : les services applicatifs sont des POJOs purs, chaque port dispose d'un adaptateur généré, les couches sont isolées sans aucune dépendance croisée</li>
+            <li><strong>Dependencies à 0%</strong> : cette dimension pénalise les cycles de dépendances entre packages. Des cycles inter-packages subsistent dans la base de code, indépendamment de la qualité de l'architecture hexagonale</li>
+            <li><strong>Coupling à 51%</strong> : le couplage inter-packages reste élevé car plusieurs bounded contexts partagent des types. Des identifiants typés réduiraient les références croisées entre agrégats</li>
+            <li><strong>Cohesion à 68%</strong> : la concentration fonctionnelle des packages est satisfaisante mais pourrait progresser en regroupant les types par bounded context</li>
+          </ul>
+        </Insight>
+      </div>
+    </section>
+
+    <!-- Inventaire architectural -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <SectionCopy
+          label="Inventaire"
+          title="Inventaire architectural"
+          gradient="bg-orange-yellow-gradient"
+        >
+          L'inventaire recense les composants du modèle domaine classifiés par HexaGlue à l'issue de la migration complète.<br>
+          Il montre la répartition finale entre agrégats, ports et services applicatifs.
+        </SectionCopy>
+
+        <div class="mt-10">
+          <InventoryTable rows={inventoryRows} />
+        </div>
+
+        <Insight>
+          <ul>
+            <li><strong>6 Aggregate Roots</strong> : Account, Beneficiary, Card, Customer, Transaction, Transfer — chaque entité métier principale est un agrégat avec identifiant typé et frontières respectées</li>
+            <li><strong>8 Value Objects</strong> : les 4 enums (AccountType, CardType, TransactionType, TransferStatus) plus Money, Iban, Email et Address — le domaine exprime ses concepts sans primitives</li>
+            <li><strong>5 Driving Ports</strong> : les 5 use cases exposés par l'hexagone. FraudDetection et NotificationSender sont correctement classifiés comme driven ports (ports sortants)</li>
+            <li><strong>8 Driven Ports</strong> : les 6 repositories de persistence plus FraudDetection et NotificationSender — tous couverts par des adaptateurs générés ou câblés manuellement</li>
+          </ul>
+        </Insight>
+      </div>
+    </section>
+
+    <!-- Violations -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <SectionCopy
+          label="Violations"
+          title="Violations détectées"
+          gradient="bg-orange-yellow-gradient"
+        >
+          Aucune violation architecturale n'est détectée dans l'état final.<br>
+          La génération automatique et la purification des services ont éliminé les 16 violations de l'étape précédente.
+        </SectionCopy>
+
+        <div class="mt-10">
+          <div class="bg-astro-dark-800/40 border border-green-500/20 rounded-2xl p-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-4">
+              <Icon name="ri:checkbox-circle-line" class="w-8 h-8 text-green-400" />
+              <span class="text-2xl font-bold text-green-400">0 violation</span>
+            </div>
+            <p class="text-astro-gray-200">Aucune violation détectée. Toutes les contraintes DDD et hexagonales sont respectées.</p>
+          </div>
+        </div>
+
+        <Insight variant="green">
+          <p>Le zéro violation résulte de la combinaison de trois actions menées lors des étapes précédentes :</p>
+          <ul>
+            <li><strong>Génération JPA</strong> : les adaptateurs générés couvrent correctement tous les driven ports, éliminant les violations <code>port-coverage</code> et <code>layer-isolation</code></li>
+            <li><strong>Génération REST</strong> : les contrôleurs et DTOs générés remplacent le code REST manuel, éliminant les violations <code>adapter-coupling</code></li>
+            <li><strong>Purification des services</strong> : la suppression des annotations <code>@Service</code> et le reclassement de FraudDetection et NotificationSender en driven ports éliminent les violations <code>application-purity</code></li>
+          </ul>
+        </Insight>
+      </div>
+    </section>
+
+    <!-- Métriques de qualité -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <SectionCopy
+          label="Qualité"
+          title="Métriques de qualité"
+          gradient="bg-orange-yellow-gradient"
+        >
+          Les métriques de qualité mesurent l'adhérence du code aux principes DDD et hexagonaux.<br>
+          La pureté du domaine atteint 100%, mais le boilerplate technique reste élevé en raison du code généré.
+        </SectionCopy>
+
+        <div class="mt-10">
+          <MetricsTable rows={metricRows} />
+        </div>
+
+        <Insight>
+          <ul>
+            <li><strong><code>domain.purity</code> à 100%</strong> : le domaine ne contient aucune dépendance technique. Les agrégats, value objects et ports sont des POJOs purs Java</li>
+            <li><strong><code>aggregate.boundary</code> à 100%</strong> : tous les agrégats respectent leurs frontières. Aucune entité interne n'est exposée directement depuis l'extérieur</li>
+            <li><strong><code>code.boilerplate</code> à 88.41%</strong> (CRITICAL) : ce ratio inclut le code infrastructure généré par HexaGlue. Les entités JPA, mappers et DTOs sont techniques par nature ; le seuil de 50% est conçu pour le code domaine et ne s'applique pas directement à un projet multi-module avec génération active</li>
+            <li><strong><code>adapter.independence</code> à 100%</strong> : les adaptateurs générés ne dépendent pas les uns des autres et restent isolés dans leur module</li>
+            <li><strong><code>code.complexity</code> à 1.08</strong> : la complexité cyclomatique moyenne est très faible, confirmant la lisibilité du code domaine pur</li>
+          </ul>
+        </Insight>
+      </div>
+    </section>
+
+    <!-- Stabilité des packages -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <SectionCopy
+          label="Packages"
+          title="Stabilité des packages"
+          gradient="bg-orange-yellow-gradient"
+        >
+          L'analyse de stabilité positionne chaque package sur le graphe Abstractness / Instability.<br>
+          Elle révèle les packages en Zone of Pain (stables mais concrets) et ceux bien positionnés sur la Main Sequence.
+        </SectionCopy>
+
+        <div class="mt-10">
+          <PackageStabilityTable rows={packageStabilityRows} />
+        </div>
+
+        <Insight>
+          <ul>
+            <li><strong><code>core.model</code> en Zone of Pain</strong> (D=1.00) : ce package est très stable (Ca=49, Ce=0 — 49 packages en dépendent) mais totalement concret (A=0). Il concentre toutes les classes domaine. Cette position est attendue pour un modèle métier dense ; la résoudre impliquerait d'introduire des interfaces ou de découper par bounded context</li>
+            <li><strong><code>core.port.in</code> et <code>core.port.out</code> sur la Main Sequence</strong> : les ports sont abstraits (A=1.00) et correctement positionnés. Ils constituent l'hexagone au sens strict</li>
+            <li><strong><code>infrastructure.persistence</code>, <code>service.application</code>, <code>api.controller</code></strong> : ces packages sont instables (I=1.00) — aucun package ne dépend d'eux. C'est la position correcte pour les couches externes : elles dépendent du domaine et ne sont pas dépendées</li>
+          </ul>
+        </Insight>
+      </div>
+    </section>
+
+    <!-- Remédiation -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <SectionCopy
+          label="Remédiation"
+          title="Plan de remédiation"
+          gradient="bg-orange-yellow-gradient"
+        >
+          Aucune action de remédiation n'est requise à l'issue de la migration.<br>
+          Toutes les violations architecturales ont été résolues. Le plan de remédiation est vide.
+        </SectionCopy>
+
+        <div class="mt-10">
+          <div class="bg-astro-dark-800/40 border border-green-500/20 rounded-2xl p-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-4">
+              <Icon name="ri:checkbox-circle-line" class="w-8 h-8 text-green-400" />
+              <span class="text-2xl font-bold text-green-400">0 action requise</span>
+            </div>
+            <p class="text-astro-gray-200">Aucune violation à corriger. L'architecture hexagonale est conforme aux contraintes DDD et hexagonales définies.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </AuditReport>
+
+  <!-- Avant vs Après -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Bilan"
+        title="Avant vs Après"
+        gradient="bg-blue-purple-gradient"
+      >
+        Comparaison entre l'application legacy (étape 0) et l'architecture hexagonale finale.<br>
+        Les chiffres montrent ce que la migration apporte concrètement : suppression de la dette technique, ajout des patterns DDD, et génération automatique de l'infrastructure.
+      </SectionCopy>
+
+      <div class="mt-10 overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-astro-dark-100/15 text-astro-gray-400 text-left">
+              <th class="py-3 pr-4 font-medium">Critère</th>
+              <th class="py-3 px-3 font-medium text-center text-red-400">Legacy</th>
+              <th class="py-3 pl-3 font-medium text-center text-astro-green">Hexagonal</th>
+            </tr>
+          </thead>
+          <tbody class="text-astro-gray-200">
+            <tr class="border-b border-astro-dark-100/10">
+              <td class="py-2.5 pr-4 text-white">Classes manuelles</td>
+              <td class="py-2.5 px-3 text-center">~45</td>
+              <td class="py-2.5 pl-3 text-center">38</td>
+            </tr>
+            <tr class="border-b border-astro-dark-100/10">
+              <td class="py-2.5 pr-4 text-white">Infrastructure générée</td>
+              <td class="py-2.5 px-3 text-center text-red-400">0</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green">~32</td>
+            </tr>
+            <tr class="border-b border-astro-dark-100/10">
+              <td class="py-2.5 pr-4 text-white">JPA dans le domaine</td>
+              <td class="py-2.5 px-3 text-center text-red-400">Oui</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green">Non</td>
+            </tr>
+            <tr class="border-b border-astro-dark-100/10">
+              <td class="py-2.5 pr-4 text-white">Value Objects</td>
+              <td class="py-2.5 px-3 text-center text-red-400">0</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green">8</td>
+            </tr>
+            <tr class="border-b border-astro-dark-100/10">
+              <td class="py-2.5 pr-4 text-white">Identifiants typés</td>
+              <td class="py-2.5 px-3 text-center text-red-400">0</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green">6</td>
+            </tr>
+            <tr class="border-b border-astro-dark-100/10">
+              <td class="py-2.5 pr-4 text-white">Driving Ports</td>
+              <td class="py-2.5 px-3 text-center text-red-400">0</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green">5</td>
+            </tr>
+            <tr class="border-b border-astro-dark-100/10">
+              <td class="py-2.5 pr-4 text-white">Driven Ports</td>
+              <td class="py-2.5 px-3 text-center text-red-400">0</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green">8</td>
+            </tr>
+            <tr class="border-b border-astro-dark-100/15">
+              <td class="py-2.5 pr-4 text-white font-bold">Score architectural</td>
+              <td class="py-2.5 px-3 text-center text-astro-gray-400">N/A</td>
+              <td class="py-2.5 pl-3 text-center text-astro-green font-bold">67/100</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Enseignements -->
+  <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <PurpleStardust height="h-64" />
+    <div class="max-w-5xl mx-auto">
+      <SectionCopy
+        label="Retours"
+        title="Enseignements"
+        gradient="bg-blue-purple-gradient"
+      >
+        Les leçons clés tirées de cette migration, issues directement des rapports HexaGlue et des observations à chaque étape.
+      </SectionCopy>
+
+      <div class="mt-10 grid gap-4 md:grid-cols-2">
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <div class="p-2 w-fit rounded-lg bg-purple-400/10 shrink-0">
+              <Icon name="ri:sparkling-2-line" class="size-5 text-purple-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-white mb-1.5">Le domaine doit être pur</h3>
+              <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+                La suppression des annotations JPA du domaine est le point d'inflexion. Tant que le domaine contient du code technique, HexaGlue ne peut pas générer l'infrastructure correctement.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <div class="p-2 w-fit rounded-lg bg-purple-400/10 shrink-0">
+              <Icon name="ri:node-tree" class="size-5 text-purple-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-white mb-1.5">Multi-module et routage par module</h3>
+              <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+                <code>targetModule</code> route le code généré vers le bon module. Le mode reactor analyse tous les modules en une seule passe. Les ports définis dans <code>banking-core</code> sont vus par tous les plugins.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <div class="p-2 w-fit rounded-lg bg-purple-400/10 shrink-0">
+              <Icon name="ri:building-line" class="size-5 text-purple-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-white mb-1.5">Convention reconstitute()</h3>
+              <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+                La factory method <code>reconstitute()</code> est indispensable pour que les mappers générés puissent restaurer les agrégats depuis la persistance, sans compromettre l'encapsulation du domaine.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <div class="p-2 w-fit rounded-lg bg-purple-400/10 shrink-0">
+              <Icon name="ri:git-branch-line" class="size-5 text-purple-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-white mb-1.5">Migration incrémentale</h3>
+              <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+                Chaque étape compile. Les rapports d'audit guident l'étape suivante. Pas de Big Bang : le score progresse de 14 à 67/100 de manière incrémentale.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <div class="p-2 w-fit rounded-lg bg-purple-400/10 shrink-0">
+              <Icon name="ri:bar-chart-box-line" class="size-5 text-purple-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-white mb-1.5">Le score est un indicateur fidèle</h3>
+              <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+                67/100 avec 0 violation montre une architecture hexagonale bien structurée. Dependencies (0%) et Coupling (51%) signalent des cycles inter-packages, un axe d'amélioration distinct de la conformité hexagonale.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl p-6">
+          <div class="flex items-start gap-3">
+            <div class="p-2 w-fit rounded-lg bg-purple-400/10 shrink-0">
+              <Icon name="ri:magic-line" class="size-5 text-purple-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-white mb-1.5">Infrastructure sans code manuel</h3>
+              <p class="text-sm text-astro-gray-200 font-light leading-relaxed">
+                ~32 fichiers générés remplacent l'infrastructure manuelle. Le coût de l'architecture hexagonale est absorbé par la génération automatique : entités JPA, repositories, mappers, adapters, controllers et DTOs.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 md:py-24 mb-12 relative">
+    <div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+      <h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+        <span class="text-astro-gray-300">Une architecture hexagonale opérationnelle.</span><br />
+        <span class="bg-clip-text text-transparent bg-blue-purple-gradient">Un socle solide pour aller plus loin.</span>
+      </h2>
+
+      <p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+        L'application bancaire multi-modules est passée de 14/100 à 67/100, avec 0 violation et DDD + Hexagonal à 100%.
+      </p>
+
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Link href="/docs/getting-started/" class="primary" gradient="linear-gradient(83.21deg, #3245FF 0%, #B845ED 100%)">
+          Essayer HexaGlue sur votre projet
+        </Link>
+        <Link href="/contact/" class="secondary">
+          <Icon name="ph:rocket-launch-duotone" class="size-5" aria-hidden="true" />
+          <span>Parlons de votre projet</span>
+        </Link>
+      </div>
+    </div>
+    <div
+      class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
+    ></div>
+  </section>
+
+  <!-- Navigation -->
+  <section class="py-16 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+    <div class="max-w-5xl mx-auto">
+      <StepNavigation
+        prev={{ href: '/case-studies/banking-migration/migration/', label: 'Migration hexagonale' }}
+      />
+    </div>
+  </section>
+</MainLayout>

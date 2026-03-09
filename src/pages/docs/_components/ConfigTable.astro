@@ -1,0 +1,43 @@
+---
+/**
+ * Data-driven YAML options table for plugin documentation pages.
+ * Renders a table with columns: Option | Type | Défaut | Description.
+ *
+ * The `.table-panel` / `.table-panel-content` wrapper must be provided
+ * by the parent page (since it shares the same scoped styles).
+ */
+
+interface Param {
+	name: string;
+	type: string;
+	defaultValue: string;
+	description: string;
+}
+
+interface Props {
+	params: Param[];
+}
+
+const { params } = Astro.props;
+---
+
+<table class="w-full text-sm text-left">
+	<thead>
+		<tr class="border-b border-astro-dark-100/20">
+			<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+			<th class="py-3 pr-4 text-astro-gray-300 font-medium">Type</th>
+			<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+			<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+		</tr>
+	</thead>
+	<tbody class="text-astro-gray-200">
+		{params.map((p, i) => (
+			<tr class={i < params.length - 1 ? "border-b border-astro-dark-100/10" : ""}>
+				<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">{p.name}</code></td>
+				<td class="py-3 pr-4 whitespace-nowrap">{p.type}</td>
+				<td class="py-3 pr-4"><Fragment set:html={p.defaultValue} /></td>
+				<td class="py-3 hidden md:table-cell"><Fragment set:html={p.description} /></td>
+			</tr>
+		))}
+	</tbody>
+</table>

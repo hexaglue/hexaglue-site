@@ -12,7 +12,7 @@ const versions: PluginVersion[] = pluginVersions[pluginSlug] ?? [];
 const current = versions.find((v) => v.version === currentVersion);
 ---
 
-{versions.length > 1 && (
+{versions.length > 0 && (
 	<version-selector>
 		<details class="group relative">
 			<summary

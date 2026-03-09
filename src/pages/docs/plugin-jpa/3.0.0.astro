@@ -6,61 +6,21 @@ import SectionCopy from '../../_components/SectionCopy.astro';
 import Link from '../../_components/Link.astro';
 import Insight from '~/components/Insight.astro';
 import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
-import CompanionBanner from '~/components/CompanionBanner.astro';
-import ConfigTable from '../_components/ConfigTable.astro';
-import MavenParamsTable from '../_components/MavenParamsTable.astro';
-import versions from '~/data/versions';
-import jpaConfig from '~/data/generated/plugin-jpa.json';
-import mavenGoals from '~/data/generated/maven-goals.json';
-import { yamlDescriptions, mavenDescriptions } from '~/data/generated/descriptions-jpa';
-
-// Build YAML options from extracted JSON + localized descriptions
-const allParams = [...jpaConfig.parameters, ...jpaConfig.extraParameters];
-const yamlParams = allParams.map(p => ({
-	name: p.name,
-	type: p.type === 'String' ? 'string' : p.type === 'IdentityStrategy' ? 'string' : p.type,
-	defaultValue: p.name === 'tablePrefix' && p.defaultValue === '""'
-		? '<code>""</code> (vide)'
-		: p.name === 'infrastructurePackage'
-			? '<code>"&#123;basePackage&#125;.infrastructure.persistence"</code>'
-			: p.defaultValue === 'null'
-				? '<code>null</code>'
-				: `<code>${p.defaultValue.replace(/^"|"$/g, '')}</code>`,
-	description: yamlDescriptions[p.name] || p.description,
-}));
-// Add outputDirectory (not in config record, but documented)
-yamlParams.push({
-	name: 'outputDirectory',
-	type: 'string',
-	defaultValue: '(défaut global)',
-	description: yamlDescriptions.outputDirectory,
-});
-
-// Build Maven params from extracted goals JSON
-const generateGoal = mavenGoals.goals.find((g: any) => g.name === 'generate');
-const mvnParams = generateGoal ? generateGoal.parameters.map((p: any) => ({
-	name: p.name,
-	defaultValue: p.required
-		? '(requis)'
-		: p.defaultValue
-			? `<code>${p.defaultValue.replace(/\$\{[^}]+\}/g, '').replace('${project.build.directory}/', '')}</code>`
-			: '',
-	description: mavenDescriptions[p.name] || p.description,
-})) : [];
+import VersionBanner from '~/components/VersionBanner.astro';
 
 const pomPlugin = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>6.0.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-jpa</artifactId>
-            <version>${versions.plugins}</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
@@ -126,22 +86,20 @@ const yamlComplete = `plugins:
     generateAdapters: true
     generateEmbeddables: true
 
-    # Stratégie @GeneratedValue sur le champ @Id généré
-    idStrategy: "ASSIGNED"
-
     # Multi-module (optionnel)
     # targetModule: "banking-persistence"`;
 ---
 
 <MainLayout
-	title="Plugin JPA v3.1.0 : Référence"
-	description="Référence complète du plugin JPA HexaGlue v3.1.0 : suffixes de nommage, artefacts générés, options d'auditing JPA, stratégie d'identifiant et configuration multi-module."
+	title="Plugin JPA v3.0.0 : Référence"
+	description="Référence complète du plugin JPA HexaGlue v3.0.0 : suffixes de nommage, artefacts générés, options d'auditing JPA et configuration multi-module."
+	canonicalURL={new URL('/docs/plugin-jpa/', Astro.site)}
 	pluginSlug="plugin-jpa"
-	currentVersion="3.1.0"
+	currentVersion="3.0.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "3.1.0",
+		version: "3.0.0",
 		about: [
 			{ "@type": "Thing", name: "JPA" },
 			{ "@type": "Thing", name: "Génération de code" },
@@ -149,6 +107,8 @@ const yamlComplete = `plugins:
 		],
 	}}
 >
+	<VersionBanner variant="past" version="3.0.0" latestUrl="/docs/plugin-jpa/" />
+
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<AmberStardust height="h-64 md:h-80" />
@@ -168,10 +128,6 @@ const yamlComplete = `plugins:
 			</p>
 		</div>
 	</section>
-
-	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<CompanionBanner variant="docs" href="/features/jpa-generation/" />
-	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -220,7 +176,47 @@ const yamlComplete = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-				<MavenParamsTable params={mvnParams} />
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
+						<td class="py-3 hidden md:table-cell">Package racine à analyser. Les artefacts JPA sont générés à partir des types de domaine de ce package.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4"><code>target/hexaglue/generated-sources</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire où les entités JPA, repositories et mappers sont écrits</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Désactive complètement l'exécution de HexaGlue (configurable via <code>-Dhexaglue.skip=true</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skipValidation</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Ignore la validation des classifications avant la génération JPA</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types du domaine ne peuvent pas être classifiés</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tolerantResolution</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Active la résolution tolérante des types non résolus. Utile pour les projets utilisant des annotation processors (MapStruct, Immutables) dont le code généré n'est pas encore sur le classpath (configurable via <code>-Dhexaglue.tolerantResolution=true</code>)</td>
+					</tr>
+				</tbody>
+			</table>
 			</div>
 		</div>
 	</section>
@@ -239,23 +235,112 @@ const yamlComplete = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-				<ConfigTable params={yamlParams} />
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Type</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">entitySuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Entity"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe ajouté aux noms de classes pour les entités JPA générées</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">embeddableSuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Embeddable"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les classes <code>@Embeddable</code> (value objects persistés)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">repositorySuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"JpaRepository"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les interfaces Spring Data Repository</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">adapterSuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Adapter"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les implémentations d'adapter de port</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">mapperSuffix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"Mapper"</code></td>
+						<td class="py-3 hidden md:table-cell">Suffixe pour les interfaces MapStruct</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tablePrefix</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>""</code> (vide)</td>
+						<td class="py-3 hidden md:table-cell">Préfixe ajouté à tous les noms de tables en base</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">enableAuditing</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les champs <code>@CreatedDate</code> et <code>@LastModifiedDate</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">enableOptimisticLocking</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Génère un champ <code>@Version</code> pour le verrouillage optimiste</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateRepositories</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les interfaces Spring Data JPA Repository</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateMappers</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les mappers MapStruct bidirectionnels</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateAdapters</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les implémentations d'adapter de port</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateEmbeddables</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Génère les classes <code>@Embeddable</code> pour les value objects</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">infrastructurePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4"><code>"&#123;basePackage&#125;.infrastructure.persistence"</code></td>
+						<td class="py-3 hidden md:table-cell">Package cible pour les artefacts JPA générés</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4">(défaut global)</td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie spécifique au plugin. Utilisez <code>src/main/java</code> pour écrire les artefacts JPA directement dans votre arbre source au lieu de <code>target/</code>. Les fichiers existants sont écrasés à chaque build (voir note ci-dessous).</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">targetModule</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>null</code></td>
+						<td class="py-3 hidden md:table-cell">Multi-module : identifiant du module cible pour le routage des artefacts générés</td>
+					</tr>
+				</tbody>
+			</table>
 			</div>
 		</div>
 
-		<div class="mt-6 max-w-4xl mx-auto space-y-6">
-			<Insight variant="green">
-				<p>Le paramètre <code>idStrategy</code> contrôle l'annotation <code>@GeneratedValue</code> ajoutée au champ <code>@Id</code> des entités JPA générées. Le domaine reste pur : aucune annotation JPA n'y est nécessaire.</p>
-				<ul>
-					<li><code>ASSIGNED</code> (défaut) : pas de <code>@GeneratedValue</code>, l'application fournit l'identifiant (adapté aux identifiants métier ou UUID générés dans le domaine)</li>
-					<li><code>IDENTITY</code> : auto-incrément géré par la base (MySQL, SQL Server, PostgreSQL)</li>
-					<li><code>SEQUENCE</code> : séquence de base de données (PostgreSQL, Oracle)</li>
-					<li><code>UUID</code> : génération d'UUID déléguée au provider JPA</li>
-					<li><code>AUTO</code> : le provider JPA choisit la stratégie selon la base</li>
-					<li><code>TABLE</code> : table dédiée simulant une séquence (portable, moins performant)</li>
-				</ul>
-			</Insight>
-
+		<div class="mt-6 max-w-4xl mx-auto">
 			<Insight variant="amber">
 				<p>Les fichiers générés sont <strong>systématiquement écrasés</strong> à chaque build. Si vous redirigez la sortie vers <code>src/main/java</code> via <code>outputDirectory</code>, toute modification manuelle des fichiers générés sera perdue au prochain <code>mvn compile</code>.<br>
 				Un avertissement est émis dans les logs Maven lorsqu'un fichier existant est écrasé.</p>

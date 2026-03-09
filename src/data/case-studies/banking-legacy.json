@@ -1,0 +1,1676 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "projectName": "Acme Banking - Multi-Module Case Study",
+    "projectVersion": "1.0.0",
+    "timestamp": "2026-03-09T10:32:32.758809Z",
+    "analysisDuration": "13ms",
+    "hexaglueVersion": "3.1.0",
+    "pluginVersion": "3.1.0"
+  },
+  "verdict": {
+    "score": 14,
+    "grade": "F",
+    "status": "FAILED",
+    "statusReason": "13 critical issues found",
+    "summary": "Your application has critical issues that should be addressed. Review the issues section for details.",
+    "kpis": [
+      {
+        "id": "ddd-compliance",
+        "name": "DDD Compliance",
+        "value": 9.0,
+        "unit": "%",
+        "threshold": 90.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "hexagonal-compliance",
+        "name": "Hexagonal Architecture",
+        "value": 0.0,
+        "unit": "%",
+        "threshold": 90.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "dependency-quality",
+        "name": "Dependencies",
+        "value": 0.0,
+        "unit": "%",
+        "threshold": 80.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "coupling-metrics",
+        "name": "Coupling",
+        "value": 40.0,
+        "unit": "%",
+        "threshold": 70.0,
+        "status": "CRITICAL"
+      },
+      {
+        "id": "cohesion-quality",
+        "name": "Cohesion",
+        "value": 40.0,
+        "unit": "%",
+        "threshold": 80.0,
+        "status": "CRITICAL"
+      }
+    ],
+    "immediateAction": {
+      "required": false,
+      "message": null,
+      "reference": null
+    }
+  },
+  "architecture": {
+    "summary": "Analyzed 25 types across 1 bounded context",
+    "inventory": {
+      "boundedContexts": [
+        {
+          "name": "banking",
+          "aggregates": 0,
+          "entities": 6,
+          "valueObjects": 12,
+          "domainEvents": 1
+        }
+      ],
+      "totals": {
+        "aggregates": 0,
+        "entities": 6,
+        "valueObjects": 12,
+        "identifiers": 0,
+        "domainEvents": 1,
+        "domainServices": 0,
+        "applicationServices": 0,
+        "commandHandlers": 0,
+        "queryHandlers": 0,
+        "drivingPorts": 0,
+        "drivenPorts": 6
+      }
+    },
+    "components": {
+      "aggregates": [],
+      "valueObjects": [
+        {
+          "name": "CreateCustomerRequest",
+          "package": "com.acme.banking.api.dto"
+        },
+        {
+          "name": "OpenAccountRequest",
+          "package": "com.acme.banking.api.dto"
+        },
+        {
+          "name": "TransferRequest",
+          "package": "com.acme.banking.api.dto"
+        },
+        {
+          "name": "AccountType",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "CardStatus",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "TransactionType",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "TransferStatus",
+          "package": "com.acme.banking.core.model"
+        },
+        {
+          "name": "AccountService",
+          "package": "com.acme.banking.service.service"
+        },
+        {
+          "name": "CardService",
+          "package": "com.acme.banking.service.service"
+        },
+        {
+          "name": "CustomerService",
+          "package": "com.acme.banking.service.service"
+        },
+        {
+          "name": "TransactionService",
+          "package": "com.acme.banking.service.service"
+        },
+        {
+          "name": "TransferService",
+          "package": "com.acme.banking.service.service"
+        }
+      ],
+      "identifiers": [],
+      "drivingPorts": [],
+      "drivenPorts": [
+        {
+          "name": "AccountRepository",
+          "package": "com.acme.banking.persistence.repository",
+          "kind": "REPOSITORY",
+          "methods": 3,
+          "hasAdapter": false,
+          "adapter": null
+        },
+        {
+          "name": "BeneficiaryRepository",
+          "package": "com.acme.banking.persistence.repository",
+          "kind": "REPOSITORY",
+          "methods": 1,
+          "hasAdapter": false,
+          "adapter": null
+        },
+        {
+          "name": "CardRepository",
+          "package": "com.acme.banking.persistence.repository",
+          "kind": "REPOSITORY",
+          "methods": 2,
+          "hasAdapter": false,
+          "adapter": null
+        },
+        {
+          "name": "CustomerRepository",
+          "package": "com.acme.banking.persistence.repository",
+          "kind": "REPOSITORY",
+          "methods": 2,
+          "hasAdapter": false,
+          "adapter": null
+        },
+        {
+          "name": "TransactionRepository",
+          "package": "com.acme.banking.persistence.repository",
+          "kind": "REPOSITORY",
+          "methods": 3,
+          "hasAdapter": false,
+          "adapter": null
+        },
+        {
+          "name": "TransferRepository",
+          "package": "com.acme.banking.persistence.repository",
+          "kind": "REPOSITORY",
+          "methods": 3,
+          "hasAdapter": false,
+          "adapter": null
+        }
+      ],
+      "adapters": []
+    },
+    "relationships": [
+      {
+        "from": "AccountController",
+        "to": "AccountService",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "CardController",
+        "to": "CardService",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerController",
+        "to": "CustomerService",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionController",
+        "to": "TransactionService",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "TransferController",
+        "to": "TransferService",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "AccountResponse",
+        "to": "AccountType",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "CardResponse",
+        "to": "CardStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "OpenAccountRequest",
+        "to": "AccountType",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionResponse",
+        "to": "TransactionType",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "TransferResponse",
+        "to": "TransferStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "BaseEntity",
+        "type": "extends",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "AccountType",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "Customer",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "Transaction",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Account",
+        "to": "Card",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Beneficiary",
+        "to": "BaseEntity",
+        "type": "extends",
+        "isCycle": false
+      },
+      {
+        "from": "Beneficiary",
+        "to": "Customer",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "BaseEntity",
+        "type": "extends",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "Account",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "Card",
+        "to": "CardStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "BaseEntity",
+        "type": "extends",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "Account",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Customer",
+        "to": "Beneficiary",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "BaseEntity",
+        "type": "extends",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "TransactionType",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "Transaction",
+        "to": "Account",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "BaseEntity",
+        "type": "extends",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "Account",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "Transfer",
+        "to": "TransferStatus",
+        "type": "contains",
+        "isCycle": false
+      },
+      {
+        "from": "TransferCompletedEvent",
+        "to": "Transfer",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "AccountService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "AccountService",
+        "to": "CustomerRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "AccountService",
+        "to": "TransactionRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CardService",
+        "to": "CardRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CardService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "CustomerService",
+        "to": "CustomerRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionService",
+        "to": "TransactionRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransactionService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferService",
+        "to": "TransferRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferService",
+        "to": "AccountRepository",
+        "type": "uses",
+        "isCycle": false
+      },
+      {
+        "from": "TransferService",
+        "to": "TransactionRepository",
+        "type": "uses",
+        "isCycle": false
+      }
+    ],
+    "typeViolations": [
+      {
+        "typeName": "AccountRepository",
+        "violationType": "PORT_UNCOVERED"
+      },
+      {
+        "typeName": "BeneficiaryRepository",
+        "violationType": "PORT_UNCOVERED"
+      },
+      {
+        "typeName": "CardRepository",
+        "violationType": "PORT_UNCOVERED"
+      },
+      {
+        "typeName": "CustomerRepository",
+        "violationType": "PORT_UNCOVERED"
+      },
+      {
+        "typeName": "TransactionRepository",
+        "violationType": "PORT_UNCOVERED"
+      },
+      {
+        "typeName": "TransferRepository",
+        "violationType": "PORT_UNCOVERED"
+      },
+      {
+        "typeName": "TransactionService",
+        "violationType": "LAYER_VIOLATION"
+      },
+      {
+        "typeName": "TransferService",
+        "violationType": "LAYER_VIOLATION"
+      },
+      {
+        "typeName": "AccountService",
+        "violationType": "LAYER_VIOLATION"
+      },
+      {
+        "typeName": "CardService",
+        "violationType": "LAYER_VIOLATION"
+      },
+      {
+        "typeName": "CustomerService",
+        "violationType": "LAYER_VIOLATION"
+      },
+      {
+        "typeName": "Account",
+        "violationType": "IMPURE_DOMAIN"
+      },
+      {
+        "typeName": "Beneficiary",
+        "violationType": "IMPURE_DOMAIN"
+      },
+      {
+        "typeName": "Card",
+        "violationType": "IMPURE_DOMAIN"
+      },
+      {
+        "typeName": "Customer",
+        "violationType": "IMPURE_DOMAIN"
+      },
+      {
+        "typeName": "Transaction",
+        "violationType": "IMPURE_DOMAIN"
+      },
+      {
+        "typeName": "Transfer",
+        "violationType": "IMPURE_DOMAIN"
+      },
+      {
+        "typeName": "TransferService",
+        "violationType": "IMPURE_DOMAIN"
+      },
+      {
+        "typeName": "Account",
+        "violationType": "MISSING_IDENTITY"
+      },
+      {
+        "typeName": "Beneficiary",
+        "violationType": "MISSING_IDENTITY"
+      },
+      {
+        "typeName": "Card",
+        "violationType": "MISSING_IDENTITY"
+      },
+      {
+        "typeName": "Customer",
+        "violationType": "MISSING_IDENTITY"
+      },
+      {
+        "typeName": "Transaction",
+        "violationType": "MISSING_IDENTITY"
+      },
+      {
+        "typeName": "Transfer",
+        "violationType": "MISSING_IDENTITY"
+      }
+    ],
+    "moduleTopology": {
+      "summary": "5 modules detected",
+      "modules": [
+        {
+          "moduleId": "banking-api",
+          "role": "API",
+          "typeCount": 14,
+          "packages": ["com.acme.banking.api.controller", "com.acme.banking.api.dto", "com.acme.banking.api.exception"]
+        },
+        {
+          "moduleId": "banking-app",
+          "role": "ASSEMBLY",
+          "typeCount": 2,
+          "packages": ["com.acme.banking", "com.acme.banking.config"]
+        },
+        {
+          "moduleId": "banking-core",
+          "role": "DOMAIN",
+          "typeCount": 16,
+          "packages": ["com.acme.banking.core.exception", "com.acme.banking.core.model", "com.acme.banking.core.util"]
+        },
+        {
+          "moduleId": "banking-persistence",
+          "role": "INFRASTRUCTURE",
+          "typeCount": 8,
+          "packages": ["com.acme.banking.persistence.config", "com.acme.banking.persistence.repository"]
+        },
+        {
+          "moduleId": "banking-service",
+          "role": "APPLICATION",
+          "typeCount": 8,
+          "packages": ["com.acme.banking.service.event", "com.acme.banking.service.service"]
+        }
+      ]
+    }
+  },
+  "issues": {
+    "summary": {
+      "total": 36,
+      "blockers": 0,
+      "criticals": 13,
+      "majors": 23,
+      "minors": 0,
+      "infos": 0
+    },
+    "groups": [
+      {
+        "id": "domain-model-issues",
+        "theme": "Domain Model Issues",
+        "icon": "domain",
+        "description": "Problems with DDD tactical patterns that affect domain integrity",
+        "count": 13,
+        "violations": [
+          {
+            "id": "ddd-domain-purity-1",
+            "constraintId": "ddd:domain-purity",
+            "severity": "CRITICAL",
+            "title": "Domain purity violation",
+            "message": "Domain type 'Account' has 2 forbidden infrastructure import(s)",
+            "location": {
+              "type": "com.acme.banking.core.model.Account",
+              "file": "com.acme.banking.core.model.Account",
+              "line": 1
+            },
+            "impact": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+            "suggestion": {
+              "action": "Remove infrastructure imports and use domain-pure alternatives",
+              "steps": ["Identify all forbidden infrastructure imports in the domain type", "Replace framework annotations with domain concepts (e.g., remove @Entity, @Column)", "If infrastructure behavior is needed, define a port interface in the domain layer", "Move framework-specific code to infrastructure adapters"],
+              "codeExample": "// Before: domain polluted with JPA\n@Entity\npublic class Order { ... }\n\n// After: pure domain model\npublic class Order {\n    private final OrderId id;\n    private final List<OrderItem> items;\n    // Pure business logic, no framework imports\n}",
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "ddd-domain-purity-2",
+            "constraintId": "ddd:domain-purity",
+            "severity": "CRITICAL",
+            "title": "Domain purity violation",
+            "message": "Domain type 'Beneficiary' has 2 forbidden infrastructure import(s)",
+            "location": {
+              "type": "com.acme.banking.core.model.Beneficiary",
+              "file": "com.acme.banking.core.model.Beneficiary",
+              "line": 1
+            },
+            "impact": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+            "suggestion": {
+              "action": "Remove infrastructure imports and use domain-pure alternatives",
+              "steps": ["Identify all forbidden infrastructure imports in the domain type", "Replace framework annotations with domain concepts (e.g., remove @Entity, @Column)", "If infrastructure behavior is needed, define a port interface in the domain layer", "Move framework-specific code to infrastructure adapters"],
+              "codeExample": "// Before: domain polluted with JPA\n@Entity\npublic class Order { ... }\n\n// After: pure domain model\npublic class Order {\n    private final OrderId id;\n    private final List<OrderItem> items;\n    // Pure business logic, no framework imports\n}",
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "ddd-domain-purity-3",
+            "constraintId": "ddd:domain-purity",
+            "severity": "CRITICAL",
+            "title": "Domain purity violation",
+            "message": "Domain type 'Card' has 2 forbidden infrastructure import(s)",
+            "location": {
+              "type": "com.acme.banking.core.model.Card",
+              "file": "com.acme.banking.core.model.Card",
+              "line": 1
+            },
+            "impact": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+            "suggestion": {
+              "action": "Remove infrastructure imports and use domain-pure alternatives",
+              "steps": ["Identify all forbidden infrastructure imports in the domain type", "Replace framework annotations with domain concepts (e.g., remove @Entity, @Column)", "If infrastructure behavior is needed, define a port interface in the domain layer", "Move framework-specific code to infrastructure adapters"],
+              "codeExample": "// Before: domain polluted with JPA\n@Entity\npublic class Order { ... }\n\n// After: pure domain model\npublic class Order {\n    private final OrderId id;\n    private final List<OrderItem> items;\n    // Pure business logic, no framework imports\n}",
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "ddd-domain-purity-4",
+            "constraintId": "ddd:domain-purity",
+            "severity": "CRITICAL",
+            "title": "Domain purity violation",
+            "message": "Domain type 'Customer' has 2 forbidden infrastructure import(s)",
+            "location": {
+              "type": "com.acme.banking.core.model.Customer",
+              "file": "com.acme.banking.core.model.Customer",
+              "line": 1
+            },
+            "impact": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+            "suggestion": {
+              "action": "Remove infrastructure imports and use domain-pure alternatives",
+              "steps": ["Identify all forbidden infrastructure imports in the domain type", "Replace framework annotations with domain concepts (e.g., remove @Entity, @Column)", "If infrastructure behavior is needed, define a port interface in the domain layer", "Move framework-specific code to infrastructure adapters"],
+              "codeExample": "// Before: domain polluted with JPA\n@Entity\npublic class Order { ... }\n\n// After: pure domain model\npublic class Order {\n    private final OrderId id;\n    private final List<OrderItem> items;\n    // Pure business logic, no framework imports\n}",
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "ddd-domain-purity-5",
+            "constraintId": "ddd:domain-purity",
+            "severity": "CRITICAL",
+            "title": "Domain purity violation",
+            "message": "Domain type 'Transaction' has 2 forbidden infrastructure import(s)",
+            "location": {
+              "type": "com.acme.banking.core.model.Transaction",
+              "file": "com.acme.banking.core.model.Transaction",
+              "line": 1
+            },
+            "impact": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+            "suggestion": {
+              "action": "Remove infrastructure imports and use domain-pure alternatives",
+              "steps": ["Identify all forbidden infrastructure imports in the domain type", "Replace framework annotations with domain concepts (e.g., remove @Entity, @Column)", "If infrastructure behavior is needed, define a port interface in the domain layer", "Move framework-specific code to infrastructure adapters"],
+              "codeExample": "// Before: domain polluted with JPA\n@Entity\npublic class Order { ... }\n\n// After: pure domain model\npublic class Order {\n    private final OrderId id;\n    private final List<OrderItem> items;\n    // Pure business logic, no framework imports\n}",
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "ddd-domain-purity-6",
+            "constraintId": "ddd:domain-purity",
+            "severity": "CRITICAL",
+            "title": "Domain purity violation",
+            "message": "Domain type 'Transfer' has 2 forbidden infrastructure import(s)",
+            "location": {
+              "type": "com.acme.banking.core.model.Transfer",
+              "file": "com.acme.banking.core.model.Transfer",
+              "line": 1
+            },
+            "impact": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+            "suggestion": {
+              "action": "Remove infrastructure imports and use domain-pure alternatives",
+              "steps": ["Identify all forbidden infrastructure imports in the domain type", "Replace framework annotations with domain concepts (e.g., remove @Entity, @Column)", "If infrastructure behavior is needed, define a port interface in the domain layer", "Move framework-specific code to infrastructure adapters"],
+              "codeExample": "// Before: domain polluted with JPA\n@Entity\npublic class Order { ... }\n\n// After: pure domain model\npublic class Order {\n    private final OrderId id;\n    private final List<OrderItem> items;\n    // Pure business logic, no framework imports\n}",
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "ddd-domain-purity-7",
+            "constraintId": "ddd:domain-purity",
+            "severity": "CRITICAL",
+            "title": "Domain purity violation",
+            "message": "Domain type 'TransferService' has 1 forbidden infrastructure import(s)",
+            "location": {
+              "type": "com.acme.banking.service.service.TransferService",
+              "file": "com.acme.banking.service.service.TransferService",
+              "line": 1
+            },
+            "impact": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+            "suggestion": {
+              "action": "Remove infrastructure imports and use domain-pure alternatives",
+              "steps": ["Identify all forbidden infrastructure imports in the domain type", "Replace framework annotations with domain concepts (e.g., remove @Entity, @Column)", "If infrastructure behavior is needed, define a port interface in the domain layer", "Move framework-specific code to infrastructure adapters"],
+              "codeExample": "// Before: domain polluted with JPA\n@Entity\npublic class Order { ... }\n\n// After: pure domain model\npublic class Order {\n    private final OrderId id;\n    private final List<OrderItem> items;\n    // Pure business logic, no framework imports\n}",
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "ddd-entity-identity-1",
+            "constraintId": "ddd:entity-identity",
+            "severity": "CRITICAL",
+            "title": "Entity without identity",
+            "message": "Entity 'Account' has no identity field",
+            "location": {
+              "type": "com.acme.banking.core.model.Account",
+              "file": "com.acme.banking.core.model.Account",
+              "line": 1
+            },
+            "impact": "Entities are defined by their identity, not their attributes. Without an identity field, the entity cannot be uniquely identified, tracked, or persisted. Equality comparisons become attribute-based instead of identity-based, which breaks DDD semantics and can cause subtle bugs in collections and persistence operations.",
+            "suggestion": {
+              "action": "Add a dedicated identity field to the entity",
+              "steps": ["Create a typed identifier (e.g., OrderId wrapping UUID) or use a simple ID type", "Add the identity field to the entity class", "Implement equals/hashCode based on the identity field (or use a record)"],
+              "codeExample": "// Create a typed identifier\npublic record OrderId(UUID value) {\n    public static OrderId generate() {\n        return new OrderId(UUID.randomUUID());\n    }\n}\n\n// Add identity to the entity\npublic class Order {\n    private final OrderId id;\n    // ... other fields\n}",
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "ddd-entity-identity-2",
+            "constraintId": "ddd:entity-identity",
+            "severity": "CRITICAL",
+            "title": "Entity without identity",
+            "message": "Entity 'Beneficiary' has no identity field",
+            "location": {
+              "type": "com.acme.banking.core.model.Beneficiary",
+              "file": "com.acme.banking.core.model.Beneficiary",
+              "line": 1
+            },
+            "impact": "Entities are defined by their identity, not their attributes. Without an identity field, the entity cannot be uniquely identified, tracked, or persisted. Equality comparisons become attribute-based instead of identity-based, which breaks DDD semantics and can cause subtle bugs in collections and persistence operations.",
+            "suggestion": {
+              "action": "Add a dedicated identity field to the entity",
+              "steps": ["Create a typed identifier (e.g., OrderId wrapping UUID) or use a simple ID type", "Add the identity field to the entity class", "Implement equals/hashCode based on the identity field (or use a record)"],
+              "codeExample": "// Create a typed identifier\npublic record OrderId(UUID value) {\n    public static OrderId generate() {\n        return new OrderId(UUID.randomUUID());\n    }\n}\n\n// Add identity to the entity\npublic class Order {\n    private final OrderId id;\n    // ... other fields\n}",
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "ddd-entity-identity-3",
+            "constraintId": "ddd:entity-identity",
+            "severity": "CRITICAL",
+            "title": "Entity without identity",
+            "message": "Entity 'Card' has no identity field",
+            "location": {
+              "type": "com.acme.banking.core.model.Card",
+              "file": "com.acme.banking.core.model.Card",
+              "line": 1
+            },
+            "impact": "Entities are defined by their identity, not their attributes. Without an identity field, the entity cannot be uniquely identified, tracked, or persisted. Equality comparisons become attribute-based instead of identity-based, which breaks DDD semantics and can cause subtle bugs in collections and persistence operations.",
+            "suggestion": {
+              "action": "Add a dedicated identity field to the entity",
+              "steps": ["Create a typed identifier (e.g., OrderId wrapping UUID) or use a simple ID type", "Add the identity field to the entity class", "Implement equals/hashCode based on the identity field (or use a record)"],
+              "codeExample": "// Create a typed identifier\npublic record OrderId(UUID value) {\n    public static OrderId generate() {\n        return new OrderId(UUID.randomUUID());\n    }\n}\n\n// Add identity to the entity\npublic class Order {\n    private final OrderId id;\n    // ... other fields\n}",
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "ddd-entity-identity-4",
+            "constraintId": "ddd:entity-identity",
+            "severity": "CRITICAL",
+            "title": "Entity without identity",
+            "message": "Entity 'Customer' has no identity field",
+            "location": {
+              "type": "com.acme.banking.core.model.Customer",
+              "file": "com.acme.banking.core.model.Customer",
+              "line": 1
+            },
+            "impact": "Entities are defined by their identity, not their attributes. Without an identity field, the entity cannot be uniquely identified, tracked, or persisted. Equality comparisons become attribute-based instead of identity-based, which breaks DDD semantics and can cause subtle bugs in collections and persistence operations.",
+            "suggestion": {
+              "action": "Add a dedicated identity field to the entity",
+              "steps": ["Create a typed identifier (e.g., OrderId wrapping UUID) or use a simple ID type", "Add the identity field to the entity class", "Implement equals/hashCode based on the identity field (or use a record)"],
+              "codeExample": "// Create a typed identifier\npublic record OrderId(UUID value) {\n    public static OrderId generate() {\n        return new OrderId(UUID.randomUUID());\n    }\n}\n\n// Add identity to the entity\npublic class Order {\n    private final OrderId id;\n    // ... other fields\n}",
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "ddd-entity-identity-5",
+            "constraintId": "ddd:entity-identity",
+            "severity": "CRITICAL",
+            "title": "Entity without identity",
+            "message": "Entity 'Transaction' has no identity field",
+            "location": {
+              "type": "com.acme.banking.core.model.Transaction",
+              "file": "com.acme.banking.core.model.Transaction",
+              "line": 1
+            },
+            "impact": "Entities are defined by their identity, not their attributes. Without an identity field, the entity cannot be uniquely identified, tracked, or persisted. Equality comparisons become attribute-based instead of identity-based, which breaks DDD semantics and can cause subtle bugs in collections and persistence operations.",
+            "suggestion": {
+              "action": "Add a dedicated identity field to the entity",
+              "steps": ["Create a typed identifier (e.g., OrderId wrapping UUID) or use a simple ID type", "Add the identity field to the entity class", "Implement equals/hashCode based on the identity field (or use a record)"],
+              "codeExample": "// Create a typed identifier\npublic record OrderId(UUID value) {\n    public static OrderId generate() {\n        return new OrderId(UUID.randomUUID());\n    }\n}\n\n// Add identity to the entity\npublic class Order {\n    private final OrderId id;\n    // ... other fields\n}",
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "ddd-entity-identity-6",
+            "constraintId": "ddd:entity-identity",
+            "severity": "CRITICAL",
+            "title": "Entity without identity",
+            "message": "Entity 'Transfer' has no identity field",
+            "location": {
+              "type": "com.acme.banking.core.model.Transfer",
+              "file": "com.acme.banking.core.model.Transfer",
+              "line": 1
+            },
+            "impact": "Entities are defined by their identity, not their attributes. Without an identity field, the entity cannot be uniquely identified, tracked, or persisted. Equality comparisons become attribute-based instead of identity-based, which breaks DDD semantics and can cause subtle bugs in collections and persistence operations.",
+            "suggestion": {
+              "action": "Add a dedicated identity field to the entity",
+              "steps": ["Create a typed identifier (e.g., OrderId wrapping UUID) or use a simple ID type", "Add the identity field to the entity class", "Implement equals/hashCode based on the identity field (or use a record)"],
+              "codeExample": "// Create a typed identifier\npublic record OrderId(UUID value) {\n    public static OrderId generate() {\n        return new OrderId(UUID.randomUUID());\n    }\n}\n\n// Add identity to the entity\npublic class Order {\n    private final OrderId id;\n    // ... other fields\n}",
+              "effort": "0.5 days"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ports-adapters-issues",
+        "theme": "Ports & Adapters Issues",
+        "icon": "ports",
+        "description": "Problems with hexagonal architecture implementation",
+        "count": 23,
+        "violations": [
+          {
+            "id": "hexagonal-port-coverage-1",
+            "constraintId": "hexagonal:port-coverage",
+            "severity": "MAJOR",
+            "title": "Driven port without adapter",
+            "message": "Driven port 'AccountRepository' [REPOSITORY] has no adapter implementation",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.AccountRepository",
+              "file": "com.acme.banking.persistence.repository.AccountRepository",
+              "line": 1
+            },
+            "impact": "Ports without adapters cannot be used. The application cannot interact with external systems or be invoked by driving adapters.",
+            "suggestion": {
+              "action": "Create a driven adapter implementing this port as a JPA persistence layer",
+              "steps": ["Create JPA entity mapping the aggregate", "Create mapper to convert between domain and JPA entity", "Create JPA repository adapter implementing the port", "Add identity converters if using typed identifiers", "Register the implementation with your DI container"],
+              "codeExample": "@Repository\npublic class JpaOrderRepository implements OrderRepository {\n    private final SpringDataOrderRepository springRepo;\n    private final OrderMapper mapper;\n    \n    @Override\n    public void save(Order order) {\n        springRepo.save(mapper.toEntity(order));\n    }\n}",
+              "effort": "3 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-coverage-2",
+            "constraintId": "hexagonal:port-coverage",
+            "severity": "MAJOR",
+            "title": "Driven port without adapter",
+            "message": "Driven port 'BeneficiaryRepository' [REPOSITORY] has no adapter implementation",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.BeneficiaryRepository",
+              "file": "com.acme.banking.persistence.repository.BeneficiaryRepository",
+              "line": 1
+            },
+            "impact": "Ports without adapters cannot be used. The application cannot interact with external systems or be invoked by driving adapters.",
+            "suggestion": {
+              "action": "Create a driven adapter implementing this port as a JPA persistence layer",
+              "steps": ["Create JPA entity mapping the aggregate", "Create mapper to convert between domain and JPA entity", "Create JPA repository adapter implementing the port", "Add identity converters if using typed identifiers", "Register the implementation with your DI container"],
+              "codeExample": "@Repository\npublic class JpaOrderRepository implements OrderRepository {\n    private final SpringDataOrderRepository springRepo;\n    private final OrderMapper mapper;\n    \n    @Override\n    public void save(Order order) {\n        springRepo.save(mapper.toEntity(order));\n    }\n}",
+              "effort": "3 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-coverage-3",
+            "constraintId": "hexagonal:port-coverage",
+            "severity": "MAJOR",
+            "title": "Driven port without adapter",
+            "message": "Driven port 'CardRepository' [REPOSITORY] has no adapter implementation",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.CardRepository",
+              "file": "com.acme.banking.persistence.repository.CardRepository",
+              "line": 1
+            },
+            "impact": "Ports without adapters cannot be used. The application cannot interact with external systems or be invoked by driving adapters.",
+            "suggestion": {
+              "action": "Create a driven adapter implementing this port as a JPA persistence layer",
+              "steps": ["Create JPA entity mapping the aggregate", "Create mapper to convert between domain and JPA entity", "Create JPA repository adapter implementing the port", "Add identity converters if using typed identifiers", "Register the implementation with your DI container"],
+              "codeExample": "@Repository\npublic class JpaOrderRepository implements OrderRepository {\n    private final SpringDataOrderRepository springRepo;\n    private final OrderMapper mapper;\n    \n    @Override\n    public void save(Order order) {\n        springRepo.save(mapper.toEntity(order));\n    }\n}",
+              "effort": "3 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-coverage-4",
+            "constraintId": "hexagonal:port-coverage",
+            "severity": "MAJOR",
+            "title": "Driven port without adapter",
+            "message": "Driven port 'CustomerRepository' [REPOSITORY] has no adapter implementation",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.CustomerRepository",
+              "file": "com.acme.banking.persistence.repository.CustomerRepository",
+              "line": 1
+            },
+            "impact": "Ports without adapters cannot be used. The application cannot interact with external systems or be invoked by driving adapters.",
+            "suggestion": {
+              "action": "Create a driven adapter implementing this port as a JPA persistence layer",
+              "steps": ["Create JPA entity mapping the aggregate", "Create mapper to convert between domain and JPA entity", "Create JPA repository adapter implementing the port", "Add identity converters if using typed identifiers", "Register the implementation with your DI container"],
+              "codeExample": "@Repository\npublic class JpaOrderRepository implements OrderRepository {\n    private final SpringDataOrderRepository springRepo;\n    private final OrderMapper mapper;\n    \n    @Override\n    public void save(Order order) {\n        springRepo.save(mapper.toEntity(order));\n    }\n}",
+              "effort": "3 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-coverage-5",
+            "constraintId": "hexagonal:port-coverage",
+            "severity": "MAJOR",
+            "title": "Driven port without adapter",
+            "message": "Driven port 'TransactionRepository' [REPOSITORY] has no adapter implementation",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.TransactionRepository",
+              "file": "com.acme.banking.persistence.repository.TransactionRepository",
+              "line": 1
+            },
+            "impact": "Ports without adapters cannot be used. The application cannot interact with external systems or be invoked by driving adapters.",
+            "suggestion": {
+              "action": "Create a driven adapter implementing this port as a JPA persistence layer",
+              "steps": ["Create JPA entity mapping the aggregate", "Create mapper to convert between domain and JPA entity", "Create JPA repository adapter implementing the port", "Add identity converters if using typed identifiers", "Register the implementation with your DI container"],
+              "codeExample": "@Repository\npublic class JpaOrderRepository implements OrderRepository {\n    private final SpringDataOrderRepository springRepo;\n    private final OrderMapper mapper;\n    \n    @Override\n    public void save(Order order) {\n        springRepo.save(mapper.toEntity(order));\n    }\n}",
+              "effort": "3 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-coverage-6",
+            "constraintId": "hexagonal:port-coverage",
+            "severity": "MAJOR",
+            "title": "Driven port without adapter",
+            "message": "Driven port 'TransferRepository' [REPOSITORY] has no adapter implementation",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.TransferRepository",
+              "file": "com.acme.banking.persistence.repository.TransferRepository",
+              "line": 1
+            },
+            "impact": "Ports without adapters cannot be used. The application cannot interact with external systems or be invoked by driving adapters.",
+            "suggestion": {
+              "action": "Create a driven adapter implementing this port as a JPA persistence layer",
+              "steps": ["Create JPA entity mapping the aggregate", "Create mapper to convert between domain and JPA entity", "Create JPA repository adapter implementing the port", "Add identity converters if using typed identifiers", "Register the implementation with your DI container"],
+              "codeExample": "@Repository\npublic class JpaOrderRepository implements OrderRepository {\n    private final SpringDataOrderRepository springRepo;\n    private final OrderMapper mapper;\n    \n    @Override\n    public void save(Order order) {\n        springRepo.save(mapper.toEntity(order));\n    }\n}",
+              "effort": "3 days"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-1",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'TransactionService' depends on PORT type 'TransactionRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.TransactionService",
+              "file": "com.acme.banking.service.service.TransactionService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-2",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'TransactionService' depends on PORT type 'AccountRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.TransactionService",
+              "file": "com.acme.banking.service.service.TransactionService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-3",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'TransferService' depends on PORT type 'TransactionRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.TransferService",
+              "file": "com.acme.banking.service.service.TransferService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-4",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'TransferService' depends on PORT type 'AccountRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.TransferService",
+              "file": "com.acme.banking.service.service.TransferService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-5",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'TransferService' depends on PORT type 'TransferRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.TransferService",
+              "file": "com.acme.banking.service.service.TransferService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-6",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'AccountService' depends on PORT type 'TransactionRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.AccountService",
+              "file": "com.acme.banking.service.service.AccountService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-7",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'AccountService' depends on PORT type 'AccountRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.AccountService",
+              "file": "com.acme.banking.service.service.AccountService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-8",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'AccountService' depends on PORT type 'CustomerRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.AccountService",
+              "file": "com.acme.banking.service.service.AccountService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-9",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'CardService' depends on PORT type 'AccountRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.CardService",
+              "file": "com.acme.banking.service.service.CardService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-10",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'CardService' depends on PORT type 'CardRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.CardService",
+              "file": "com.acme.banking.service.service.CardService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-layer-isolation-11",
+            "constraintId": "hexagonal:layer-isolation",
+            "severity": "MAJOR",
+            "title": "Layer isolation violation",
+            "message": "DOMAIN type 'CustomerService' depends on PORT type 'CustomerRepository' (not allowed)",
+            "location": {
+              "type": "com.acme.banking.service.service.CustomerService",
+              "file": "com.acme.banking.service.service.CustomerService",
+              "line": 1
+            },
+            "impact": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+            "suggestion": {
+              "action": "Route the dependency through the appropriate port",
+              "steps": ["Identify the direct cross-layer dependency", "Create or use an existing port interface for this interaction", "Refactor the caller to depend on the port instead of the concrete class", "Ensure the adapter implements the port on the infrastructure side"],
+              "codeExample": null,
+              "effort": "1 day"
+            }
+          },
+          {
+            "id": "hexagonal-port-direction-1",
+            "constraintId": "hexagonal:port-direction",
+            "severity": "MAJOR",
+            "title": "Port direction violation",
+            "message": "DRIVEN port 'AccountRepository' is not used by any application service",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.AccountRepository",
+              "file": "com.acme.banking.persistence.repository.AccountRepository",
+              "line": 1
+            },
+            "impact": "Ports should only be used in the intended direction. Driving ports should be called from external adapters, and driven ports should be called from the domain.",
+            "suggestion": {
+              "action": "Correct the port usage direction",
+              "steps": ["Review which component is calling the port", "Move the call to the appropriate layer", "Consider if the port type is correct"],
+              "codeExample": null,
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-direction-2",
+            "constraintId": "hexagonal:port-direction",
+            "severity": "MAJOR",
+            "title": "Port direction violation",
+            "message": "DRIVEN port 'BeneficiaryRepository' is not used by any application service",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.BeneficiaryRepository",
+              "file": "com.acme.banking.persistence.repository.BeneficiaryRepository",
+              "line": 1
+            },
+            "impact": "Ports should only be used in the intended direction. Driving ports should be called from external adapters, and driven ports should be called from the domain.",
+            "suggestion": {
+              "action": "Correct the port usage direction",
+              "steps": ["Review which component is calling the port", "Move the call to the appropriate layer", "Consider if the port type is correct"],
+              "codeExample": null,
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-direction-3",
+            "constraintId": "hexagonal:port-direction",
+            "severity": "MAJOR",
+            "title": "Port direction violation",
+            "message": "DRIVEN port 'CardRepository' is not used by any application service",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.CardRepository",
+              "file": "com.acme.banking.persistence.repository.CardRepository",
+              "line": 1
+            },
+            "impact": "Ports should only be used in the intended direction. Driving ports should be called from external adapters, and driven ports should be called from the domain.",
+            "suggestion": {
+              "action": "Correct the port usage direction",
+              "steps": ["Review which component is calling the port", "Move the call to the appropriate layer", "Consider if the port type is correct"],
+              "codeExample": null,
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-direction-4",
+            "constraintId": "hexagonal:port-direction",
+            "severity": "MAJOR",
+            "title": "Port direction violation",
+            "message": "DRIVEN port 'CustomerRepository' is not used by any application service",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.CustomerRepository",
+              "file": "com.acme.banking.persistence.repository.CustomerRepository",
+              "line": 1
+            },
+            "impact": "Ports should only be used in the intended direction. Driving ports should be called from external adapters, and driven ports should be called from the domain.",
+            "suggestion": {
+              "action": "Correct the port usage direction",
+              "steps": ["Review which component is calling the port", "Move the call to the appropriate layer", "Consider if the port type is correct"],
+              "codeExample": null,
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-direction-5",
+            "constraintId": "hexagonal:port-direction",
+            "severity": "MAJOR",
+            "title": "Port direction violation",
+            "message": "DRIVEN port 'TransactionRepository' is not used by any application service",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.TransactionRepository",
+              "file": "com.acme.banking.persistence.repository.TransactionRepository",
+              "line": 1
+            },
+            "impact": "Ports should only be used in the intended direction. Driving ports should be called from external adapters, and driven ports should be called from the domain.",
+            "suggestion": {
+              "action": "Correct the port usage direction",
+              "steps": ["Review which component is calling the port", "Move the call to the appropriate layer", "Consider if the port type is correct"],
+              "codeExample": null,
+              "effort": "0.5 days"
+            }
+          },
+          {
+            "id": "hexagonal-port-direction-6",
+            "constraintId": "hexagonal:port-direction",
+            "severity": "MAJOR",
+            "title": "Port direction violation",
+            "message": "DRIVEN port 'TransferRepository' is not used by any application service",
+            "location": {
+              "type": "com.acme.banking.persistence.repository.TransferRepository",
+              "file": "com.acme.banking.persistence.repository.TransferRepository",
+              "line": 1
+            },
+            "impact": "Ports should only be used in the intended direction. Driving ports should be called from external adapters, and driven ports should be called from the domain.",
+            "suggestion": {
+              "action": "Correct the port usage direction",
+              "steps": ["Review which component is calling the port", "Move the call to the appropriate layer", "Consider if the port type is correct"],
+              "codeExample": null,
+              "effort": "0.5 days"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "remediation": {
+    "summary": "5 actions required. Manual effort: 42,0 days. With HexaGlue: 24,0 days (saves 18,0 days).",
+    "actions": [
+      {
+        "priority": 1,
+        "severity": "CRITICAL",
+        "title": "Add a dedicated identity field to the entity",
+        "description": "Entities are defined by their identity, not their attributes. Without an identity field, the entity cannot be uniquely identified, tracked, or persisted. Equality comparisons become attribute-based instead of identity-based, which breaks DDD semantics and can cause subtle bugs in collections and persistence operations.",
+        "effort": {
+          "days": 3.0,
+          "description": "Estimated effort"
+        },
+        "impact": "Resolves 6 issue(s)",
+        "affectedTypes": ["com.acme.banking.core.model.Account", "com.acme.banking.core.model.Beneficiary", "com.acme.banking.core.model.Card", "com.acme.banking.core.model.Customer", "com.acme.banking.core.model.Transaction", "com.acme.banking.core.model.Transfer"],
+        "relatedIssues": ["ddd-entity-identity-1", "ddd-entity-identity-2", "ddd-entity-identity-3", "ddd-entity-identity-4", "ddd-entity-identity-5", "ddd-entity-identity-6"],
+        "hexagluePlugin": null
+      },
+      {
+        "priority": 2,
+        "severity": "CRITICAL",
+        "title": "Remove infrastructure imports and use domain-pure alternatives",
+        "description": "Infrastructure imports in the domain layer (e.g., JPA annotations, Spring framework classes) couple the business logic to specific technologies. This makes the domain model harder to test in isolation, impossible to reuse with different frameworks, and blurs the separation between what the system does and how it does it.",
+        "effort": {
+          "days": 7.0,
+          "description": "Estimated effort"
+        },
+        "impact": "Resolves 7 issue(s)",
+        "affectedTypes": ["com.acme.banking.core.model.Account", "com.acme.banking.core.model.Beneficiary", "com.acme.banking.core.model.Card", "com.acme.banking.core.model.Customer", "com.acme.banking.core.model.Transaction", "com.acme.banking.core.model.Transfer", "com.acme.banking.service.service.TransferService"],
+        "relatedIssues": ["ddd-domain-purity-1", "ddd-domain-purity-2", "ddd-domain-purity-3", "ddd-domain-purity-4", "ddd-domain-purity-5", "ddd-domain-purity-6", "ddd-domain-purity-7"],
+        "hexagluePlugin": null
+      },
+      {
+        "priority": 3,
+        "severity": "MAJOR",
+        "title": "Correct the port usage direction",
+        "description": "Ports should only be used in the intended direction. Driving ports should be called from external adapters, and driven ports should be called from the domain.",
+        "effort": {
+          "days": 3.0,
+          "description": "Estimated effort"
+        },
+        "impact": "Resolves 6 issue(s)",
+        "affectedTypes": ["com.acme.banking.persistence.repository.AccountRepository", "com.acme.banking.persistence.repository.BeneficiaryRepository", "com.acme.banking.persistence.repository.CardRepository", "com.acme.banking.persistence.repository.CustomerRepository", "com.acme.banking.persistence.repository.TransactionRepository", "com.acme.banking.persistence.repository.TransferRepository"],
+        "relatedIssues": ["hexagonal-port-direction-1", "hexagonal-port-direction-2", "hexagonal-port-direction-3", "hexagonal-port-direction-4", "hexagonal-port-direction-5", "hexagonal-port-direction-6"],
+        "hexagluePlugin": null
+      },
+      {
+        "priority": 4,
+        "severity": "MAJOR",
+        "title": "Create a driven adapter implementing this port as a JPA persistence layer",
+        "description": "Ports without adapters cannot be used. The application cannot interact with external systems or be invoked by driving adapters.",
+        "effort": {
+          "days": 18.0,
+          "description": "Estimated effort"
+        },
+        "impact": "Resolves 6 issue(s)",
+        "affectedTypes": ["com.acme.banking.persistence.repository.AccountRepository", "com.acme.banking.persistence.repository.BeneficiaryRepository", "com.acme.banking.persistence.repository.CardRepository", "com.acme.banking.persistence.repository.CustomerRepository", "com.acme.banking.persistence.repository.TransactionRepository", "com.acme.banking.persistence.repository.TransferRepository"],
+        "relatedIssues": ["hexagonal-port-coverage-1", "hexagonal-port-coverage-2", "hexagonal-port-coverage-3", "hexagonal-port-coverage-4", "hexagonal-port-coverage-5", "hexagonal-port-coverage-6"],
+        "hexagluePlugin": "hexaglue-plugin-jpa"
+      },
+      {
+        "priority": 5,
+        "severity": "MAJOR",
+        "title": "Route the dependency through the appropriate port",
+        "description": "Layer isolation violations break the hexagonal architecture contract. When layers bypass ports to access each other directly, the architecture loses its ability to swap implementations and maintain testability.",
+        "effort": {
+          "days": 11.0,
+          "description": "Estimated effort"
+        },
+        "impact": "Resolves 11 issue(s)",
+        "affectedTypes": ["com.acme.banking.service.service.TransactionService", "com.acme.banking.service.service.TransferService", "com.acme.banking.service.service.AccountService", "com.acme.banking.service.service.CardService", "com.acme.banking.service.service.CustomerService"],
+        "relatedIssues": ["hexagonal-layer-isolation-1", "hexagonal-layer-isolation-2", "hexagonal-layer-isolation-3", "hexagonal-layer-isolation-4", "hexagonal-layer-isolation-5", "hexagonal-layer-isolation-6", "hexagonal-layer-isolation-7", "hexagonal-layer-isolation-8", "hexagonal-layer-isolation-9", "hexagonal-layer-isolation-10", "hexagonal-layer-isolation-11"],
+        "hexagluePlugin": null
+      }
+    ],
+    "totalEffort": {
+      "days": 42.0,
+      "cost": {
+        "amount": 21000,
+        "currency": "EUR",
+        "dailyRate": 500
+      },
+      "hexaglueSavingsDays": 18.0,
+      "hexaglueSavingsCost": {
+        "amount": 9000,
+        "currency": "EUR",
+        "dailyRate": 500
+      },
+      "effectiveDays": 24.0,
+      "effectiveCost": {
+        "amount": 12000,
+        "currency": "EUR",
+        "dailyRate": 500
+      }
+    }
+  },
+  "appendix": {
+    "scoreBreakdown": {
+      "dddCompliance": {"weight": 25, "score": 9},
+      "hexagonalCompliance": {"weight": 25, "score": 0},
+      "dependencyQuality": {"weight": 20, "score": 0},
+      "couplingMetrics": {"weight": 15, "score": 40},
+      "cohesionQuality": {"weight": 15, "score": 40}
+    },
+    "metrics": [
+      {
+        "id": "aggregate.avgSize",
+        "name": "aggregate.avgSize",
+        "value": 0.00,
+        "unit": "methods",
+        "threshold": null,
+        "status": "OK"
+      },
+      {
+        "id": "aggregate.boundary",
+        "name": "aggregate.boundary",
+        "value": 0.00,
+        "unit": "%",
+        "threshold": {"min": 80.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "aggregate.coupling.efferent",
+        "name": "aggregate.coupling.efferent",
+        "value": 0.41,
+        "unit": "ratio",
+        "threshold": {"max": 0.7},
+        "status": "OK"
+      },
+      {
+        "id": "aggregate.repository.coverage",
+        "name": "aggregate.repository.coverage",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": null,
+        "status": "OK"
+      },
+      {
+        "id": "architecture.cohesion.relational",
+        "name": "architecture.cohesion.relational",
+        "value": 0.47,
+        "unit": "ratio",
+        "threshold": {"min": 1.5, "max": 4.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "architecture.cyclicity.relative",
+        "name": "architecture.cyclicity.relative",
+        "value": 1.09,
+        "unit": "%",
+        "threshold": {"max": 5.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.dependency.depth",
+        "name": "architecture.dependency.depth",
+        "value": 5.00,
+        "unit": "levels",
+        "threshold": {"max": 7.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.fan.out.max",
+        "name": "architecture.fan.out.max",
+        "value": 5.00,
+        "unit": "dependencies",
+        "threshold": {"max": 20.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.mmi",
+        "name": "architecture.mmi",
+        "value": 54.80,
+        "unit": "score",
+        "threshold": {"min": 50.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.modularity.q",
+        "name": "architecture.modularity.q",
+        "value": 0.19,
+        "unit": "Q",
+        "threshold": {"min": 0.3},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "architecture.propagation.cost",
+        "name": "architecture.propagation.cost",
+        "value": 15.93,
+        "unit": "%",
+        "threshold": {"max": 35.0},
+        "status": "OK"
+      },
+      {
+        "id": "architecture.visibility.average",
+        "name": "architecture.visibility.average",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"max": 70.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "code.boilerplate.ratio",
+        "name": "code.boilerplate.ratio",
+        "value": 76.70,
+        "unit": "%",
+        "threshold": {"max": 50.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "code.complexity.average",
+        "name": "code.complexity.average",
+        "value": 1.03,
+        "unit": "complexity",
+        "threshold": {"max": 10.0},
+        "status": "OK"
+      },
+      {
+        "id": "ddd.aggregate.coupling",
+        "name": "ddd.aggregate.coupling",
+        "value": 0.00,
+        "unit": "deps/aggregate",
+        "threshold": {"max": 3.0},
+        "status": "OK"
+      },
+      {
+        "id": "ddd.event.coverage",
+        "name": "ddd.event.coverage",
+        "value": 0.00,
+        "unit": "%",
+        "threshold": null,
+        "status": "OK"
+      },
+      {
+        "id": "ddd.value.object.ratio",
+        "name": "ddd.value.object.ratio",
+        "value": 66.67,
+        "unit": "%",
+        "threshold": {"min": 40.0},
+        "status": "OK"
+      },
+      {
+        "id": "domain.coverage",
+        "name": "domain.coverage",
+        "value": 76.00,
+        "unit": "%",
+        "threshold": {"min": 30.0},
+        "status": "OK"
+      },
+      {
+        "id": "domain.purity",
+        "name": "domain.purity",
+        "value": 63.16,
+        "unit": "%",
+        "threshold": {"min": 100.0},
+        "status": "CRITICAL"
+      },
+      {
+        "id": "hexagonal.adapter.independence",
+        "name": "hexagonal.adapter.independence",
+        "value": 100.00,
+        "unit": "%",
+        "threshold": {"min": 80.0},
+        "status": "OK"
+      }
+    ],
+    "constraintsEvaluated": [
+      {"id": "ddd:domain-purity", "violations": 7},
+      {"id": "ddd:entity-identity", "violations": 6},
+      {"id": "hexagonal:layer-isolation", "violations": 11},
+      {"id": "hexagonal:port-coverage", "violations": 6},
+      {"id": "hexagonal:port-direction", "violations": 6}
+    ],
+    "packageMetrics": [
+      {
+        "package": "com.acme.banking",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.api.controller",
+        "ca": 0,
+        "ce": 14,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.api.dto",
+        "ca": 5,
+        "ce": 9,
+        "instability": 0.64,
+        "abstractness": 0.00,
+        "distance": 0.36,
+        "zone": "STABLE_CORE"
+      },
+      {
+        "package": "com.acme.banking.api.exception",
+        "ca": 0,
+        "ce": 3,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.config",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.core.exception",
+        "ca": 1,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.core.model",
+        "ca": 21,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.09,
+        "distance": 0.91,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.core.util",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.persistence.config",
+        "ca": 0,
+        "ce": 0,
+        "instability": 0.00,
+        "abstractness": 0.00,
+        "distance": 1.00,
+        "zone": "ZONE_OF_PAIN"
+      },
+      {
+        "package": "com.acme.banking.persistence.repository",
+        "ca": 5,
+        "ce": 8,
+        "instability": 0.62,
+        "abstractness": 1.00,
+        "distance": 0.62,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.service.event",
+        "ca": 0,
+        "ce": 1,
+        "instability": 1.00,
+        "abstractness": 0.00,
+        "distance": 0.00,
+        "zone": "MAIN_SEQUENCE"
+      },
+      {
+        "package": "com.acme.banking.service.service",
+        "ca": 5,
+        "ce": 12,
+        "instability": 0.71,
+        "abstractness": 0.00,
+        "distance": 0.29,
+        "zone": "STABLE_CORE"
+      }
+    ]
+  }
+}

@@ -10,53 +10,21 @@ import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
 import { Image } from 'astro:assets';
 import accountAggregateScreenshot from '~/assets/screenshots/livingdoc-account-aggregate.png';
 import readmeOverviewScreenshot from '~/assets/screenshots/livingdoc-readme-overview.png';
-import CompanionBanner from '~/components/CompanionBanner.astro';
-import ConfigTable from '../_components/ConfigTable.astro';
-import MavenParamsTable from '../_components/MavenParamsTable.astro';
-import versions from '~/data/versions';
-import livingDocConfig from '~/data/generated/plugin-living-doc.json';
-import mavenGoals from '~/data/generated/maven-goals.json';
-import { yamlDescriptions, mavenDescriptions } from '~/data/generated/descriptions-living-doc';
-
-const yamlParams = [
-	...livingDocConfig.parameters.map(p => ({
-		name: p.name,
-		type: p.type === 'String' ? 'string' : p.type === 'int' ? 'integer' : p.type,
-		defaultValue: `<code>${p.defaultValue.replace(/^"|"$/g, '')}</code>`,
-		description: yamlDescriptions[p.name] || p.description,
-	})),
-	{
-		name: 'outputDirectory',
-		type: 'string',
-		defaultValue: '(défaut global)',
-		description: yamlDescriptions.outputDirectory,
-	},
-];
-
-const generateGoal = mavenGoals.goals.find((g: any) => g.name === 'generate');
-const mvnParams = generateGoal ? generateGoal.parameters.map((p: any) => ({
-	name: p.name,
-	defaultValue: p.required
-		? '(requis)'
-		: p.defaultValue
-			? `<code>${p.defaultValue.replace(/\$\{[^}]+\}/g, '').replace('${project.build.directory}/', '')}</code>`
-			: '',
-	description: mavenDescriptions[p.name] || p.description,
-})) : [];
+import VersionBanner from '~/components/VersionBanner.astro';
 
 const pomPlugin = `<plugin>
-    <groupId>${versions.groupId}</groupId>
+    <groupId>io.hexaglue</groupId>
     <artifactId>hexaglue-maven-plugin</artifactId>
-    <version>${versions.hexaglue}</version>
+    <version>6.0.0</version>
     <extensions>true</extensions>
     <configuration>
         <basePackage>com.acme.shop</basePackage>
     </configuration>
     <dependencies>
         <dependency>
-            <groupId>${versions.pluginsGroupId}</groupId>
+            <groupId>io.hexaglue.plugins</groupId>
             <artifactId>hexaglue-plugin-living-doc</artifactId>
-            <version>${versions.plugins}</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 </plugin>`;
@@ -70,14 +38,15 @@ const yamlConfig = `plugins:
 ---
 
 <MainLayout
-	title="Plugin Living Documentation v3.1.0 : Référence"
-	description="Référence complète du plugin Living Documentation HexaGlue v3.1.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
+	title="Plugin Living Documentation v3.0.0 : Référence"
+	description="Référence complète du plugin Living Documentation HexaGlue v3.0.0 : options de configuration, fichiers générés, diagrammes et support multi-module."
+	canonicalURL={new URL('/docs/plugin-living-doc/', Astro.site)}
 	pluginSlug="plugin-living-doc"
-	currentVersion="3.1.0"
+	currentVersion="3.0.0"
 	schema={{
 		"@type": "TechArticle",
 		proficiencyLevel: "Beginner",
-		version: "3.1.0",
+		version: "3.0.0",
 		about: [
 			{ "@type": "Thing", name: "Documentation logicielle" },
 			{ "@type": "Thing", name: "Domain-Driven Design" },
@@ -85,6 +54,8 @@ const yamlConfig = `plugins:
 		],
 	}}
 >
+	<VersionBanner variant="past" version="3.0.0" latestUrl="/docs/plugin-living-doc/" />
+
 	<!-- Hero Section -->
 	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
 		<AmberStardust height="h-64 md:h-80" />
@@ -104,10 +75,6 @@ const yamlConfig = `plugins:
 			</p>
 		</div>
 	</section>
-
-	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
-		<CompanionBanner variant="docs" href="/features/living-documentation/" />
-	</div>
 
 	<!-- Prérequis Maven -->
 	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
@@ -153,7 +120,47 @@ const yamlConfig = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-				<MavenParamsTable params={mvnParams} />
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">basePackage</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">(requis)</td>
+						<td class="py-3 hidden md:table-cell">Package racine à analyser. La documentation est générée à partir des types de domaine de ce package.</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4"><code>target/hexaglue/generated-sources</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire de base pour les fichiers générés</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skip</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Désactive complètement l'exécution de HexaGlue (configurable via <code>-Dhexaglue.skip=true</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">skipValidation</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Ignore la validation des classifications avant la génération de la documentation</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">failOnUnclassified</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Fait échouer le build si des types du domaine ne peuvent pas être classifiés</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">tolerantResolution</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>false</code></td>
+						<td class="py-3 hidden md:table-cell">Active la résolution tolérante des types non résolus. Utile pour les projets utilisant des annotation processors (MapStruct, Immutables) dont le code généré n'est pas encore sur le classpath (configurable via <code>-Dhexaglue.tolerantResolution=true</code>)</td>
+					</tr>
+				</tbody>
+			</table>
 			</div>
 		</div>
 	</section>
@@ -172,7 +179,48 @@ const yamlConfig = `plugins:
 
 		<div class="table-panel mt-10">
 			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
-				<ConfigTable params={yamlParams} />
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Option</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Type</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Défaut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Description</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDir</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>"living-doc"</code></td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie pour les fichiers de documentation (relatif à <code>target/hexaglue/reports/</code>)</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">generateDiagrams</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Active la génération de diagrammes Mermaid dans un fichier <code>diagrams.md</code> dédié</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">maxPropertiesInDiagram</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">integer</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>5</code></td>
+						<td class="py-3 hidden md:table-cell">Nombre maximum de propriétés affichées par classe dans les diagrammes</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">includeDebugSections</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">boolean</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>true</code></td>
+						<td class="py-3 hidden md:table-cell">Inclut les sections de debug (classification trace, source location) dans <code>domain.md</code> et <code>ports.md</code>. Mettre à <code>false</code> pour une documentation plus concise.</td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 whitespace-nowrap"><code class="accent">outputDirectory</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">string</td>
+						<td class="py-3 pr-4">(défaut global)</td>
+						<td class="py-3 hidden md:table-cell">Répertoire de sortie spécifique au plugin, surchargeant le répertoire global</td>
+					</tr>
+				</tbody>
+			</table>
 			</div>
 		</div>
 

@@ -1,6 +1,6 @@
 ---
 import { Schema } from 'astro-seo-schema';
-import { findCaseStudy, findStep } from '~/data/case-studies-meta';
+import { findCaseStudy } from '~/data/case-studies-meta';
 import type { SchemaType, Breadcrumb } from '~/helpers/breadcrumbs';
 import type { SchemaOverride } from './BaseHead.astro';
 
@@ -34,11 +34,11 @@ const graph: Record<string, unknown>[] = [];
 
 // --- Case study detection ---
 const caseStudy = findCaseStudy(pathname);
-const stepInfo = findStep(pathname);
-const isCaseStudyIndex = caseStudy && !stepInfo && pathname.match(/\/case-studies\/[\w-]+\/$/);
+const isCaseStudyIndex = caseStudy && pathname.match(/\/case-studies\/[\w-]+\/$/);
+const isCaseStudyPage = caseStudy && !isCaseStudyIndex;
 
 if (isCaseStudyIndex && caseStudy && pageUrl) {
-	// Case study index → HowTo with all steps
+	// Case study index → HowTo with condensed pages
 	graph.push({
 		"@type": "HowTo",
 		"@id": `${pageUrl}#howto`,
@@ -47,19 +47,16 @@ if (isCaseStudyIndex && caseStudy && pageUrl) {
 		description: caseStudy.description,
 		inLanguage,
 		isPartOf: { "@id": `${SITE_URL}/#website` },
-		step: caseStudy.steps.map((s, i) => ({
+		step: caseStudy.pages.filter((p) => p.slug).map((p, i) => ({
 			"@type": "HowToStep",
 			position: i + 1,
-			name: `Étape ${s.number} : ${s.title}`,
-			url: `${SITE_URL}/case-studies/${caseStudy.slug}/${s.slug}/`,
+			name: p.title,
+			url: `${SITE_URL}/case-studies/${caseStudy.slug}/${p.slug}/`,
 		})),
 	});
 
-} else if (stepInfo && pageUrl) {
-	// Step page → enriched TechArticle
-	const { caseStudy: cs, step, position } = stepInfo;
-	const caseStudyUrl = `${SITE_URL}/case-studies/${cs.slug}/`;
-
+} else if (isCaseStudyPage && caseStudy && pageUrl) {
+	// Case study sub-page → TechArticle
 	graph.push({
 		"@type": "TechArticle",
 		"@id": `${pageUrl}#webpage`,
@@ -67,11 +64,10 @@ if (isCaseStudyIndex && caseStudy && pageUrl) {
 		name: pageTitle,
 		description,
 		inLanguage,
-		isPartOf: { "@id": `${caseStudyUrl}#howto` },
+		isPartOf: { "@id": `${SITE_URL}/case-studies/${caseStudy.slug}/#howto` },
 		mainEntityOfPage: { "@id": `${pageUrl}#webpage` },
-		position,
-		proficiencyLevel: cs.proficiencyLevel,
-		about: cs.about,
+		proficiencyLevel: caseStudy.proficiencyLevel,
+		about: caseStudy.about,
 		publisher: { "@id": `${SITE_URL}/#organization` },
 	});
 

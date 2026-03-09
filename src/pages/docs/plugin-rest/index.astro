@@ -1,0 +1,655 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import Link from '../../_components/Link.astro';
+import Insight from '~/components/Insight.astro';
+import CompanionBanner from '~/components/CompanionBanner.astro';
+import AmberStardust from '../../_components/landing-page/AmberStardust.astro';
+import ConfigTable from '../_components/ConfigTable.astro';
+import MavenParamsTable from '../_components/MavenParamsTable.astro';
+import versions from '~/data/versions';
+import restConfig from '~/data/generated/plugin-rest.json';
+import mavenGoals from '~/data/generated/maven-goals.json';
+import { yamlDescriptions, mavenDescriptions } from '~/data/generated/descriptions-rest';
+
+const yamlParams = restConfig.parameters.map(p => ({
+	name: p.name,
+	type: p.type === 'String' ? 'string' : p.type === 'Map<String, Integer>' ? 'map' : p.type,
+	defaultValue: p.defaultValue === 'null'
+		? '(auto-détecté)'
+		: p.defaultValue === '{}'
+			? '(vide)'
+			: `<code>${p.defaultValue.replace(/^"|"$/g, '')}</code>`,
+	description: yamlDescriptions[p.name] || p.description,
+}));
+
+const generateGoal = mavenGoals.goals.find((g: any) => g.name === 'generate');
+const mvnParams = generateGoal ? generateGoal.parameters.map((p: any) => ({
+	name: p.name,
+	defaultValue: p.required
+		? '(requis)'
+		: p.defaultValue
+			? `<code>${p.defaultValue.replace(/\$\{[^}]+\}/g, '').replace('${project.build.directory}/', '')}</code>`
+			: '',
+	description: mavenDescriptions[p.name] || p.description,
+})) : [];
+
+const pomPlugin = `<plugin>
+    <groupId>${versions.groupId}</groupId>
+    <artifactId>hexaglue-maven-plugin</artifactId>
+    <version>${versions.hexaglue}</version>
+    <extensions>true</extensions>
+    <configuration>
+        <basePackage>com.acme.shop</basePackage>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-rest</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+    </dependencies>
+</plugin>`;
+
+const pomDeps = `<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <!-- Optionnel : documentation OpenAPI -->
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.8.6</version>
+    </dependency>
+</dependencies>`;
+
+const codeController = `@RestController
+@RequestMapping("/api/orders")
+@Tag(name = "Orders", description = "Order management operations")
+public class OrderController {
+
+    private final OrderUseCases orderUseCases;
+
+    public OrderController(OrderUseCases orderUseCases) {
+        this.orderUseCases = orderUseCases;
+    }
+
+    @PostMapping
+    @Operation(summary = "Create order")
+    public ResponseEntity<Object> createOrder(
+            @Valid @RequestBody CreateOrderRequest request) {
+        var result = orderUseCases.createOrder(request.customerId(), ...);
+        return ResponseEntity.status(201).body(OrderResponse.from(result));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get order")
+    public ResponseEntity<Object> getOrder(@PathVariable UUID id) {
+        var result = orderUseCases.getOrder(OrderId.of(id));
+        return ResponseEntity.ok(OrderResponse.from(result));
+    }
+}`;
+
+const codeDto = `// Request DTO : validation automatique depuis les types du domaine
+public record CreateOrderRequest(
+    @NotNull UUID customerId,
+    @NotBlank String productName,
+    @Positive int quantity
+) {}
+
+// Response DTO : factory from() pour la projection domaine → REST
+public record OrderResponse(
+    UUID id,
+    UUID customerId,
+    String productName,
+    String status
+) {
+    public static OrderResponse from(Order source) {
+        return new OrderResponse(
+            source.getId().value(),
+            source.getCustomerId().value(),
+            source.getProductName(),
+            source.getStatus().name());
+    }
+}`;
+
+const codeExceptionHandler = `@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleIllegalArgument(
+            IllegalArgumentException ex) {
+        return Map.of(
+            "error", "BAD_REQUEST",
+            "message", ex.getMessage(),
+            "status", 400);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, Object> handleException(Exception ex) {
+        return Map.of(
+            "error", "INTERNAL_SERVER_ERROR",
+            "message", ex.getMessage(),
+            "status", 500);
+    }
+}`;
+
+const codeConfiguration = `@Configuration
+public class RestConfiguration {
+
+    @Bean
+    public OrderUseCases orderUseCases(OrderService orderService) {
+        return orderService;
+    }
+}`;
+
+const yamlMultiModule = `modules:
+  shop-core:
+    role: DOMAIN
+  shop-api:
+    role: API
+  shop-persistence:
+    role: INFRASTRUCTURE
+
+plugins:
+  io.hexaglue.plugin.rest:
+    targetModule: "shop-api"
+    basePath: "/api/v2"`;
+
+const yamlComplete = `plugins:
+  io.hexaglue.plugin.rest:
+    # Package cible (auto-détecté si omis)
+    apiPackage: "com.acme.shop.api"
+
+    # Suffixes de nommage
+    controllerSuffix: "Controller"
+    requestDtoSuffix: "Request"
+    responseDtoSuffix: "Response"
+
+    # URL de base
+    basePath: "/api"
+
+    # Annotations OpenAPI (@Tag, @Operation, @ApiResponse)
+    generateOpenApiAnnotations: true
+
+    # Aplatir les value objects multi-champs dans les DTOs
+    flattenValueObjects: true
+
+    # Handler d'exceptions global (@RestControllerAdvice)
+    generateExceptionHandler: true
+    exceptionHandlerClassName: "GlobalExceptionHandler"
+
+    # Classe @Configuration avec @Bean pour les ports
+    generateConfiguration: true
+
+    # Mappings exception → HTTP status personnalisés
+    exceptionMappings:
+      "com.acme.shop.OrderNotFoundException": 404
+      "com.acme.shop.InsufficientStockException": 409
+
+    # Multi-module (optionnel)
+    # targetModule: "shop-api"`;
+---
+
+<MainLayout
+	title="Plugin REST"
+	description="Référence complète du plugin REST HexaGlue : génération de controllers Spring MVC, DTOs avec validation, dérivation automatique des verbes HTTP depuis les ports driving."
+	pluginSlug="plugin-rest"
+	currentVersion="3.1.0"
+	schema={{
+		"@type": "TechArticle",
+		proficiencyLevel: "Beginner",
+		version: "3.1.0",
+		about: [
+			{ "@type": "Thing", name: "REST API" },
+			{ "@type": "Thing", name: "Génération de code" },
+			{ "@type": "Thing", name: "Architecture hexagonale" },
+		],
+	}}
+>
+	<!-- Hero Section -->
+	<section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<AmberStardust height="h-64 md:h-80" />
+
+		<div class="text-center max-w-3xl mx-auto">
+			<span class="bg-clip-text text-transparent bg-orange-yellow-gradient font-semibold text-sm uppercase tracking-wider">
+				Documentation
+			</span>
+
+			<h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+				Plugin REST<br/>
+				<span class="bg-clip-text text-transparent bg-orange-yellow-gradient">Controllers, DTOs et dérivation HTTP automatique.</span>
+			</h1>
+
+			<p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl mx-auto text-balance">
+				Référence complète du plugin REST HexaGlue : génération de controllers Spring MVC, DTOs avec validation, et dérivation automatique des verbes HTTP depuis les ports driving.
+			</p>
+		</div>
+	</section>
+
+	<div class="relative z-[15] w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<CompanionBanner variant="docs" href="/features/rest-generation/" />
+	</div>
+
+	<!-- Installation -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Installation"
+			title="Ajouter le plugin REST"
+			gradient="bg-orange-yellow-gradient"
+		/>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-6">
+			<Code code={pomPlugin} lang="xml" title="pom.xml" />
+			<p class="text-base text-astro-gray-300 font-light">
+				La génération s'exécute automatiquement lors de la phase <code>generate-sources</code> (<code>mvn compile</code>). Les artefacts sont générés dans <code>target/generated-sources/hexaglue/</code>.
+			</p>
+			<p class="text-base text-astro-gray-200 font-light">
+				Le plugin analyse les <strong>ports driving</strong> (interfaces de cas d'utilisation) et génère pour chacun un controller REST complet avec DTOs et validation.
+			</p>
+			<ul class="text-base text-astro-gray-200 font-light list-disc list-inside space-y-1.5">
+				<li><code>&lt;extensions&gt;true&lt;/extensions&gt;</code> : active le binding automatique aux phases Maven. Les goals HexaGlue se déclenchent sans configuration supplémentaire lors de <code>mvn compile</code>.</li>
+				<li><code>&lt;basePackage&gt;</code> : package racine à analyser. Le plugin REST découvre automatiquement les ports driving de ce package et de ses sous-packages.</li>
+				<li>Le plugin REST est déclaré comme <code>&lt;dependency&gt;</code> du plugin Maven, pas du projet. HexaGlue le découvre automatiquement via <code>ServiceLoader</code>.</li>
+			</ul>
+
+			<Insight variant="green">
+				<p>Le plugin REST se combine naturellement avec les plugins <strong>JPA</strong> et <strong>Audit</strong>. HexaGlue exécute d'abord les générateurs (REST, JPA), puis l'audit valide l'architecture complète.</p>
+			</Insight>
+
+			<p class="text-base text-astro-gray-200 font-light">
+				Le plugin génère du code qui utilise Spring MVC et Bean Validation. Ajoutez ces dépendances à votre <code>pom.xml</code> :
+			</p>
+			<Code code={pomDeps} lang="xml" title="pom.xml : dépendances requises" />
+		</div>
+	</section>
+
+	<!-- Paramètres Maven -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Paramètres Maven"
+			gradient="bg-orange-yellow-gradient"
+		>
+			La configuration de la génération se fait via les paramètres <code>&lt;configuration&gt;</code> du plugin Maven dans le <code>pom.xml</code>.<br>
+			Ces paramètres contrôlent le package analysé, le répertoire de sortie et le comportement en cas de types non classifiés.<br>
+			Le paramètre <code>skip</code> peut aussi être passé en ligne de commande via <code>-Dhexaglue.skip=true</code>.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<MavenParamsTable params={mvnParams} />
+			</div>
+		</div>
+	</section>
+
+	<!-- Options YAML -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Configuration"
+			title="Options YAML"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le fichier <code>hexaglue.yaml</code>, placé à la racine du projet (à côté du <code>pom.xml</code>), centralise la configuration de HexaGlue et de tous ses plugins.<br>
+			Les options ci-dessous se configurent dans la section <code>plugins.io.hexaglue.plugin.rest:</code> du fichier YAML.<br>
+			Les paramètres Maven (<code>&lt;configuration&gt;</code>) sont prioritaires sur les valeurs YAML.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+				<ConfigTable params={yamlParams} />
+			</div>
+		</div>
+	</section>
+
+	<!-- Artefacts générés -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Génération"
+			title="Ce qui est généré pour chaque port driving"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Pour chaque port driving (interface de cas d'utilisation) détecté dans le domaine, le plugin produit jusqu'à 5 types d'artefacts. La génération du handler d'exceptions et de la configuration est contrôlable individuellement.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Artefact</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Exemple (<code>OrderUseCases</code>)</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium hidden md:table-cell">Annotations</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Option</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Controller</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>OrderController</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>@RestController</code>, <code>@RequestMapping</code>, <code>@Tag</code></td>
+						<td class="py-3 hidden md:table-cell">Toujours généré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Request DTO</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>CreateOrderRequest</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>record</code> + <code>@NotNull</code>, <code>@NotBlank</code>, <code>@Positive</code></td>
+						<td class="py-3 hidden md:table-cell">Toujours généré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Response DTO</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>OrderResponse</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>record</code> + méthode <code>from()</code></td>
+						<td class="py-3 hidden md:table-cell">Toujours généré</td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Exception Handler</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>GlobalExceptionHandler</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>@RestControllerAdvice</code>, <code>@ExceptionHandler</code></td>
+						<td class="py-3 hidden md:table-cell"><code>generateExceptionHandler</code></td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4 font-medium whitespace-nowrap">Configuration</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>RestConfiguration</code></td>
+						<td class="py-3 pr-4 hidden md:table-cell"><code>@Configuration</code>, <code>@Bean</code></td>
+						<td class="py-3 hidden md:table-cell"><code>generateConfiguration</code></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto space-y-6">
+			<Insight variant="amber">
+				<p>Les identifiants de type wrapper (comme <code>record OrderId(UUID value)</code>) sont automatiquement dépliés vers leur type primitif dans les DTOs et les <code>@PathVariable</code>. L'identifiant est reconstruit via la factory <code>OrderId.of(uuid)</code> dans le controller.</p>
+			</Insight>
+
+			<p class="text-base text-astro-gray-300 font-light">
+				Les artefacts sont organisés en sous-packages : <code>controller</code>, <code>dto</code>, <code>exception</code> et <code>config</code>. Le package parent est configurable via <code>apiPackage</code>.
+			</p>
+		</div>
+	</section>
+
+	<!-- Dérivation HTTP -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Dérivation HTTP"
+			title="Des signatures de méthode aux endpoints REST"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Le plugin analyse chaque méthode du port driving et dérive automatiquement le verbe HTTP, le chemin et le code de statut. Cette dérivation repose sur le nom de la méthode, ses paramètres et son type de retour.
+		</SectionCopy>
+
+		<div class="table-panel mt-10">
+			<div class="table-panel-content max-w-4xl mx-auto overflow-x-auto">
+			<table class="w-full text-sm text-left">
+				<thead>
+					<tr class="border-b border-astro-dark-100/20">
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Préfixe</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Verbe</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Chemin</th>
+						<th class="py-3 pr-4 text-astro-gray-300 font-medium">Statut</th>
+						<th class="py-3 text-astro-gray-300 font-medium hidden md:table-cell">Exemple</th>
+					</tr>
+				</thead>
+				<tbody class="text-astro-gray-200">
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">create</code>, <code class="accent">add</code>, <code class="accent">register</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>POST</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">201</td>
+						<td class="py-3 hidden md:table-cell"><code>createOrder()</code> → <code>POST /api/orders</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">get</code>, <code class="accent">find</code>, <code class="accent">load</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">200</td>
+						<td class="py-3 hidden md:table-cell"><code>getOrder(OrderId)</code> → <code>GET /api/orders/&#123;id&#125;</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">getAll</code>, <code class="accent">list</code>, <code class="accent">findAll</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">200</td>
+						<td class="py-3 hidden md:table-cell"><code>listOrders()</code> → <code>GET /api/orders</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">search</code>, <code class="accent">query</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/search</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">200</td>
+						<td class="py-3 hidden md:table-cell"><code>searchOrders(status, date)</code> → <code>GET /api/orders/search?status=&amp;date=</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">update</code>, <code class="accent">modify</code>, <code class="accent">edit</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>PUT</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">200</td>
+						<td class="py-3 hidden md:table-cell"><code>updateOrder(OrderId, ...)</code> → <code>PUT /api/orders/&#123;id&#125;</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">delete</code>, <code class="accent">remove</code>, <code class="accent">archive</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>DELETE</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">204</td>
+						<td class="py-3 hidden md:table-cell"><code>deleteOrder(OrderId)</code> → <code>DELETE /api/orders/&#123;id&#125;</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">count</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/count</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">200</td>
+						<td class="py-3 hidden md:table-cell"><code>countOrders()</code> → <code>GET /api/orders/count</code></td>
+					</tr>
+					<tr class="border-b border-astro-dark-100/10">
+						<td class="py-3 pr-4"><code class="accent">exists</code>, <code class="accent">is</code>, <code class="accent">has</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>GET</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;/exists</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">200</td>
+						<td class="py-3 hidden md:table-cell"><code>existsOrder(OrderId)</code> → <code>GET /api/orders/&#123;id&#125;/exists</code></td>
+					</tr>
+					<tr>
+						<td class="py-3 pr-4">(autre commande avec identifiant)</td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>POST</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap"><code>/&#123;id&#125;/&#123;action&#125;</code></td>
+						<td class="py-3 pr-4 whitespace-nowrap">200/204</td>
+						<td class="py-3 hidden md:table-cell"><code>shipOrder(OrderId)</code> → <code>POST /api/orders/&#123;id&#125;/ship-order</code></td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+
+		<div class="mt-6 max-w-4xl mx-auto space-y-6">
+			<Insight variant="green">
+				<p>Le plugin résout automatiquement les <strong>collisions d'URL</strong>. Si deux méthodes produisent le même verbe et chemin, l'une d'elles est préfixée avec le nom de la méthode en kebab-case. Un avertissement est émis dans les logs Maven.</p>
+			</Insight>
+
+			<Insight variant="amber">
+				<p>Les méthodes de type <strong>query</strong> (retournant une valeur sans effet de bord) sont mappées sur <code>GET</code>. Les méthodes de type <strong>command</strong> (modifiant l'état) sont mappées sur <code>POST</code>, <code>PUT</code> ou <code>DELETE</code> selon le préfixe. Les commandes retournant <code>void</code> reçoivent le statut <strong>204</strong>.</p>
+			</Insight>
+		</div>
+	</section>
+
+	<!-- Exemples de code généré -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Exemples"
+			title="Code généré"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Voici des extraits représentatifs du code généré par le plugin REST pour un domaine <code>Order</code>.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-8">
+			<div>
+				<h3 class="text-lg font-semibold text-white mb-3">Controller</h3>
+				<Code code={codeController} lang="java" title="OrderController.java" />
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold text-white mb-3">Request et Response DTOs</h3>
+				<Code code={codeDto} lang="java" title="DTOs générés" />
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold text-white mb-3">Exception Handler</h3>
+				<Code code={codeExceptionHandler} lang="java" title="GlobalExceptionHandler.java" />
+			</div>
+
+			<div>
+				<h3 class="text-lg font-semibold text-white mb-3">Configuration</h3>
+				<p class="text-base text-astro-gray-200 font-light mb-4">
+					La classe <code>@Configuration</code> expose les application services via leurs ports driving, permettant à Spring d'injecter automatiquement les implémentations dans les controllers.
+				</p>
+				<Code code={codeConfiguration} lang="java" title="RestConfiguration.java" />
+			</div>
+		</div>
+	</section>
+
+	<!-- Multi-module -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Multi-module"
+			title="Routage des artefacts en multi-module"
+			gradient="bg-orange-yellow-gradient"
+		>
+			En multi-module, les artefacts REST doivent être générés dans le module API, pas dans le module de domaine. Le plugin résout le module cible selon cette priorité :
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto space-y-6">
+			<ol class="space-y-3 text-astro-gray-200">
+				<li class="flex items-start gap-3">
+					<span class="flex items-center justify-center w-7 h-7 rounded-full bg-astro-green/10 border border-astro-green/30 text-astro-green text-sm font-bold shrink-0">1</span>
+					<div><strong class="text-white">Configuration explicite</strong> : <code>targetModule: "shop-api"</code> dans <code>hexaglue.yaml</code></div>
+				</li>
+				<li class="flex items-start gap-3">
+					<span class="flex items-center justify-center w-7 h-7 rounded-full bg-astro-green/10 border border-astro-green/30 text-astro-green text-sm font-bold shrink-0">2</span>
+					<div><strong class="text-white">Auto-routage par convention</strong> : si un seul module a le rôle <code>API</code>, les artefacts y sont routés automatiquement</div>
+				</li>
+				<li class="flex items-start gap-3">
+					<span class="flex items-center justify-center w-7 h-7 rounded-full bg-astro-green/10 border border-astro-green/30 text-astro-green text-sm font-bold shrink-0">3</span>
+					<div><strong class="text-white">Défaut</strong> : si ni configuration ni convention ne s'appliquent, les artefacts sont écrits dans le répertoire de sortie par défaut</div>
+				</li>
+			</ol>
+
+			<Insight variant="amber">
+				<p>Si plusieurs modules ont le rôle <code>API</code> et qu'aucun <code>targetModule</code> n'est configuré, le plugin émet un avertissement et utilise le répertoire de sortie par défaut. Préférez la configuration explicite dans ce cas.</p>
+			</Insight>
+
+			<Code code={yamlMultiModule} lang="yaml" title="hexaglue.yaml : multi-module" />
+		</div>
+	</section>
+
+	<!-- Config complète -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<SectionCopy
+			label="Exemple"
+			title="Configuration complète"
+			gradient="bg-orange-yellow-gradient"
+		>
+			Cet exemple regroupe toutes les options du plugin REST dans un seul fichier <code>hexaglue.yaml</code>. En pratique, seules les options dont vous souhaitez modifier la valeur par défaut sont nécessaires.
+		</SectionCopy>
+
+		<div class="mt-10 max-w-4xl mx-auto">
+			<Code code={yamlComplete} lang="yaml" title="hexaglue.yaml : toutes les options" />
+		</div>
+	</section>
+
+	<!-- Plugins sur mesure -->
+	<section class="py-16 md:py-20 relative w-full max-w-screen-xl mx-auto px-4 sm:px-8">
+		<div class="max-w-3xl mx-auto p-8 md:p-10 rounded-2xl bg-amber-400/[0.06] border border-amber-400/20 text-center">
+			<Icon name="ri:puzzle-line" class="size-10 text-amber-400 mx-auto" aria-hidden="true" />
+			<h2 class="mt-4 font-heading heading-bold text-2xl md:text-3xl text-white">
+				Besoin d'une génération sur mesure ?
+			</h2>
+			<p class="mt-4 text-base text-astro-gray-200 font-light max-w-xl mx-auto">
+				Ce plugin couvre les patterns d'API REST les plus courants, mais chaque entreprise a ses propres conventions et exigences techniques. L'architecture ouverte d'HexaGlue vous permet de créer des plugins adaptés à votre stack.
+			</p>
+			<div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/features/custom-plugins/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Plugins sur mesure
+				</Link>
+				<Link href="/services/" class="secondary">
+					<Icon name="ri:service-line" class="size-5" aria-hidden="true" />
+					<span>Services</span>
+				</Link>
+				<Link href="/contact/" class="secondary">
+					<Icon name="ri:mail-send-line" class="size-5" aria-hidden="true" />
+					<span>Nous contacter</span>
+				</Link>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Final -->
+	<section class="py-16 md:py-24 mb-12 relative">
+		<div class="w-full max-w-screen-xl mx-auto px-4 sm:px-8 text-center space-y-6">
+			<h2 class="font-heading heading-bold text-3xl md:text-4xl lg:text-5xl text-white">
+				<span class="text-astro-gray-300">Concentrez-vous sur les cas d'utilisation.</span><br/>
+				Générez les controllers en quelques lignes.
+			</h2>
+
+			<p class="text-xl text-astro-gray-200 font-light max-w-2xl mx-auto">
+				Définissez vos ports driving, HexaGlue génère les endpoints REST avec validation et documentation OpenAPI.
+			</p>
+
+			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Link href="/case-studies/ecommerce-migration/step-5-generated/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Voir la génération en action
+				</Link>
+				<Link href="/services/" class="secondary">
+					<Icon name="ri:building-4-line" class="size-5" aria-hidden="true" />
+					<span>Se faire accompagner</span>
+				</Link>
+			</div>
+		</div>
+		<div
+			class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-orange-yellow-gradient opacity-50 mask-radial-gradient pointer-events-none"
+		></div>
+	</section>
+</MainLayout>
+
+<style>
+	code {
+		@apply px-1.5 py-0.5 bg-astro-dark-600 rounded text-xs text-astro-gray-100;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+	}
+	code.accent {
+		@apply bg-transparent px-0 py-0 text-astro-green;
+	}
+	.table-panel {
+		position: relative;
+		left: 50%;
+		margin-left: -50vw;
+		width: 100vw;
+		padding: 2.5rem 1rem;
+		border-top: 1px solid rgba(255, 125, 84, 0.07);
+		border-bottom: 1px solid rgba(255, 125, 84, 0.07);
+		background:
+			radial-gradient(circle at 1px 1px, rgba(255, 125, 84, 0.12) 1px, transparent 0) 0 0 / 24px 24px,
+			linear-gradient(180deg, rgba(255, 125, 84, 0.04) 0%, rgba(255, 125, 84, 0.02) 50%, rgba(255, 125, 84, 0.04) 100%);
+	}
+	.table-panel-content {
+		background-color: #0e0d12;
+		border: 1px solid rgba(255, 125, 84, 0.1);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		box-shadow:
+			0 0 20px rgba(255, 125, 84, 0.12),
+			0 0 50px rgba(255, 125, 84, 0.07),
+			0 0 80px rgba(255, 125, 84, 0.04),
+			0 1px 2px rgba(0, 0, 0, 0.4),
+			0 4px 16px rgba(0, 0, 0, 0.3);
+	}
+</style>

@@ -1,0 +1,306 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Code } from 'astro-expressive-code/components';
+import MainLayout from '~/layouts/MainLayout.astro';
+import SectionCopy from '../../_components/SectionCopy.astro';
+import PurpleStardust from '../../_components/landing-page/PurpleStardust.astro';
+import StepNavigation from '../_components/StepNavigation.astro';
+import Insight from '~/components/Insight.astro';
+import ModificationList from '../_components/ModificationList.astro';
+import ModificationGroup from '../_components/ModificationGroup.astro';
+import ModificationItem from '../_components/ModificationItem.astro';
+
+// ── Code extracts ────────────────────────────────────────────────────────────
+
+const drivingPortCode = `public interface OrderUseCases {
+    OrderId createOrder(CustomerId customerId, String currency);
+    void addLine(OrderId orderId, ProductId productId, Quantity quantity, Money unitPrice);
+    void placeOrder(OrderId orderId, Address shippingAddress);
+    void cancelOrder(OrderId orderId, String reason);
+    Order getOrder(OrderId orderId);
+    List<Order> getOrdersByCustomer(CustomerId customerId);
+}`;
+
+const identifierCode = `public record OrderId(Long value) {
+    public OrderId {
+        if (value == null) {
+            throw new IllegalArgumentException("OrderId value must not be null");
+        }
+    }
+}`;
+
+const moneyCode = `public record Money(BigDecimal amount, String currency) {
+    public Money {
+        if (amount == null) throw new IllegalArgumentException("Amount must not be null");
+        if (currency == null) throw new IllegalArgumentException("Currency must not be null");
+        amount = amount.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public static Money zero(String currency) {
+        return new Money(BigDecimal.ZERO, currency);
+    }
+
+    public Money add(Money other) {
+        requireSameCurrency(other);
+        return new Money(this.amount.add(other.amount), this.currency);
+    }
+
+    public Money multiply(int quantity) {
+        return new Money(this.amount.multiply(BigDecimal.valueOf(quantity)), this.currency);
+    }
+
+    private void requireSameCurrency(Money other) {
+        if (!this.currency.equals(other.currency)) {
+            throw new IllegalArgumentException("Currency mismatch");
+        }
+    }
+}`;
+
+---
+
+<MainLayout
+    title="Migration hexagonale | Migration E-Commerce"
+    description="Restructuration hexagonale et purification du domaine : création des ports, identifiants typés, value objects."
+>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <PurpleStardust height="h-64 md:h-80" />
+        <div class="max-w-4xl mx-auto">
+            <div class="mt-8 max-w-3xl">
+                <span class="bg-clip-text text-transparent bg-blue-purple-gradient font-semibold text-sm uppercase tracking-wider">
+                    Migration hexagonale
+                </span>
+                <h1 class="mt-4 font-heading heading-bold text-4xl md:text-5xl lg:text-6xl text-white text-balance">
+                    Migration hexagonale
+                </h1>
+                <p class="mt-6 text-lg text-astro-gray-200 font-light max-w-2xl">
+                    Deux étapes fondamentales : la restructuration hexagonale pose le squelette des ports et services applicatifs, puis la purification du domaine élimine toutes les violations DDD.
+                </p>
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <a
+                        href="https://github.com/hexaglue/case-study-ecommerce"
+                        title="Voir le code sur GitHub"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="px-4 py-2 group inline-flex items-center justify-center gap-2 rounded-full border border-astro-dark-100/30 hover:border-astro-dark-100/60 text-base font-normal text-astro-gray-200 hover:text-astro-gray-100 bg-astro-dark-600/30 transition-all ease-in-out duration-500"
+                    >
+                        <Icon name="logos/github" class="size-5" aria-hidden="true" />
+                        <code class="text-sm text-purple-400">case-study-ecommerce</code>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+    <!-- SECTION 1 : Restructuration hexagonale (step-3)                       -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Modifications step-3 -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-4xl mx-auto">
+            <SectionCopy
+                label="Restructuration"
+                title="Restructuration hexagonale"
+                gradient="bg-blue-purple-gradient"
+            >
+                L'application est réorganisée selon les principes de l'architecture hexagonale :<br>
+                les packages <code>domain/</code>, <code>ports/</code>, <code>application/</code> et <code>infrastructure/</code> séparent le domaine de l'infrastructure, et les services existants sont refactorisés en services applicatifs qui orchestrent les cas d'usage via des ports.
+            </SectionCopy>
+
+            <ModificationList class="mt-10">
+                <ModificationGroup layer="domain">
+                    <ModificationItem
+                        action="move"
+                        count={13}
+                        label="classes domaine"
+                        details="vers domain/order/, domain/customer/, domain/product/, domain/inventory/, domain/payment/, domain/shipping/"
+                    />
+                </ModificationGroup>
+                <ModificationGroup layer="ports">
+                    <ModificationItem
+                        action="define"
+                        count={7}
+                        label="driving ports"
+                        details="OrderUseCases, CustomerUseCases, ProductUseCases, InventoryUseCases, PaymentUseCases, ShippingUseCases, CartUseCases dans ports/in/"
+                    />
+                    <ModificationItem
+                        action="define"
+                        count={8}
+                        label="driven ports"
+                        details="OrderRepository, CustomerRepository, ProductRepository, InventoryRepository, PaymentRepository, ShipmentRepository, NotificationSender, PaymentGateway dans ports/out/"
+                    />
+                </ModificationGroup>
+                <ModificationGroup layer="application">
+                    <ModificationItem
+                        action="create"
+                        count={7}
+                        label="services applicatifs"
+                        details="OrderApplicationService, CustomerApplicationService, etc. dans application/"
+                    />
+                </ModificationGroup>
+                <ModificationGroup layer="adapters">
+                    <ModificationItem
+                        action="implement"
+                        count={6}
+                        label="adaptateurs JPA"
+                        details="JpaOrderRepository extends JpaRepository, OrderRepository dans infrastructure/persistence/"
+                    />
+                    <ModificationItem
+                        action="implement"
+                        count={2}
+                        label="adaptateurs externes"
+                        details="PaymentGatewayAdapter, NotificationAdapter dans infrastructure/external/"
+                    />
+                </ModificationGroup>
+            </ModificationList>
+
+            <Insight>
+                <ul>
+                    <li><strong>Driving ports</strong> (ports entrants) : interfaces qui exposent les cas d'usage au monde extérieur, par exemple <code>OrderUseCases</code></li>
+                    <li><strong>Driven ports</strong> (ports sortants) : interfaces qui abstraient les dépendances externes, par exemple <code>OrderRepository</code> ou <code>NotificationSender</code></li>
+                </ul>
+                <p>Cette inversion de dépendance permet au domaine de ne dépendre que d'abstractions, pas d'implémentations concrètes.</p>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Code step-3 : Driving port -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-4xl mx-auto">
+            <SectionCopy
+                label="Code"
+                title="Exemple de driving port"
+                gradient="bg-blue-purple-gradient"
+            >
+                Un driving port définit un cas d'usage métier sans référence à une technologie.<br>
+                HexaGlue détecte automatiquement ce pattern et classe l'interface comme <code>DRIVING_PORT</code>.
+            </SectionCopy>
+
+            <div class="mt-10">
+                <Code code={drivingPortCode} lang="java" title="OrderUseCases.java - Driving Port" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li>L'interface ne contient que du métier : pas d'annotation Spring, pas d'import JPA</li>
+                    <li>Les types utilisés (<code>OrderId</code>, <code>CustomerId</code>, <code>Money</code>) sont des concepts domaine, pas des primitifs</li>
+                    <li>HexaGlue détecte ce pattern et le fait apparaître dans l'inventaire architectural comme <code>DrivingPort</code></li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+    <!-- SECTION 2 : Purification du domaine (step-4)                          -->
+    <!-- ══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Modifications step-4 -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-4xl mx-auto">
+            <SectionCopy
+                label="Purification"
+                title="Purification du domaine"
+                gradient="bg-blue-purple-gradient"
+            >
+                Le domaine est purifié : toutes les annotations JPA sont supprimées et remplacées par des patterns tactiques DDD.<br>
+                Les identifiants typés et les value objects permettent à HexaGlue d'inférer la classification complète sans aucune annotation explicite.
+            </SectionCopy>
+
+            <ModificationList class="mt-10">
+                <ModificationGroup layer="domain">
+                    <ModificationItem
+                        action="create"
+                        count={6}
+                        label="identifiants typés"
+                        details="OrderId, CustomerId, ProductId, PaymentId, ShipmentId, InventoryId (records Java avec validation)"
+                    />
+                    <ModificationItem
+                        action="create"
+                        count={4}
+                        label="value objects"
+                        details="Money, Address, Email, Quantity avec validation et comportement métier"
+                    />
+                    <ModificationItem
+                        action="create"
+                        count={1}
+                        label="domain event"
+                        details="OrderPlacedEvent capturant le fait métier avec OrderId, CustomerId et Money"
+                    />
+                    <ModificationItem
+                        action="purify"
+                        count={9}
+                        label="classes domaine"
+                        details="suppression @Entity / @ManyToOne / extends BaseEntity, ajout logique métier (place(), cancel()...)"
+                    />
+                    <ModificationItem
+                        action="remove"
+                        label="BaseEntity"
+                        details="chaque agrégat définit son propre identifiant typé, la hiérarchie technique disparaît"
+                    />
+                </ModificationGroup>
+                <ModificationGroup layer="adapters">
+                    <ModificationItem
+                        action="remove"
+                        count={6}
+                        label="repositories JPA"
+                        details="JpaOrderRepository, JpaCustomerRepository, etc. supprimés car le domaine purifié n'est plus compatible"
+                    />
+                </ModificationGroup>
+            </ModificationList>
+
+            <Insight>
+                <p>C'est la transformation fondamentale du DDD : séparer le modèle métier de l'infrastructure.</p>
+                <ul>
+                    <li><strong>Identifiants typés</strong> (records) : remplacent les <code>Long</code> génériques issus de <code>BaseEntity</code>, chaque agrégat a son propre type d'identifiant</li>
+                    <li><strong>Value objects</strong> : encapsulent les règles de validation et le comportement, par exemple <code>Money</code> sait additionner et multiplier des montants</li>
+                    <li><strong>Agrégats purifiés</strong> : protègent leurs invariants via des méthodes métier (<code>place()</code>, <code>markPaid()</code>, <code>cancel()</code>)</li>
+                    <li><strong>Repositories JPA supprimés</strong> : le domaine purifié n'est plus compatible avec les anciens adaptateurs, ils seront régénérés par HexaGlue</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+    <!-- Code step-4 : Identifiant typé + Value Object -->
+    <section class="py-16 md:py-20 relative w-full max-w-4xl mx-auto px-4 sm:px-8">
+        <div class="max-w-4xl mx-auto">
+            <SectionCopy
+                label="Code"
+                title="Identifiants typés et value objects"
+                gradient="bg-blue-purple-gradient"
+            >
+                Deux patterns clés illustrent la purification du domaine.<br>
+                HexaGlue détecte ces structures automatiquement et classe <code>OrderId</code> comme <code>IDENTIFIER</code> et <code>Money</code> comme <code>VALUE_OBJECT</code>.
+            </SectionCopy>
+
+            <div class="mt-10 space-y-6">
+                <Code code={identifierCode} lang="java" title="OrderId.java - Identifiant typé" />
+                <Code code={moneyCode} lang="java" title="Money.java - Value Object" />
+            </div>
+
+            <Insight>
+                <ul>
+                    <li>Le <strong>record</strong> remplace le <code>Long</code> générique hérité de <code>BaseEntity</code> : on ne peut plus confondre un <code>OrderId</code> avec un <code>CustomerId</code> à la compilation</li>
+                    <li>La <strong>validation au constructeur</strong> garantit qu'aucun identifiant nul ni montant invalide ne circule dans le domaine</li>
+                    <li><code>Money.add()</code> et <code>Money.multiply()</code> retournent une nouvelle instance : l'<strong>immutabilité</strong> est garantie par le record</li>
+                    <li>Ces deux patterns sont détectés automatiquement par HexaGlue sans aucune annotation supplémentaire</li>
+                </ul>
+            </Insight>
+        </div>
+    </section>
+
+
+    <!-- Navigation -->
+    <section class="py-16 relative">
+        <div class="w-full max-w-4xl mx-auto px-4 sm:px-8">
+            <StepNavigation
+                prev={{ href: '/case-studies/ecommerce-migration/', label: 'Diagnostic initial' }}
+                next={{ href: '/case-studies/ecommerce-migration/result/', label: 'Résultat final' }}
+            />
+        </div>
+        <div
+            class="absolute inset-x-0 bottom-0 h-[50vw] translate-y-[60%] bg-blue-purple-gradient opacity-50 mask-radial-gradient pointer-events-none"
+        ></div>
+    </section>
+</MainLayout>

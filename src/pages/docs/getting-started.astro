@@ -12,7 +12,7 @@ cd hexaglue-demo`;
 
 const codeStep2 = `mvn clean compile`;
 
-const codeStep2Output = `[INFO] --- hexaglue:6.0.0:generate (default-hexaglue-generate) @ hexaglue-demo ---
+const codeStep2Output = `[INFO] --- hexaglue:6.1.0:generate (default-hexaglue-generate) @ hexaglue-demo ---
 [INFO] HexaGlue analyzing: io.hexaglue.demo
 .../...
 [INFO] Executing plugin: io.hexaglue.plugin.livingdoc
@@ -32,17 +32,33 @@ const codeStep2Output = `[INFO] --- hexaglue:6.0.0:generate (default-hexaglue-ge
 
 const codeStep3 = `mvn clean verify -DskipTests`;
 
-const codeStep3Output = `[INFO] --- hexaglue:6.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
+const codeStep3Output = `[INFO] --- hexaglue:6.1.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
 [INFO] HexaGlue auditing: io.hexaglue.demo
 .../...
 [INFO] Executing plugin: io.hexaglue.plugin.audit
-[ERROR] [io.hexaglue.plugin.audit] Audit FAILED: 0 blocker, 1 critical violations
+[INFO] [io.hexaglue.plugin.audit] Audit complete: 2 violations, 20 metrics
+[INFO] [io.hexaglue.plugin.audit]
+======================================================================
+  HEXAGLUE ARCHITECTURE AUDIT REPORT
+======================================================================
 
   Score:  76/100  |  Grade: C  |  Status: FAILED
 
+  Your application has critical issues that should be addressed.
+
+----------------------------------------------------------------------
   ISSUES
+----------------------------------------------------------------------
+
+  Total: 2 issue(s)
+
+    █ CRITICAL: 1
+    █ MAJOR:    1
+
     [CRITICAL]  Domain purity violation
     [MAJOR]     Driven port without adapter
+
+----------------------------------------------------------------------
 
 [INFO] ────────────────────────────────────────────────────────────────────────────────
 [INFO] AUDIT SUMMARY
@@ -55,19 +71,35 @@ const codeStep3Output = `[INFO] --- hexaglue:6.0.0:audit (default-hexaglue-audit
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
-[ERROR] Audit failed with 1 ERROR violations`;
+[ERROR] Audit failed with 1 error-level violations (BLOCKER/CRITICAL)`;
 
 const codeStep4 = `mvn clean verify -DskipTests`;
 
-const codeStep4Output = `[INFO] --- hexaglue:6.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
+const codeStep4Output = `[INFO] --- hexaglue:6.1.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
 [INFO] HexaGlue auditing: io.hexaglue.demo
 .../...
 [INFO] Executing plugin: io.hexaglue.plugin.audit
+[INFO] [io.hexaglue.plugin.audit] Audit complete: 1 violations, 20 metrics
+[INFO] [io.hexaglue.plugin.audit]
+======================================================================
+  HEXAGLUE ARCHITECTURE AUDIT REPORT
+======================================================================
 
   Score:  77/100  |  Grade: C  |  Status: PASSED (with warnings)
 
+  Your application is generally healthy but has some issues that should be reviewed.
+
+----------------------------------------------------------------------
   ISSUES
+----------------------------------------------------------------------
+
+  Total: 1 issue(s)
+
+    █ MAJOR:    1
+
     [MAJOR]     Driven port without adapter
+
+----------------------------------------------------------------------
 
 [INFO] ────────────────────────────────────────────────────────────────────────────────
 [INFO] AUDIT SUMMARY
@@ -84,8 +116,13 @@ const codeStep4Output = `[INFO] --- hexaglue:6.0.0:audit (default-hexaglue-audit
 
 const codeStep5 = `mvn clean verify`;
 
-const codeStep5Output = `[INFO] --- hexaglue:6.0.0:generate (default-hexaglue-generate) @ hexaglue-demo ---
+const codeStep5Output = `[INFO] --- hexaglue:6.1.0:generate (default-hexaglue-generate) @ hexaglue-demo ---
 [INFO] HexaGlue analyzing: io.hexaglue.demo
+.../...
+[INFO] Executing plugin: io.hexaglue.plugin.rest
+[INFO] [io.hexaglue.plugin.rest] REST plugin generated @Configuration class with 1 @Bean method(s).
+[INFO] [io.hexaglue.plugin.rest] REST plugin generated 1 controller(s) and 2 DTO(s).
+[INFO] Plugin io.hexaglue.plugin.rest completed in 19ms, generated 5 files
 .../...
 [INFO] Executing plugin: io.hexaglue.plugin.jpa
 [INFO] [io.hexaglue.plugin.jpa] Generated entity: TaskEntity
@@ -93,13 +130,30 @@ const codeStep5Output = `[INFO] --- hexaglue:6.0.0:generate (default-hexaglue-ge
 [INFO] [io.hexaglue.plugin.jpa] Generated mapper: TaskMapper
 [INFO] [io.hexaglue.plugin.jpa] Generated adapter: TaskRepositoryAdapter implementing TaskRepository
 [INFO] [io.hexaglue.plugin.jpa] JPA generation complete: 1 entities, 0 embeddables, 1 repositories, 1 mappers, 1 adapters
+[INFO] Plugin io.hexaglue.plugin.jpa completed in 16ms, generated 4 files
+[INFO] Plugins executed: 3 plugins, 13 files generated
 .../...
 [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 .../...
-[INFO] --- hexaglue:6.0.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
+[INFO] --- hexaglue:6.1.0:audit (default-hexaglue-audit) @ hexaglue-demo ---
+.../...
+[INFO] [io.hexaglue.plugin.audit] Audit complete: 0 violations, 20 metrics
+[INFO] [io.hexaglue.plugin.audit]
+======================================================================
+  HEXAGLUE ARCHITECTURE AUDIT REPORT
+======================================================================
 
   Score:  71/100  |  Grade: C  |  Status: PASSED
+
+  Congratulations! Your application follows all architectural best practices.
+
+----------------------------------------------------------------------
+  ISSUES
+----------------------------------------------------------------------
+
   ✓ No issues detected!
+
+----------------------------------------------------------------------
 
 [INFO] ────────────────────────────────────────────────────────────────────────────────
 [INFO] AUDIT SUMMARY
@@ -142,6 +196,13 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
         <dependency>
             <groupId>${versions.pluginsGroupId}</groupId>
             <artifactId>hexaglue-plugin-jpa</artifactId>
+            <version>${versions.plugins}</version>
+        </dependency>
+
+        <!-- Génération REST (controllers, DTOs, configuration, exception handler) -->
+        <dependency>
+            <groupId>${versions.pluginsGroupId}</groupId>
+            <artifactId>hexaglue-plugin-rest</artifactId>
             <version>${versions.plugins}</version>
         </dependency>
     </dependencies>
@@ -193,8 +254,8 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 			{
 				"@type": "HowToStep",
 				position: 5,
-				name: "Générer l'infrastructure JPA",
-				text: "Décommentez hexaglue-plugin-jpa. HexaGlue génère entités, repositories, mappers et adapters automatiquement.",
+				name: "Générer l'infrastructure",
+				text: "Décommentez hexaglue-plugin-jpa et hexaglue-plugin-rest. HexaGlue génère l'infrastructure complète : persistence JPA et controllers REST depuis les ports.",
 				url: "https://hexaglue.io/docs/getting-started/#etapes",
 			},
 		],
@@ -368,9 +429,9 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 					<span class="text-xl md:text-2xl font-bold text-astro-purple">5</span>
 				</div>
 				<div class="p-6 bg-astro-dark-800/40 border border-astro-dark-100/15 rounded-2xl group-hover:border-astro-purple/30 transition-all duration-300">
-					<h3 class="text-xl font-semibold text-white mb-4">Générer l'infrastructure JPA</h3>
+					<h3 class="text-xl font-semibold text-white mb-4">Générer l'infrastructure</h3>
 					<p class="text-astro-gray-200 font-light mb-4">
-						Décommentez <code class="text-astro-blue">hexaglue-plugin-jpa</code> dans le <code>pom.xml</code>.
+						Décommentez <code class="text-astro-blue">hexaglue-plugin-jpa</code> et <code class="text-astro-blue">hexaglue-plugin-rest</code> dans le <code>pom.xml</code>.
 						Les sources générées sont ajoutées automatiquement au classpath grâce à <code>&lt;extensions&gt;true&lt;/extensions&gt;</code>.
 					</p>
 
@@ -385,7 +446,7 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 						HexaGlue exécute les plugins dans un ordre précis selon leur catégorie :
 					</p>
 					<ol class="text-astro-gray-200 font-light space-y-2 list-decimal list-inside">
-						<li><strong class="text-white">Générateurs</strong> (phase <code>generate-sources</code>) : <code>living-doc</code> puis <code>jpa</code> génèrent le code</li>
+						<li><strong class="text-white">Générateurs</strong> (phase <code>generate-sources</code>) : <code>living-doc</code>, <code>jpa</code> puis <code>rest</code> génèrent le code</li>
 						<li><strong class="text-white">Compilation</strong> : Maven compile les sources générées avec MapStruct</li>
 						<li><strong class="text-white">Tests</strong> : Spring Boot démarre avec l'infrastructure générée</li>
 						<li><strong class="text-white">Audit</strong> (phase <code>verify</code>) : <code>audit</code> valide l'architecture finale</li>
@@ -454,10 +515,10 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 						<div class="p-2 rounded-lg bg-astro-purple/10">
 							<Icon name="ri:code-box-line" class="size-5 text-astro-purple" aria-hidden="true" />
 						</div>
-						<h3 class="text-lg font-semibold text-white">Génération JPA</h3>
+						<h3 class="text-lg font-semibold text-white">Génération de code</h3>
 					</div>
 					<p class="text-sm text-astro-gray-200 font-light">
-						Entités, repositories et adapters générés depuis votre modèle domaine.
+						Infrastructure JPA et controllers REST générés depuis vos ports driving et driven.
 					</p>
 				</div>
 
@@ -489,15 +550,9 @@ const pomConfig = `<!-- HexaGlue Maven Plugin (dans <build><plugins>) -->
 			</p>
 
 			<div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-				<a
-					href="/case-studies/ecommerce-migration/"
-					title="Explorer l'étude de cas e-commerce"
-					class="px-6 py-3 group inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-white hover:bg-astro-gray-100 text-base font-medium transition-all ease-in-out duration-300"
-				>
-					<span class="bg-clip-text text-transparent bg-orange-yellow-gradient group-hover:text-[#b35a20] transition-all ease-in-out duration-500">
-						Explorer une étude de cas
-					</span>
-				</a>
+				<Link href="/case-studies/ecommerce-migration/" class="primary" gradient="linear-gradient(266.93deg, #F8E42E 0%, #FF7D54 100%)">
+					Explorer une étude de cas
+				</Link>
 				<Link href="/services/" class="secondary">
 					<Icon name="ri:building-4-line" class="size-5" aria-hidden="true" />
 					<span>Se faire accompagner</span>
