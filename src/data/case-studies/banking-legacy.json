@@ -5,8 +5,8 @@
     "projectVersion": "1.0.0",
     "timestamp": "2026-03-09T10:32:32.758809Z",
     "analysisDuration": "13ms",
-    "hexaglueVersion": "3.1.0",
-    "pluginVersion": "3.1.0"
+    "hexaglueVersion": "3.1.1",
+    "pluginVersion": "3.1.1"
   },
   "verdict": {
     "score": 14,
